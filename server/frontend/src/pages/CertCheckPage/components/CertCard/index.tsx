@@ -2,7 +2,7 @@ import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import type { CertType } from "@/apis/domain";
 import type { CertificateInfo } from "@/apis/domain";
-import { CertificateSource, CertificateStatus } from "@/apis/domain";
+import { CertificateStatus } from "@/apis/domain";
 import { Edit, Eye, Trash2, Loader2 } from "@/assets/icons/lucide";
 import { useCertificateStatus, useCertificateTime } from "@/hooks";
 import { useActionCertificateItem } from "../../hooks";
@@ -74,12 +74,7 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
             <button
               className={styles.actionButton}
               onClick={handleEdit(cert, certType)}
-              disabled={(cert.source as CertificateSource) === CertificateSource.AUTO}
-              title={
-                (cert.source as CertificateSource) === CertificateSource.AUTO
-                  ? (t("update.autoNotEditable") || "Auto certificates cannot be edited")
-                  : (t("actions.update") || "Edit")
-              }
+              title={t("actions.update") || "Edit"}
             >
               <Edit size={18} />
             </button>

@@ -18,15 +18,11 @@ export const useActionCertificateItem = () => {
     (cert: CertificateInfo, certType: string) => {
       return () => {
         const source = (cert.source as CertificateSource) || CertificateSource.AUTO;
-        // 如果是 AUTO 源的证书，不允许编辑
-        if (source === CertificateSource.AUTO) {
-          showError(t("update.autoNotEditable") || "Auto source certificates cannot be manually updated. Please refresh from folder instead.");
-          return;
-        }
+        // 允许所有类型的证书点击编辑，编辑页面会根据 source 显示不同的表单（只读或可编辑）
         navigate(ROUTES.CERT_EDIT_PATH(certType, cert.domain, source));
       };
     },
-    [navigate, t],
+    [navigate],
   );
 
   const handleView = useCallback(

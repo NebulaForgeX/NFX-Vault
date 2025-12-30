@@ -12,6 +12,7 @@ from events.operation_refresh_event import OperationRefreshEvent
 from events.cache_invalidate_event import CacheInvalidateEvent
 from events.parse_certificate_event import ParseCertificateEvent
 from modules.applications.tls import CertificateApplication
+from modules.applications.file import FileApplication
 
 logger = logging.getLogger(__name__)
 
@@ -21,15 +22,18 @@ class CertificateKafkaHandler:
     
     def __init__(
         self,
-        certificate_application: CertificateApplication
+        certificate_application: CertificateApplication,
+        file_application: FileApplication
     ):
         """
         初始化事件处理器
         
         Args:
             certificate_application: 证书应用层实例
+            file_application: 文件应用层实例
         """
         self.certificate_application = certificate_application
+        self.file_application = file_application
     
     def process_read_certificate_file(self, event_data: Dict[str, Any]):
         """
@@ -55,7 +59,7 @@ class CertificateKafkaHandler:
                 asyncio.set_event_loop(loop)
             
             loop.run_until_complete(
-                self.certificate_application.read_folders_and_store_certificates(store=event.store)
+                self.file_application.read_folders_and_store_certificates(store=event.store)
             )
             
         except Exception as e:

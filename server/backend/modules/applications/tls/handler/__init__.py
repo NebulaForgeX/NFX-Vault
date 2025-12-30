@@ -8,7 +8,6 @@ Handler 模块
 from .get_certificate_list import get_certificate_list
 from .get_certificate_detail import get_certificate_detail
 from .publish_refresh_event import publish_refresh_event
-from .read_folders_and_store import read_folders_and_store_certificates
 from .create_certificate import create_certificate
 from .update_certificate import update_certificate
 from .delete_certificate import delete_certificate
@@ -20,7 +19,6 @@ __all__ = [
     "get_certificate_list",
     "get_certificate_detail",
     "publish_refresh_event",
-    "read_folders_and_store_certificates",
     "create_certificate",
     "update_certificate",
     "delete_certificate",

@@ -121,6 +121,16 @@ const ManualApplyForm = memo(({ onSubmit, isPending }: ManualApplyFormProps) => 
                     className={`${styles.input} ${styles.inputDisabled}`}
                   />
                 </div>
+                {/* source 字段 - 只读 */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>{t("form.source") || "来源"}</label>
+                  <input
+                    type="text"
+                    value={t("source.manual_apply") || "Manual Apply"}
+                    disabled
+                    className={`${styles.input} ${styles.inputDisabled}`}
+                  />
+                </div>
               </div>
             </div>
           </div>

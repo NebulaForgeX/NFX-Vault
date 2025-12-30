@@ -7,6 +7,8 @@
   "certificate": {
     "info": "Informations sur le certificat",
     "validFrom": "Valide à partir du",
+    "expiryDate": "Date d'expiration",
+    "sans": "Noms alternatifs du sujet (SANs)",
     "content": "Contenu du certificat",
     "privateKey": "Clé privée"
   },

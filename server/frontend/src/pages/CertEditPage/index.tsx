@@ -87,6 +87,11 @@ const CertEditPageContent = memo(() => {
             </h1>
             <p className={styles.subtitle}>
               {t("form.editSubtitle") || `更新「${certificate.domain}」的证书信息`}
+              {certificate.source && (
+                <span className={styles.sourceBadge}>
+                  ({t(`source.${certificate.source}`) || certificate.source})
+                </span>
+              )}
             </p>
           </div>
         </div>

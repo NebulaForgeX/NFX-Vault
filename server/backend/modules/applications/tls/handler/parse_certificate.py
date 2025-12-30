@@ -50,6 +50,9 @@ def parse_certificate(
         # 解析证书
         cert_info = extract_cert_info_from_pem_sync(cert_obj["certificate"])
         
+        # 打印解析结果用于调试
+        logger.info(f"🔍 证书解析结果: {cert_info}")
+        
         if not cert_info:
             # 解析失败，更新状态为 fail，但保存基本信息
             app.database_repo.update_certificate_parse_result(
@@ -79,8 +82,19 @@ def parse_certificate(
         
         # 合并所有域名（包括 CN 和 SANs）
         all_domains = cert_info.get("all_domains", [])
+        if not isinstance(all_domains, list):
+            all_domains = []
+        # 确保 parsed_domain 在列表中
         if parsed_domain and parsed_domain not in all_domains:
             all_domains.insert(0, parsed_domain)
+        # 确保所有 SANs 都在列表中
+        if parsed_sans:
+            for san in parsed_sans:
+                if san and san not in all_domains:
+                    all_domains.append(san)
+        
+        # 打印调试信息
+        logger.info(f"🔍 解析结果: domain={parsed_domain}, sans={parsed_sans}, all_domains={all_domains}")
         
         # 检查域名是否匹配
         original_domain = cert_obj.get("domain")
@@ -95,16 +109,21 @@ def parse_certificate(
                 logger.warning(f"⚠️  域名不匹配: original={original_domain}, parsed={parsed_domain}")
         
         # 更新数据库（无论成功还是失败，都保存解析结果）
+        # 使用 all_domains 作为 sans（包含 CN 和所有 SANs）
+        # 如果 all_domains 为空列表，也保存（表示没有 SANs）
         app.database_repo.update_certificate_parse_result(
             certificate_id=certificate_id,
             status=status,
-            sans=all_domains if all_domains else None,
+            sans=all_domains if all_domains else [],  # 空列表而不是 None，表示没有 SANs
             issuer=parsed_issuer,
             not_before=parsed_not_before,
             not_after=parsed_not_after,
             is_valid=parsed_is_valid,
             days_remaining=parsed_days_remaining
         )
+        
+        logger.info(f"🔍 保存到数据库: sans={all_domains if all_domains else []}, "
+                   f"issuer={parsed_issuer}, is_valid={parsed_is_valid}, days_remaining={parsed_days_remaining}")
         
         # 发布缓存失效事件
         store = cert_obj.get("store", CertificateStore.DATABASE.value)

@@ -4,6 +4,8 @@
   "certList": "证书列表",
   "addCert": "添加证书",
   "applyCert": "申请证书",
+  "analysis": "分析",
+  "analyzeTLS": "解析 TLS",
   "appName": "NFX-Vault"
 }
 

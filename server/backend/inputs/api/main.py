@@ -17,7 +17,7 @@ from modules.configs import load_config, DatabaseConfig, CertConfig
 from modules.server import init_connections, cleanup_connections
 from modules.interfaces.http import register_routers
 from modules.applications.acme import ACMEChallengeStorage
-from modules.applications.tls.handler.read_folders_and_store import read_folders_and_store_certificates
+from modules.applications.file.handler.read_folders_and_store import read_folders_and_store_certificates
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 import uvicorn
@@ -57,10 +57,17 @@ async def lifespan(app: FastAPI):
     acme_storage = ACMEChallengeStorage(challenge_dir=cert_config.ACME_CHALLENGE_DIR)
     
     # 注册所有路由（统一入口）
+    from modules.interfaces.http.handler.analysis import AnalysisHTTPHandler
+    from modules.applications.analysis import AnalysisApplication
+    
+    analysis_application = AnalysisApplication()
+    analysis_handler = AnalysisHTTPHandler(analysis_application=analysis_application)
+    
     register_routers(
         app=app,
         tls_handler=connections.certificate_http_handler,
         file_handler=connections.file_http_handler,
+        analysis_handler=analysis_handler,
         acme_storage=acme_storage
     )
     
@@ -68,14 +75,14 @@ async def lifespan(app: FastAPI):
     if cert_config.READ_ON_STARTUP:
         logger.info("📖 启动时读取文件夹并存储到数据库...")
         try:
-            if connections.certificate_http_handler:
-                # 从 handler 获取 certificate_application（它有 base_dir 属性）
-                certificate_application = connections.certificate_http_handler.certificate_application
+            if connections.file_http_handler:
+                # 从 handler 获取 file_application
+                file_application = connections.file_http_handler.file_application
                 
                 # 在 lifespan 中直接使用 await（因为已经在异步上下文中）
                 for store in ["websites", "apis"]:
                     result = await read_folders_and_store_certificates(
-                        certificate_application,
+                        file_application,
                         store
                     )
                     logger.info(f"✅ 初始化完成: store={store}, processed={result.get('processed', 0)}")
@@ -90,12 +97,12 @@ async def lifespan(app: FastAPI):
         async def read_folders_job(store: str):
             """定时任务：读取文件夹"""
             global connections
-            if connections and connections.certificate_http_handler:
+            if connections and connections.file_http_handler:
                 try:
-                    # 从 handler 获取 certificate_application
-                    certificate_application = connections.certificate_http_handler.certificate_application
+                    # 从 handler 获取 file_application
+                    file_application = connections.file_http_handler.file_application
                     result = await read_folders_and_store_certificates(
-                        certificate_application,
+                        file_application,
                         store
                     )
                     logger.info(f"✅ 定时任务完成: store={store}, processed={result.get('processed', 0)}")

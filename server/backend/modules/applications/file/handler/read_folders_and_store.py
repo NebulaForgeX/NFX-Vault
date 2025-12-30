@@ -10,7 +10,7 @@ import os
 from typing import Dict, Any, List, Optional
 from pathlib import Path
 
-from .protocol import CertificateAppLike
+from .protocol import FileAppLike
 from utils.certificate import extract_cert_info_from_pem_sync
 from enums.certificate_source import CertificateSource
 from enums.certificate_status import CertificateStatus
@@ -20,19 +20,27 @@ logger = logging.getLogger(__name__)
 
 
 async def read_folders_and_store_certificates(
-    app: CertificateAppLike,
+    app: FileAppLike,
     store: str
 ) -> Dict[str, Any]:
     """
     读取文件夹中的证书文件并存储到数据库
     
     Args:
-        app: CertificateApplication 实例
+        app: FileApplication 实例
         store: 存储位置（websites 或 apis）
         
     Returns:
         处理结果字典
     """
+    if not app.database_repo:
+        logger.error("❌ 数据库仓库未初始化，无法读取文件夹")
+        return {
+            "success": False,
+            "message": "Database repository not initialized",
+            "processed": 0
+        }
+    
     base_dir = app.base_dir
     store_dir = os.path.join(base_dir, store.capitalize())
     
@@ -86,6 +94,20 @@ async def read_folders_and_store_certificates(
                     logger.warning(f"⚠️  无法从证书提取域名，跳过: {folder_name}")
                     continue
                 
+                # 提取 SANs 和合并所有域名
+                parsed_sans = cert_info.get("sans", [])
+                all_domains = cert_info.get("all_domains", [])
+                if not isinstance(all_domains, list):
+                    all_domains = []
+                # 确保 domain 在列表中
+                if domain and domain not in all_domains:
+                    all_domains.insert(0, domain)
+                # 确保所有 SANs 都在列表中
+                if parsed_sans:
+                    for san in parsed_sans:
+                        if san and san not in all_domains:
+                            all_domains.append(san)
+                
                 # 检查数据库中是否已存在（根据 folder_name）
                 existing = app.database_repo.get_certificate_by_folder_name(folder_name)
                 
@@ -97,6 +119,7 @@ async def read_folders_and_store_certificates(
                         domain=domain,
                         certificate=cert_pem,
                         private_key=key_pem,
+                        sans=all_domains if all_domains else [],
                         issuer=cert_info.get("issuer", "Let's Encrypt"),
                         not_before=cert_info.get("not_before"),
                         not_after=cert_info.get("not_after"),
@@ -104,7 +127,7 @@ async def read_folders_and_store_certificates(
                         days_remaining=cert_info.get("days_remaining"),
                         status=CertificateStatus.SUCCESS.value
                     )
-                    logger.debug(f"✅ 更新证书: folder_name={folder_name}, domain={domain}")
+                    logger.debug(f"✅ 更新证书: folder_name={folder_name}, domain={domain}, sans={all_domains}")
                 else:
                     # 创建新记录（source='auto'）
                     app.database_repo.create_certificate_with_folder(
@@ -115,13 +138,14 @@ async def read_folders_and_store_certificates(
                         private_key=key_pem,
                         source=CertificateSource.AUTO.value,
                         status=CertificateStatus.SUCCESS.value,
+                        sans=all_domains if all_domains else [],
                         issuer=cert_info.get("issuer", "Let's Encrypt"),
                         not_before=cert_info.get("not_before"),
                         not_after=cert_info.get("not_after"),
                         is_valid=cert_info.get("is_valid", True),
                         days_remaining=cert_info.get("days_remaining")
                     )
-                    logger.debug(f"✅ 创建证书: folder_name={folder_name}, domain={domain}, source=auto")
+                    logger.debug(f"✅ 创建证书: folder_name={folder_name}, domain={domain}, source=auto, sans={all_domains}")
                 
                 processed_count += 1
                 
@@ -129,9 +153,6 @@ async def read_folders_and_store_certificates(
                 logger.error(f"❌ 处理证书失败: folder_name={folder_name}, error={e}", exc_info=True)
                 failed_count += 1
                 continue
-        
-        # 发布缓存失效事件（通过 Kafka）
-        app.invalidate_cache([store], trigger="read_folders")
         
         logger.info(f"✅ 文件夹读取和存储完成: store={store}, 成功={processed_count}, 失败={failed_count}")
         return {

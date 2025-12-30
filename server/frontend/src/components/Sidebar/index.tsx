@@ -3,7 +3,7 @@ import type { SidebarProps as ProSidebarProps } from "react-pro-sidebar";
 
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { Home, Plus, Shield } from "@/assets/icons/lucide";
+import { Home, Plus, Shield, FileSearch } from "@/assets/icons/lucide";
 import { Menu, MenuItem, Sidebar as ProSidebar, SubMenu } from "react-pro-sidebar";
 import { Link, useLocation } from "react-router-dom";
 
@@ -108,6 +108,20 @@ const Sidebar = memo(
                   active={isActiveRoute(location.pathname, ROUTES.CERT_APPLY)}
                 >
                   {t("applyCert")}
+                </MenuItem>
+              </SubMenu>
+
+              <SubMenu
+                label={t("analysis")}
+                icon={<FileSearch size={20} />}
+                active={isActiveRoute(location.pathname, ROUTES.ANALYSIS_TLS)}
+              >
+                <MenuItem
+                  icon={<FileSearch size={18} />}
+                  component={<Link to={ROUTES.ANALYSIS_TLS} />}
+                  active={isActiveRoute(location.pathname, ROUTES.ANALYSIS_TLS)}
+                >
+                  {t("analyzeTLS")}
                 </MenuItem>
               </SubMenu>
             </Menu>

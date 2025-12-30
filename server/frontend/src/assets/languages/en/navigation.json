@@ -4,6 +4,8 @@
   "certList": "Certificate List",
   "addCert": "Add Certificate",
   "applyCert": "Apply Certificate",
+  "analysis": "Analysis",
+  "analyzeTLS": "Analyze TLS",
   "appName": "NFX-Vault"
 }
 

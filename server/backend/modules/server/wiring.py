@@ -21,9 +21,11 @@ from resources.kafka import (
 from resources.kafka.client import KafkaClient
 from modules.interfaces.http.handler.certificate import CertificateHTTPHandler
 from modules.interfaces.http.handler.file import FileHTTPHandler
+from modules.interfaces.http.handler.analysis import AnalysisHTTPHandler
 from modules.interfaces.kafka.handler.certificate import CertificateKafkaHandler
 from modules.applications.tls import CertificateApplication
 from modules.applications.file import FileApplication
+from modules.applications.analysis import AnalysisApplication
 from modules.repositories import (
     CertificateCache,
     CertificateDatabase,
@@ -94,6 +96,9 @@ def init_connections(db_config: DatabaseConfig, cert_config: CertConfig) -> Conn
         db_config=db_config
     )
     
+    # 初始化 Analysis Application
+    analysis_application = AnalysisApplication()
+    
     # 2.3 初始化 Interfaces（HTTP 和 Kafka 分离）
     certificate_http_handler = CertificateHTTPHandler(
         certificate_application=certificate_application
@@ -101,8 +106,12 @@ def init_connections(db_config: DatabaseConfig, cert_config: CertConfig) -> Conn
     file_http_handler = FileHTTPHandler(
         file_application=file_application
     )
+    analysis_http_handler = AnalysisHTTPHandler(
+        analysis_application=analysis_application
+    )
     certificate_kafka_handler = CertificateKafkaHandler(
-        certificate_application=certificate_application
+        certificate_application=certificate_application,
+        file_application=file_application
     )
     
     logger.info("✅ MVC Interfaces 初始化完成（HTTP 和 Kafka 分离）")

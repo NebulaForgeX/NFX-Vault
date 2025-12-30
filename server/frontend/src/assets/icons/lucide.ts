@@ -25,6 +25,7 @@ export { default as ExternalLink } from "lucide-react/icons/external-link";
 export { default as Eye } from "lucide-react/icons/eye";
 export { default as EyeOff } from "lucide-react/icons/eye-off";
 export { default as FileText } from "lucide-react/icons/file-text";
+export { default as FileSearch } from "lucide-react/icons/file-search";
 export { default as Filter } from "lucide-react/icons/filter";
 export { default as FolderPlus } from "lucide-react/icons/folder-plus";
 export { default as FolderTree } from "lucide-react/icons/folder-tree";

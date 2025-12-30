@@ -7,6 +7,8 @@
   "certificate": {
     "info": "Certificate Information",
     "validFrom": "Valid From",
+    "expiryDate": "Expiry Date",
+    "sans": "Subject Alternative Names (SANs)",
     "content": "Certificate Content",
     "privateKey": "Private Key"
   },

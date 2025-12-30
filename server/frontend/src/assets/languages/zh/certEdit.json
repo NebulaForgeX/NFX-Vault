@@ -10,6 +10,7 @@
     "basicInfo": "基本信息",
     "store": "证书类型",
     "domain": "域名",
+    "source": "来源",
     "folderName": "文件夹名称",
     "folderNamePlaceholder": "例如: api_lucaslyu_com",
     "folderNameHelp": "唯一标识符，只能包含字母、数字、下划线和连字符",
@@ -17,6 +18,11 @@
     "privateKey": "私钥内容",
     "update": "更新证书",
     "updating": "更新中..."
+  },
+  "source": {
+    "auto": "自动发现",
+    "manual_apply": "手动申请",
+    "manual_add": "手动添加"
   },
   "loading": "加载中..."
 }

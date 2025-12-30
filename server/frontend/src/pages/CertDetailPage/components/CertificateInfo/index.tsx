@@ -45,6 +45,16 @@ const CertificateInfo = memo(({ certDetail }: CertificateInfoProps) => {
             <span>{new Date(certDetail.notAfter).toLocaleString()}</span>
           </div>
         )}
+        {certDetail.sans && certDetail.sans.length > 0 && (
+          <div className={styles.infoItem}>
+            <label>{t("certificate.sans") || "Subject Alternative Names (SANs)"}</label>
+            <div className={styles.sansList}>
+              {certDetail.sans.map((san, idx) => (
+                <span key={idx} className={styles.sanTag}>{san}</span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

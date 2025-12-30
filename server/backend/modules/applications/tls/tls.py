@@ -20,7 +20,6 @@ from .handler import (
     get_certificate_list,
     get_certificate_detail,
     publish_refresh_event,
-    read_folders_and_store_certificates,
     create_certificate,
     update_certificate,
     delete_certificate,
@@ -97,13 +96,6 @@ class CertificateApplication:
     ):
         """发布刷新事件"""
         return publish_refresh_event(self, store, trigger)
-    
-    async def read_folders_and_store_certificates(
-        self,
-        store: str
-    ) -> Dict[str, Any]:
-        """读取文件夹并存储证书"""
-        return await read_folders_and_store_certificates(self, store)
     
     def create_certificate(
         self,

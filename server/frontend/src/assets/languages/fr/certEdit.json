@@ -10,6 +10,7 @@
     "basicInfo": "Informations de base",
     "store": "Type de certificat",
     "domain": "Domaine",
+    "source": "Source",
     "folderName": "Nom du dossier",
     "folderNamePlaceholder": "par exemple : api_lucaslyu_com",
     "folderNameHelp": "Identifiant unique, ne peut contenir que des lettres, des chiffres, des traits de soulignement et des tirets",
@@ -17,6 +18,11 @@
     "privateKey": "Contenu de la clé privée",
     "update": "Mettre à jour le certificat",
     "updating": "Mise à jour..."
+  },
+  "source": {
+    "auto": "Auto",
+    "manual_apply": "Application manuelle",
+    "manual_add": "Ajout manuel"
   },
   "loading": "Chargement du certificat..."
 }

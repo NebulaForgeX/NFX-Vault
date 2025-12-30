@@ -1,0 +1,236 @@
+.page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--color-bg-2);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  padding: 0 0;
+}
+
+.backBtn:hover {
+  background-color: var(--color-bg-3);
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: var(--color-fg-heading);
+  margin: 0;
+}
+
+.content {
+  display: flex;
+  gap: 2rem;
+}
+
+.leftColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.rightColumn {
+  flex: 1;
+}
+
+.section {
+  background-color: var(--color-bg-2);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-fg-heading);
+  margin: 0 0 1rem 0;
+}
+
+.uploadArea {
+  margin-bottom: 1rem;
+}
+
+.uploadLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-bg-3);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 0.875rem;
+}
+
+.uploadLabel:hover {
+  background-color: var(--color-bg-4);
+}
+
+.fileInput {
+  display: none;
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.875rem;
+  resize: vertical;
+  color: var(--color-fg-text);
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.analyzeBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.analyzeBtn:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.analyzeBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.clearBtn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-bg-2);
+  color: var(--color-fg-text);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.clearBtn:hover {
+  background-color: var(--color-bg-3);
+}
+
+.error {
+  padding: 1rem;
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+  border-radius: 4px;
+}
+
+.result {
+  background-color: var(--color-bg-2);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.resultTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-fg-heading);
+  margin: 0 0 1.5rem 0;
+}
+
+.resultSection {
+  margin-bottom: 1.5rem;
+}
+
+.resultSection:last-child {
+  margin-bottom: 0;
+}
+
+.resultSection h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-fg-heading);
+  margin: 0 0 1rem 0;
+}
+
+.resultItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.resultItem:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.label {
+  font-weight: 500;
+  color: var(--color-fg-text);
+  min-width: 120px;
+}
+
+.valid {
+  color: var(--color-success);
+  font-weight: 500;
+}
+
+.invalid {
+  color: var(--color-error);
+  font-weight: 500;
+}
+
+.domainsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.domainTag {
+  padding: 0.25rem 0.75rem;
+  background-color: var(--color-bg-3);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+

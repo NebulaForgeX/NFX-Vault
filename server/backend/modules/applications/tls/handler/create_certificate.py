@@ -76,14 +76,34 @@ def create_certificate(
         )
         
         if cert_obj:
-            # 在 session 关闭前获取 ID（避免 detached instance 错误）
-            certificate_id = cert_obj.id
+            # 安全获取 ID（避免 detached instance 错误）
+            try:
+                certificate_id = cert_obj.id
+            except Exception as e:
+                # 如果无法从对象获取 ID，使用 folder_name 或 domain 重新查询
+                logger.warning(f"⚠️ 无法从对象获取 ID，尝试重新查询: {e}")
+                if folder_name:
+                    cert_by_folder = app.database_repo.get_certificate_by_folder_name(folder_name)
+                    if cert_by_folder:
+                        certificate_id = cert_by_folder.get("id")
+                    else:
+                        logger.error("❌ 无法通过 folder_name 查询证书 ID")
+                        certificate_id = None
+                else:
+                    cert_by_domain = app.database_repo.get_certificate_by_domain(
+                        actual_store, domain, source=CertificateSource.MANUAL_ADD.value
+                    )
+                    if cert_by_domain:
+                        certificate_id = cert_by_domain.get("id")
+                    else:
+                        logger.error("❌ 无法通过 domain 查询证书 ID")
+                        certificate_id = None
             
             # 发布缓存失效事件（通过 Kafka）
             app.invalidate_cache([actual_store], trigger="add")
             
             # 发送解析证书事件（通过 Kafka）
-            if app.pipeline_repo:
+            if certificate_id and app.pipeline_repo:
                 try:
                     app.pipeline_repo.send_parse_certificate_event(certificate_id=certificate_id)
                     logger.info(f"✅ Certificate created, parse event sent for certificate_id '{certificate_id}'")

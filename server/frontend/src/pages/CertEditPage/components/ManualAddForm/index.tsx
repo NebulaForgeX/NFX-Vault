@@ -24,7 +24,7 @@ interface ManualAddFormProps {
  * MANUAL_ADD 源证书表单 - 所有字段都可以编辑
  */
 const ManualAddForm = memo(({ onSubmit, onSubmitError, isPending }: ManualAddFormProps) => {
-  const { t } = useTranslation("certificateElements");
+  const { t } = useTranslation("certEdit");
   const methods = useFormContext<CertificateFormValues>();
 
   return (
@@ -47,6 +47,15 @@ const ManualAddForm = memo(({ onSubmit, onSubmitError, isPending }: ManualAddFor
               <div className={styles.leftColumn}>
                 <StoreController />
                 <DomainController />
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>{t("form.source") || "来源"}</label>
+                  <input
+                    type="text"
+                    value={t("source.manual_add") || "Manual Add"}
+                    disabled
+                    className={styles.input}
+                  />
+                </div>
               </div>
             </div>
           </div>

@@ -39,7 +39,10 @@ def get_certificate_detail(
     if use_cache:
         cached = app.cache_repo.get_certificate_detail(store, domain)
         if cached:
-            logger.debug(f"✅ 从缓存获取证书详情: store={store}, domain={domain}")
+            # 确保缓存中的数据包含 sans 字段（兼容旧缓存）
+            if "sans" not in cached or cached.get("sans") is None:
+                cached["sans"] = []
+            logger.debug(f"✅ 从缓存获取证书详情: store={store}, domain={domain}, sans={cached.get('sans')}")
             return cached
     
     # 2. 从数据库获取（已经是字典格式）
@@ -56,13 +59,16 @@ def get_certificate_detail(
         "status": cert_dict.get("status"),
         "certificate": cert_dict["certificate"],
         "privateKey": cert_dict["private_key"],
-        "sans": cert_dict["sans"],
-        "issuer": cert_dict["issuer"],
+        "sans": cert_dict.get("sans") or [],  # 确保 sans 不会是 None
+        "issuer": cert_dict.get("issuer"),
         "notBefore": cert_dict["not_before"].isoformat() if cert_dict.get("not_before") else None,
         "notAfter": cert_dict["not_after"].isoformat() if cert_dict.get("not_after") else None,
-        "isValid": cert_dict["is_valid"],
-        "daysRemaining": cert_dict["days_remaining"]
+        "isValid": cert_dict.get("is_valid"),
+        "daysRemaining": cert_dict.get("days_remaining")
     }
+    
+    # 打印调试信息
+    logger.debug(f"🔍 证书详情: domain={result['domain']}, sans={result['sans']}, issuer={result['issuer']}")
     
     # 3. 写入缓存（使用较短的 TTL，默认 5 分钟）
     if use_cache:

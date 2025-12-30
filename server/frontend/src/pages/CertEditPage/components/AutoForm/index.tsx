@@ -64,6 +64,15 @@ const AutoForm = memo(({ }: AutoFormProps) => {
                     className={styles.input}
                   />
                 </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>{t("form.source") || "来源"}</label>
+                  <input
+                    type="text"
+                    value={t("source.auto") || "Auto"}
+                    disabled
+                    className={styles.input}
+                  />
+                </div>
               </div>
             </div>
           </div>

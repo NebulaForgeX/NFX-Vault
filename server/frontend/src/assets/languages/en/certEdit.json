@@ -10,6 +10,7 @@
     "basicInfo": "Basic Information",
     "store": "Certificate Type",
     "domain": "Domain",
+    "source": "Source",
     "folderName": "Folder Name",
     "folderNamePlaceholder": "e.g., api_lucaslyu_com",
     "folderNameHelp": "Unique identifier, can only contain letters, numbers, underscores, and hyphens",
@@ -17,6 +18,11 @@
     "privateKey": "Private Key Content",
     "update": "Update Certificate",
     "updating": "Updating..."
+  },
+  "source": {
+    "auto": "Auto",
+    "manual_apply": "Manual Apply",
+    "manual_add": "Manual Add"
   },
   "loading": "Loading certificate..."
 }
