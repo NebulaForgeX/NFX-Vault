@@ -162,7 +162,8 @@ def create_tls_router(handler: CertificateHTTPHandler) -> APIRouter:
         try:
             result = handler.update_manual_apply_certificate(
                 domain=request.domain,
-                folder_name=request.folder_name
+                folder_name=request.folder_name,
+                store=request.store
             )
             return CertificateResponse(**result)
         except HTTPException:

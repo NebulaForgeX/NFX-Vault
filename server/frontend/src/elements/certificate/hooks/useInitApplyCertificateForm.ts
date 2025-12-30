@@ -2,12 +2,16 @@ import type { ApplyCertificateFormValues } from "../controllers/applyCertificate
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
-import { ApplyCertificateFormSchema } from "../controllers/applyCertificateSchema";
+import { createApplyCertificateFormSchema } from "../controllers/applyCertificateSchema";
 
 export default function useInitApplyCertificateForm() {
+  const { t } = useTranslation("common");
+  const schema = createApplyCertificateFormSchema(t);
+
   const form = useForm<ApplyCertificateFormValues>({
-    resolver: zodResolver(ApplyCertificateFormSchema),
+    resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues: {
       domain: "",

@@ -49,5 +49,28 @@
   "layout": {
     "show": "Afficher la barre latérale",
     "hide": "Masquer la barre latérale"
+  },
+  "validation": {
+    "domainRequired": "Veuillez entrer le nom de domaine",
+    "emailRequired": "Veuillez entrer une adresse e-mail valide",
+    "folderNameRequired": "Veuillez entrer le nom du dossier",
+    "folderNameInvalid": "Le nom du dossier ne peut contenir que des lettres, des chiffres, des traits de soulignement et des tirets",
+    "certificateRequired": "Veuillez entrer le contenu du certificat (format PEM)",
+    "privateKeyRequired": "Veuillez entrer le contenu de la clé privée (format PEM)",
+    "sansItemRequired": "L'élément SANs ne peut pas être vide",
+    "sansContentRequired": "Le contenu SANs ne peut pas être vide"
+  },
+  "messages": {
+    "folderNameRequired": "Le nom du dossier est requis",
+    "certificateIdMissing": "L'ID du certificat est manquant, impossible de mettre à jour",
+    "unsupportedSource": "Type de source de certificat non pris en charge",
+    "certificateUpdateSuccess": "Certificat mis à jour avec succès !",
+    "certificateUpdateFailed": "Échec de la mise à jour du certificat",
+    "certificateCreateSuccess": "Certificat créé avec succès !",
+    "certificateCreateFailed": "Échec de la création du certificat",
+    "certificateApplySuccess": "Certificat demandé avec succès !",
+    "certificateApplyFailed": "Échec de la demande de certificat",
+    "errorReason": "Raison de l'erreur",
+    "checkFormErrors": "Veuillez vérifier les erreurs du formulaire"
   }
 }

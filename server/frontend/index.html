@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/logo.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Content-Security-Policy: 允许内网环境（开发环境使用更宽松的策略） -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' http: https: blob: data: 'unsafe-inline' 'unsafe-eval'; connect-src 'self' http: https: ws: wss:;" />
     <title>NFX-Vault - 密钥管理系统</title>
   </head>
   <body>

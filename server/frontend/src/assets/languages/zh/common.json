@@ -49,5 +49,28 @@
   "layout": {
     "show": "显示侧边栏",
     "hide": "隐藏侧边栏"
+  },
+  "validation": {
+    "domainRequired": "请输入域名",
+    "emailRequired": "请输入有效的邮箱地址",
+    "folderNameRequired": "请输入文件夹名称",
+    "folderNameInvalid": "文件夹名称只能包含字母、数字、下划线和连字符",
+    "certificateRequired": "请输入证书内容（PEM格式）",
+    "privateKeyRequired": "请输入私钥内容（PEM格式）",
+    "sansItemRequired": "SANs项不能为空",
+    "sansContentRequired": "SANs内容不能为空"
+  },
+  "messages": {
+    "folderNameRequired": "文件夹名称是必需的",
+    "certificateIdMissing": "证书 ID 缺失，无法更新",
+    "unsupportedSource": "不支持的证书来源类型",
+    "certificateUpdateSuccess": "证书更新成功！",
+    "certificateUpdateFailed": "更新证书失败",
+    "certificateCreateSuccess": "证书创建成功！",
+    "certificateCreateFailed": "创建证书失败",
+    "certificateApplySuccess": "证书申请成功！",
+    "certificateApplyFailed": "申请证书失败",
+    "errorReason": "错误原因",
+    "checkFormErrors": "请检查表单错误"
   }
 }

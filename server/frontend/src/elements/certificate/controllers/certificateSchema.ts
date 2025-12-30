@@ -1,15 +1,43 @@
 import { z } from "zod";
+import type { TFunction } from "i18next";
 
-export type CertificateFormValues = z.input<typeof CertificateFormSchema>;
+export type CertificateFormValues = z.input<ReturnType<typeof createCertificateFormSchema>>;
 
+export const createCertificateFormSchema = (t: TFunction) => {
+  return z.object({
+    store: z.enum(["websites", "apis", "database"]),
+    domain: z.string().trim().min(1, t("validation.domainRequired", { ns: "common" })),
+    folderName: z
+      .string()
+      .trim()
+      .min(1, t("validation.folderNameRequired", { ns: "common" }))
+      .regex(/^[a-zA-Z0-9_-]+$/, t("validation.folderNameInvalid", { ns: "common" }))
+      .optional(),
+    email: z.string().trim().email(t("validation.emailRequired", { ns: "common" })).optional(),
+    issuer: z.string().trim().optional(),
+    certificate: z.string().trim().min(1, t("validation.certificateRequired", { ns: "common" })),
+    privateKey: z.string().trim().min(1, t("validation.privateKeyRequired", { ns: "common" })),
+    sans: z
+      .array(z.string().trim().min(1, t("validation.sansItemRequired", { ns: "common" })))
+      .optional()
+      .default([]),
+  });
+};
+
+// 向后兼容：导出一个默认 schema（使用英文作为后备）
 export const CertificateFormSchema = z.object({
   store: z.enum(["websites", "apis", "database"]),
-  domain: z.string().trim().min(1, "请输入域名"),
-  folderName: z.string().trim().min(1, "请输入文件夹名称").regex(/^[a-zA-Z0-9_-]+$/, "文件夹名称只能包含字母、数字、下划线和连字符").optional(),
-  email: z.string().trim().email("请输入有效的邮箱地址").optional(),
+  domain: z.string().trim().min(1, "Please enter domain name"),
+  folderName: z
+    .string()
+    .trim()
+    .min(1, "Please enter folder name")
+    .regex(/^[a-zA-Z0-9_-]+$/, "Folder name can only contain letters, numbers, underscores, and hyphens")
+    .optional(),
+  email: z.string().trim().email("Please enter a valid email address").optional(),
   issuer: z.string().trim().optional(),
-  certificate: z.string().trim().min(1, "请输入证书内容（PEM格式）"),
-  privateKey: z.string().trim().min(1, "请输入私钥内容（PEM格式）"),
-  sans: z.array(z.string().trim().min(1, "SANs项不能为空")).optional().default([]),
+  certificate: z.string().trim().min(1, "Please enter certificate content (PEM format)"),
+  privateKey: z.string().trim().min(1, "Please enter private key content (PEM format)"),
+  sans: z.array(z.string().trim().min(1, "SANs item cannot be empty")).optional().default([]),
 });
 

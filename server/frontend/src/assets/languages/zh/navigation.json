@@ -6,6 +6,9 @@
   "applyCert": "申请证书",
   "analysis": "分析",
   "analyzeTLS": "解析 TLS",
+  "fileFolder": "文件目录",
+  "apis": "Apis",
+  "websites": "Websites",
   "appName": "NFX-Vault"
 }
 

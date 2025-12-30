@@ -53,7 +53,7 @@ def parse_certificate(
                 not_before=None,
                 not_after=None,
                 is_valid=False,
-                days_remaining=None
+                days_remaining=0
             )
             return {
                 "success": False,
@@ -73,7 +73,7 @@ def parse_certificate(
                 not_before=None,
                 not_after=None,
                 is_valid=False,
-                days_remaining=None
+                days_remaining=0
             )
             logger.warning(f"⚠️  证书解析失败: certificate_id={certificate_id}")
             return {
@@ -127,7 +127,7 @@ def parse_certificate(
             not_before=parsed_not_before,
             not_after=parsed_not_after,
             is_valid=parsed_is_valid,
-            days_remaining=None if status == CertificateStatus.FAIL.value else parsed_days_remaining
+            days_remaining=0 if status == CertificateStatus.FAIL.value else parsed_days_remaining
         )
         
         # 发布缓存失效事件
@@ -154,7 +154,7 @@ def parse_certificate(
                 not_before=None,
                 not_after=None,
                 is_valid=False,
-                days_remaining=None
+                days_remaining=0
             )
         except Exception as update_error:
             logger.error(f"❌ 更新证书状态失败: {update_error}")

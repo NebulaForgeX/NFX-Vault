@@ -128,10 +128,11 @@ class CertificateApplication:
     def update_manual_apply_certificate(
         self,
         domain: str,
-        folder_name: str
+        folder_name: str,
+        store: Optional[str] = None
     ) -> Dict[str, Any]:
-        """更新手动申请的证书（MANUAL_APPLY），只能更新 folder_name"""
-        return update_manual_apply_certificate(self, domain, folder_name)
+        """更新手动申请的证书（MANUAL_APPLY），可以更新 folder_name 和 store"""
+        return update_manual_apply_certificate(self, domain, folder_name, store)
     
     def delete_certificate(
         self,

@@ -3,6 +3,7 @@ import type { CertificateFormValues } from "../controllers/certificateSchema";
 
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { useUpdateManualAddCertificate, useUpdateManualApplyCertificate } from "@/hooks";
 import { CertificateSource } from "@/apis/domain";
@@ -12,6 +13,7 @@ import { ROUTES } from "@/types/navigation";
 
 export const useEditCertificate = (domain: string, source: CertificateSource, certificateId?: string) => {
   const navigate = useNavigate();
+  const { t } = useTranslation("common");
   const { mutateAsync: mutateManualAdd, isPending: isPendingManualAdd } = useUpdateManualAddCertificate();
   const { mutateAsync: mutateManualApply, isPending: isPendingManualApply } = useUpdateManualApplyCertificate();
 
@@ -23,19 +25,20 @@ export const useEditCertificate = (domain: string, source: CertificateSource, ce
         let result;
         
         if (source === CertificateSource.MANUAL_APPLY) {
-          // MANUAL_APPLY 只能更新 folder_name
+          // MANUAL_APPLY 可以更新 folder_name 和 store
           if (!values.folderName) {
-            showError("文件夹名称是必需的");
+            showError(t("messages.folderNameRequired"));
             return;
           }
           result = await mutateManualApply({
             domain,
             folderName: values.folderName,
+            store: values.store as CertType,
           });
         } else if (source === CertificateSource.MANUAL_ADD) {
           // MANUAL_ADD 可以更新所有字段
           if (!certificateId) {
-            showError("证书 ID 缺失，无法更新");
+            showError(t("messages.certificateIdMissing"));
             return;
           }
           result = await mutateManualAdd({
@@ -48,31 +51,31 @@ export const useEditCertificate = (domain: string, source: CertificateSource, ce
             email: values.email?.trim() || undefined,
           });
         } else {
-          showError("不支持的证书来源类型");
+          showError(t("messages.unsupportedSource"));
           return;
         }
 
         if (result.success) {
-          showSuccess(result.message || "证书更新成功！");
+          showSuccess(result.message || t("messages.certificateUpdateSuccess"));
           navigate(ROUTES.CHECK);
         } else {
-          showError(result.message || "更新证书失败");
+          showError(result.message || t("messages.certificateUpdateFailed"));
         }
       } catch (error: any) {
         console.error("Edit certificate error:", error);
-        showError(error?.message || "更新证书失败");
+        showError(error?.message || t("messages.certificateUpdateFailed"));
       }
     },
-    [mutateManualAdd, mutateManualApply, navigate, domain, source, certificateId],
+    [mutateManualAdd, mutateManualApply, navigate, domain, source, certificateId, t],
   );
 
   const onSubmitError = useCallback(
     (errors: FieldErrors<CertificateFormValues>) => {
       console.error("Form validation errors:", errors);
       const firstError = Object.values(errors)[0];
-      showError(firstError?.message || "请检查表单错误");
+      showError(firstError?.message || t("messages.checkFormErrors"));
     },
-    [],
+    [t],
   );
 
   return {

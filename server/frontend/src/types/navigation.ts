@@ -9,6 +9,8 @@ export const ROUTES = {
   CERT_EDIT_APPLY: "/cert/edit-apply",
   CERT_DETAIL: "/cert/:certType",
   ANALYSIS_TLS: "/analysis/tls",
+  FILE_FOLDER_APIS: "/filefolder/apis",
+  FILE_FOLDER_WEBSITES: "/filefolder/websites",
   CERT_DETAIL_PATH: (certType: string, domain: string, source: string | CertificateSource = CertificateSource.AUTO) => {
     // 枚举值本身就是字符串，可以直接使用
     const sourceValue = typeof source === "string" ? source : source;

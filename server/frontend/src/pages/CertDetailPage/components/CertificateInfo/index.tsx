@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { CertificateSource } from "@/apis/domain";
 import type { CertificateDetailResponse } from "@/apis/domain";
+import { useCertificateSource } from "@/hooks";
 import styles from "./styles.module.css";
 
 interface CertificateInfoProps {
@@ -10,6 +10,7 @@ interface CertificateInfoProps {
 
 const CertificateInfo = memo(({ certDetail }: CertificateInfoProps) => {
   const { t } = useTranslation("certDetail");
+  const sourceInfo = useCertificateSource(certDetail.source);
 
   return (
     <div className={styles.section}>
@@ -22,10 +23,11 @@ const CertificateInfo = memo(({ certDetail }: CertificateInfoProps) => {
         {certDetail.source && (
           <div className={styles.infoItem}>
             <label>{t("certificate.source") || "Source"}</label>
-            <span>
-              {certDetail.source === CertificateSource.AUTO
-                ? t("certificate.source.auto") || "Auto"
-                : t("certificate.source.manual") || "Manual"}
+            <span
+              className={styles.sourceBadge}
+              style={{ backgroundColor: sourceInfo.bgColor, color: sourceInfo.textColor }}
+            >
+              {sourceInfo.label}
             </span>
           </div>
         )}

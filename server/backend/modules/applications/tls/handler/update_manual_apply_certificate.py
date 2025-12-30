@@ -4,7 +4,7 @@
 更新手动申请证书 Handler
 """
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from .protocol import CertificateAppLike
 from enums.certificate_source import CertificateSource

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { CertificateInfo } from "@/apis/domain";
-import { CertificateStatus } from "@/apis/domain";
+import { CertificateStatus, CertificateSource } from "@/apis/domain";
 
 export interface CertificateStatusInfo {
   label: string;
@@ -10,6 +10,12 @@ export interface CertificateStatusInfo {
 }
 
 export interface CertificateTimeInfo {
+  label: string;
+  bgColor: string;
+  textColor: string;
+}
+
+export interface CertificateSourceInfo {
   label: string;
   bgColor: string;
   textColor: string;
@@ -58,7 +64,7 @@ export const useCertificateTime = (cert: CertificateInfo | undefined): Certifica
     }
 
     // 判断证书状态
-    const isExpired = !cert.isValid || (cert.daysRemaining !== undefined && cert.daysRemaining < 0);
+    const isExpired = !cert.isValid || (cert.daysRemaining !== undefined && cert.daysRemaining <= 0);
     
     if (isExpired) {
       return {
@@ -100,5 +106,55 @@ export const useCertificateTime = (cert: CertificateInfo | undefined): Certifica
   }, [cert, t]);
 
   return timeInfo;
+};
+
+/**
+ * Hook to get certificate source display information
+ * @param source - Certificate source (auto, manual_apply, manual_add)
+ * @returns Source display information including label, bgColor, and textColor
+ */
+export const useCertificateSource = (source?: CertificateSource | string): CertificateSourceInfo => {
+  const { t } = useTranslation("certEdit");
+
+  const sourceInfo = useMemo(() => {
+    if (!source) {
+      return {
+        label: t("source.auto") || "Auto",
+        bgColor: "#6b7280", // Gray
+        textColor: "#ffffff",
+      };
+    }
+
+    const sourceValue = source as CertificateSource;
+
+    switch (sourceValue) {
+      case CertificateSource.AUTO:
+        return {
+          label: t("source.auto") || "Auto",
+          bgColor: "#3b82f6", // Blue
+          textColor: "#ffffff",
+        };
+      case CertificateSource.MANUAL_APPLY:
+        return {
+          label: t("source.manual_apply") || "Manual Apply",
+          bgColor: "#10b981", // Green
+          textColor: "#ffffff",
+        };
+      case CertificateSource.MANUAL_ADD:
+        return {
+          label: t("source.manual_add") || "Manual Add",
+          bgColor: "#f59e0b", // Amber
+          textColor: "#ffffff",
+        };
+      default:
+        return {
+          label: t("source.auto") || "Auto",
+          bgColor: "#6b7280", // Gray
+          textColor: "#ffffff",
+        };
+    }
+  }, [source, t]);
+
+  return sourceInfo;
 };
 

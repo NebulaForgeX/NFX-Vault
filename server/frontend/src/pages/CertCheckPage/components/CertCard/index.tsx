@@ -4,7 +4,7 @@ import type { CertType } from "@/apis/domain";
 import type { CertificateInfo } from "@/apis/domain";
 import { CertificateStatus } from "@/apis/domain";
 import { Edit, Eye, Trash2, Loader2 } from "@/assets/icons/lucide";
-import { useCertificateStatus, useCertificateTime } from "@/hooks";
+import { useCertificateStatus, useCertificateTime, useCertificateSource } from "@/hooks";
 import { useActionCertificateItem } from "../../hooks";
 import styles from "./styles.module.css";
 
@@ -17,6 +17,7 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
   const { t } = useTranslation("certCheck");
   const statusColor = useCertificateStatus(cert); // 用于边框颜色
   const timeInfo = useCertificateTime(cert); // 用于时间状态显示
+  const sourceInfo = useCertificateSource(cert.source); // 用于来源显示
   const { handleEdit, handleView, handleDelete } = useActionCertificateItem();
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -45,6 +46,14 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
       <div className={styles.certHeader}>
         <div className={styles.certInfo}>
           <h3 className={styles.certDomain}>{cert.domain}</h3>
+          {cert.source && (
+            <div
+              className={styles.certSource}
+              style={{ backgroundColor: sourceInfo.bgColor, color: sourceInfo.textColor }}
+            >
+              {sourceInfo.label}
+            </div>
+          )}
           <p className={styles.certMeta}>
             {t("certificate.issuer")}: {cert.issuer || t("certificate.unknown")}
           </p>

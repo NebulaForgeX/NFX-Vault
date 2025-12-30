@@ -1,7 +1,7 @@
 import { createStore, useStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-type ModalType = "success" | "error" | "info" | "confirm" | "search" | "loading";
+type ModalType = "success" | "error" | "info" | "confirm" | "search" | "loading" | "file";
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -32,12 +32,22 @@ interface LoadingModalProps {
   title?: string;
 }
 
+interface FileModalProps {
+  isOpen: boolean;
+  store?: "apis" | "websites";
+  folderPath?: string;
+  folderName?: string;
+  filePath?: string; // 文件路径（如果设置，则显示文件内容）
+  fileName?: string; // 文件名
+}
+
 interface ModalState {
   modalType: ModalType;
   baseModal: BaseModalProps;
   confirmModal: ConfirmModalProps;
   searchModal: SearchModalProps;
   loadingModal: LoadingModalProps;
+  fileModal: FileModalProps;
 }
 
 interface ModalActions {
@@ -48,8 +58,10 @@ interface ModalActions {
       | ConfirmModalProps
       | SearchModalProps
       | LoadingModalProps
+      | FileModalProps
   ) => void;
   hideModal: (modalType?: ModalType) => void; // undefined 表示关闭所有模态框
+  showFileModal: (props: FileModalProps) => void;
 }
 
 const defaultBaseModalProps: BaseModalProps = {
@@ -78,6 +90,15 @@ const defaultLoadingModalProps: LoadingModalProps = {
   title: undefined,
 };
 
+const defaultFileModalProps: FileModalProps = {
+  isOpen: false,
+  store: undefined,
+  folderPath: undefined,
+  folderName: undefined,
+  filePath: undefined,
+  fileName: undefined,
+};
+
 export const ModalStore = createStore<ModalState & ModalActions>()(
   subscribeWithSelector((set) => ({
     modalType: "info",
@@ -85,6 +106,7 @@ export const ModalStore = createStore<ModalState & ModalActions>()(
     confirmModal: defaultConfirmModalProps,
     searchModal: defaultSearchModalProps,
     loadingModal: defaultLoadingModalProps,
+    fileModal: defaultFileModalProps,
 
     showModal: (modalType, props) => {
       // 根据 modalType 设置对应的模态框状态
@@ -124,7 +146,27 @@ export const ModalStore = createStore<ModalState & ModalActions>()(
             ...restProps,
           },
         });
+      } else if (modalType === "file") {
+        const { isOpen, ...restProps } = props as FileModalProps;
+        set({
+          modalType,
+          fileModal: {
+            isOpen: true,
+            ...restProps,
+          },
+        });
       }
+    },
+
+    showFileModal: (props) => {
+      const { isOpen, ...restProps } = props;
+      set({
+        modalType: "file",
+        fileModal: {
+          isOpen: true,
+          ...restProps,
+        },
+      });
     },
 
     hideModal: (modalType) => {
@@ -136,6 +178,7 @@ export const ModalStore = createStore<ModalState & ModalActions>()(
           confirmModal: defaultConfirmModalProps,
           searchModal: defaultSearchModalProps,
           loadingModal: defaultLoadingModalProps,
+          fileModal: defaultFileModalProps,
         });
         return;
       }
@@ -159,6 +202,11 @@ export const ModalStore = createStore<ModalState & ModalActions>()(
         set({
           modalType: undefined,
           loadingModal: defaultLoadingModalProps,
+        });
+      } else if (modalType === "file") {
+        set({
+          modalType: undefined,
+          fileModal: defaultFileModalProps,
         });
       }
     },

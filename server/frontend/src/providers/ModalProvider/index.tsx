@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { memo } from "react";
 
-import { BaseModal, ConfirmModal, SearchModal, LoadingModal } from "./components";
+import { BaseModal, ConfirmModal, SearchModal, LoadingModal, FileModal } from "./components";
 
 interface ModalProviderProps {
   children: ReactNode;
@@ -17,6 +17,7 @@ const ModalProvider = memo(({ children }: ModalProviderProps) => {
       <ConfirmModal />
       <SearchModal />
       <LoadingModal />
+      <FileModal />
     </>
   );
 });

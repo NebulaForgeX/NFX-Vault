@@ -45,6 +45,7 @@ class UpdateManualApplyCertificateRequest(BaseModel):
     """更新手动申请证书请求（MANUAL_APPLY）"""
     domain: str = Field(..., description="域名")
     folder_name: str = Field(..., description="文件夹名称（必需）")
+    store: Optional[str] = Field(None, description="证书类型（可选：websites, apis, database）")
 
 
 class DeleteCertificateRequest(BaseModel):

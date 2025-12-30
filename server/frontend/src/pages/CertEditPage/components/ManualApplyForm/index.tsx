@@ -6,6 +6,7 @@ import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 import { Input } from "@/components";
+import { StoreController } from "@/elements/certificate/components";
 import styles from "./styles.module.css";
 
 interface ManualApplyFormProps {
@@ -15,14 +16,13 @@ interface ManualApplyFormProps {
 }
 
 /**
- * MANUAL_APPLY 源证书表单 - 只能编辑 folderName
+ * MANUAL_APPLY 源证书表单 - 可以编辑 folderName 和 store
  */
 const ManualApplyForm = memo(({ onSubmit, isPending }: ManualApplyFormProps) => {
   const { t } = useTranslation("certEdit");
   const methods = useFormContext<CertificateFormValues>();
   const { watch, handleSubmit, formState: { errors } } = methods;
   
-  const store = watch("store");
   const domain = watch("domain");
   const certificate = watch("certificate");
   const privateKey = watch("privateKey");
@@ -34,14 +34,14 @@ const ManualApplyForm = memo(({ onSubmit, isPending }: ManualApplyFormProps) => 
           {t("form.editTitle") || "编辑证书"}
         </h2>
         <p className={styles.description}>
-          {t("form.manualApplyEditable") || "手动申请的证书只能编辑文件夹名称"}
+          {t("form.manualApplyEditable") || "手动申请的证书可以编辑文件夹名称和证书类型"}
         </p>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
           className={styles.form}
         >
-          {/* Basic Information - folderName 可编辑，其他只读 */}
+          {/* Basic Information - folderName 和 store 可编辑，其他只读 */}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>{t("form.basicInfo") || "基本信息"}</h3>
             <div className={styles.basicInfoGrid}>
@@ -69,14 +69,9 @@ const ManualApplyForm = memo(({ onSubmit, isPending }: ManualApplyFormProps) => 
                   {t("form.folderNameHelp") || "唯一标识符，只能包含字母、数字、下划线和连字符"}
                 </p>
               </div>
-              {/* store 字段 - 只读 */}
+              {/* store 字段 - 可编辑 */}
               <div className={styles.formGroup}>
-                <label className={styles.label}>{t("form.store") || "证书类型"}</label>
-                <Input
-                  type="text"
-                  value={store || ""}
-                  disabled
-                />
+                <StoreController />
               </div>
               {/* domain 字段 - 只读 */}
               <div className={styles.formGroup}>

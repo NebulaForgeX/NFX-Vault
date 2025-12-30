@@ -26,9 +26,6 @@ class TLSCertificateRepository:
             cert_config: 证书管理配置对象（必需）
             certbot_client: Certbot 证书申请客户端实例（可选，默认从 cert_config 创建）
         """
-        if not cert_config:
-            raise ValueError("cert_config is required")
-        
         # 从配置对象创建 CertbotClient，所有参数必须传入
         self.certbot_client = certbot_client or CertbotClient(
             challenge_dir=cert_config.ACME_CHALLENGE_DIR,

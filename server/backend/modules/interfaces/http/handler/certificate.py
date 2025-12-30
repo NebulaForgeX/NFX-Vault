@@ -93,12 +93,14 @@ class CertificateHTTPHandler:
     def update_manual_apply_certificate(
         self,
         domain: str,  # 域名
-        folder_name: str  # 文件夹名称（必需）
+        folder_name: str,  # 文件夹名称（必需）
+        store: Optional[str] = None  # 证书类型（可选）
     ):
-        """更新手动申请的证书（MANUAL_APPLY），只能更新 folder_name"""
+        """更新手动申请的证书（MANUAL_APPLY），可以更新 folder_name 和 store"""
         return self.certificate_application.update_manual_apply_certificate(
             domain=domain,
-            folder_name=folder_name
+            folder_name=folder_name,
+            store=store
         )
     
     def delete_certificate(

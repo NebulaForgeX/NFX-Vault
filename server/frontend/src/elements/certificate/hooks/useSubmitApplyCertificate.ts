@@ -14,6 +14,7 @@ import { cacheEventEmitter, cacheEvents } from "@/events";
 export const useSubmitApplyCertificate = () => {
   const navigate = useNavigate();
   const { t } = useTranslation("certApply");
+  const { t: tCommon } = useTranslation("common");
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async (data: { values: ApplyCertificateFormValues }) => {
@@ -40,18 +41,18 @@ export const useSubmitApplyCertificate = () => {
         cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "database");
         cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "websites");
         cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "apis");
-        showSuccess(result.message || "证书申请成功！");
+        showSuccess(result.message || tCommon("messages.certificateApplySuccess"));
         navigate(ROUTES.CHECK);
       } else {
         const errorMsg = result.error 
-          ? `${result.message}\n错误原因: ${result.error}`
-          : result.message || "申请证书失败";
+          ? `${result.message}\n${tCommon("messages.errorReason")}: ${result.error}`
+          : result.message || tCommon("messages.certificateApplyFailed");
         showError(errorMsg);
       }
     },
     onError: (error: Error) => {
       console.error("Apply certificate error:", error);
-      showError(error.message || "申请证书失败");
+      showError(error.message || tCommon("messages.certificateApplyFailed"));
     },
   });
 
@@ -70,9 +71,9 @@ export const useSubmitApplyCertificate = () => {
     (errors: FieldErrors<ApplyCertificateFormValues>) => {
       console.error("Form validation errors:", errors);
       const firstError = Object.values(errors)[0];
-      showError(firstError?.message || "请检查表单错误");
+      showError(firstError?.message || tCommon("messages.checkFormErrors"));
     },
-    [],
+    [tCommon],
   );
 
   return {

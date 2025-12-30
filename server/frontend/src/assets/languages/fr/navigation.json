@@ -6,6 +6,9 @@
   "applyCert": "Demander un certificat",
   "analysis": "Analyse",
   "analyzeTLS": "Analyser TLS",
+  "fileFolder": "Dossier de fichiers",
+  "apis": "Apis",
+  "websites": "Websites",
   "appName": "NFX-Vault"
 }
 

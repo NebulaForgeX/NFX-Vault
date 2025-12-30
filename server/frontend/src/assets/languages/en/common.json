@@ -49,5 +49,28 @@
   "layout": {
     "show": "Show Sidebar",
     "hide": "Hide Sidebar"
+  },
+  "validation": {
+    "domainRequired": "Please enter domain name",
+    "emailRequired": "Please enter a valid email address",
+    "folderNameRequired": "Please enter folder name",
+    "folderNameInvalid": "Folder name can only contain letters, numbers, underscores, and hyphens",
+    "certificateRequired": "Please enter certificate content (PEM format)",
+    "privateKeyRequired": "Please enter private key content (PEM format)",
+    "sansItemRequired": "SANs item cannot be empty",
+    "sansContentRequired": "SANs content cannot be empty"
+  },
+  "messages": {
+    "folderNameRequired": "Folder name is required",
+    "certificateIdMissing": "Certificate ID is missing, cannot update",
+    "unsupportedSource": "Unsupported certificate source type",
+    "certificateUpdateSuccess": "Certificate updated successfully!",
+    "certificateUpdateFailed": "Failed to update certificate",
+    "certificateCreateSuccess": "Certificate created successfully!",
+    "certificateCreateFailed": "Failed to create certificate",
+    "certificateApplySuccess": "Certificate applied successfully!",
+    "certificateApplyFailed": "Failed to apply certificate",
+    "errorReason": "Error reason",
+    "checkFormErrors": "Please check form errors"
   }
 }

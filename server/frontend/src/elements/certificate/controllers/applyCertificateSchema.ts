@@ -1,11 +1,35 @@
 import { z } from "zod";
+import type { TFunction } from "i18next";
 
-export type ApplyCertificateFormValues = z.input<typeof ApplyCertificateFormSchema>;
+export type ApplyCertificateFormValues = z.input<ReturnType<typeof createApplyCertificateFormSchema>>;
+
+export const createApplyCertificateFormSchema = (t: TFunction) => {
+  return z.object({
+    domain: z.string().trim().min(1, t("validation.domainRequired", { ns: "common" })),
+    email: z.string().trim().email(t("validation.emailRequired", { ns: "common" })),
+    folderName: z
+      .string()
+      .trim()
+      .min(1, t("validation.folderNameRequired", { ns: "common" }))
+      .regex(/^[a-zA-Z0-9_-]+$/, t("validation.folderNameInvalid", { ns: "common" })),
+    sans: z
+      .array(z.string().trim().min(1, t("validation.sansContentRequired", { ns: "common" })))
+      .optional()
+      .default([]),
+    webroot: z.string().trim().optional(),
+  });
+};
+
+// 向后兼容：导出一个默认 schema（使用英文作为后备）
 export const ApplyCertificateFormSchema = z.object({
-  domain: z.string().trim().min(1, "请输入域名"),
-  email: z.string().trim().email("请输入有效的邮箱地址"),
-  folderName: z.string().trim().min(1, "请输入文件夹名称").regex(/^[a-zA-Z0-9_-]+$/, "文件夹名称只能包含字母、数字、下划线和连字符"),
-  sans: z.array(z.string().trim().min(1, "SANs内容不能为空")).optional().default([]),
+  domain: z.string().trim().min(1, "Please enter domain name"),
+  email: z.string().trim().email("Please enter a valid email address"),
+  folderName: z
+    .string()
+    .trim()
+    .min(1, "Please enter folder name")
+    .regex(/^[a-zA-Z0-9_-]+$/, "Folder name can only contain letters, numbers, underscores, and hyphens"),
+  sans: z.array(z.string().trim().min(1, "SANs content cannot be empty")).optional().default([]),
   webroot: z.string().trim().optional(),
 });
 

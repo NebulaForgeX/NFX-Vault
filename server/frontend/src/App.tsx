@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Routes, Route } from "react-router-dom";
 import { LayoutSwitcher } from "@/layouts";
-import { DashboardPage, CertCheckPage, CertDetailPage, CertAddPage, CertEditPage, CertApplyPage, CertEditApplyPage, TLSAnalysisPage } from "@/pages";
+import { DashboardPage, CertCheckPage, CertDetailPage, CertAddPage, CertEditPage, CertApplyPage, CertEditApplyPage, TLSAnalysisPage, FileFolderPage } from "@/pages";
 import { ROUTES } from "@/types/navigation";
 
 function App() {
@@ -23,6 +23,8 @@ function App() {
         <Route path={ROUTES.CERT_EDIT_APPLY} element={<CertEditApplyPage />} />
         <Route path={ROUTES.CERT_DETAIL} element={<CertDetailPage />} />
         <Route path={ROUTES.ANALYSIS_TLS} element={<TLSAnalysisPage />} />
+        <Route path={ROUTES.FILE_FOLDER_APIS} element={<FileFolderPage />} />
+        <Route path={ROUTES.FILE_FOLDER_WEBSITES} element={<FileFolderPage />} />
       </Routes>
     </LayoutSwitcher>
   );

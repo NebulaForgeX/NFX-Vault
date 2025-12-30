@@ -3,7 +3,18 @@ import type { SidebarProps as ProSidebarProps } from "react-pro-sidebar";
 
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { Home, Plus, Shield, FileSearch } from "@/assets/icons/lucide";
+import { 
+  Home, 
+  Shield, 
+  FileSearch, 
+  Folder, 
+  List, 
+  FilePlus, 
+  Send, 
+  Scan, 
+  Server, 
+  Globe
+} from "@/assets/icons/lucide";
 import { Menu, MenuItem, Sidebar as ProSidebar, SubMenu } from "react-pro-sidebar";
 import { Link, useLocation } from "react-router-dom";
 
@@ -89,21 +100,21 @@ const Sidebar = memo(
                 }
               >
                 <MenuItem
-                  icon={<Shield size={18} />}
+                  icon={<List size={18} />}
                   component={<Link to={ROUTES.CHECK} />}
                   active={isActiveRoute(location.pathname, ROUTES.CHECK)}
                 >
                   {t("certList")}
                 </MenuItem>
                 <MenuItem
-                  icon={<Plus size={18} />}
+                  icon={<FilePlus size={18} />}
                   component={<Link to={ROUTES.CERT_ADD} />}
                   active={isActiveRoute(location.pathname, ROUTES.CERT_ADD)}
                 >
                   {t("addCert")}
                 </MenuItem>
                 <MenuItem
-                  icon={<Plus size={18} />}
+                  icon={<Send size={18} />}
                   component={<Link to={ROUTES.CERT_APPLY} />}
                   active={isActiveRoute(location.pathname, ROUTES.CERT_APPLY)}
                 >
@@ -117,11 +128,35 @@ const Sidebar = memo(
                 active={isActiveRoute(location.pathname, ROUTES.ANALYSIS_TLS)}
               >
                 <MenuItem
-                  icon={<FileSearch size={18} />}
+                  icon={<Scan size={18} />}
                   component={<Link to={ROUTES.ANALYSIS_TLS} />}
                   active={isActiveRoute(location.pathname, ROUTES.ANALYSIS_TLS)}
                 >
                   {t("analyzeTLS")}
+                </MenuItem>
+              </SubMenu>
+
+              <SubMenu
+                label={t("fileFolder")}
+                icon={<Folder size={20} />}
+                active={
+                  isActiveRoute(location.pathname, ROUTES.FILE_FOLDER_APIS) ||
+                  isActiveRoute(location.pathname, ROUTES.FILE_FOLDER_WEBSITES)
+                }
+              >
+                <MenuItem
+                  icon={<Server size={18} />}
+                  component={<Link to={ROUTES.FILE_FOLDER_APIS} />}
+                  active={isActiveRoute(location.pathname, ROUTES.FILE_FOLDER_APIS)}
+                >
+                  {t("apis")}
+                </MenuItem>
+                <MenuItem
+                  icon={<Globe size={18} />}
+                  component={<Link to={ROUTES.FILE_FOLDER_WEBSITES} />}
+                  active={isActiveRoute(location.pathname, ROUTES.FILE_FOLDER_WEBSITES)}
+                >
+                  {t("websites")}
                 </MenuItem>
               </SubMenu>
             </Menu>
