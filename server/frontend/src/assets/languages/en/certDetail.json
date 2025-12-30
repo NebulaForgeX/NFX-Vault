@@ -10,7 +10,9 @@
     "expiryDate": "Expiry Date",
     "sans": "Subject Alternative Names (SANs)",
     "content": "Certificate Content",
-    "privateKey": "Private Key"
+    "privateKey": "Private Key",
+    "lastError": "Latest Error",
+    "errorTime": "Error Time"
   },
   "actions": {
     "operations": "Operations",

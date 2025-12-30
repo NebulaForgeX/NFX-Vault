@@ -21,8 +21,10 @@ from .operation import (
     update_certificate_by_id,
     update_certificate_by_folder_name,
     update_certificate_parse_result,
+    update_all_days_remaining,
     delete_certificate,
     delete_certificates_by_store,
+    search_certificates,
 )
 
 logger = logging.getLogger(__name__)
@@ -193,6 +195,7 @@ class CertificateDatabase:
         certificate: Optional[str] = None,
         private_key: Optional[str] = None,
         store: Optional[str] = None,
+        domain: Optional[str] = None,
         sans: Optional[List[str]] = None,
         issuer: Optional[str] = None,
         not_before: Optional[datetime] = None,
@@ -205,7 +208,7 @@ class CertificateDatabase:
     ) -> Optional[TLSCertificate]:
         """根据证书 ID 更新证书"""
         return update_certificate_by_id(
-            self, certificate_id, certificate, private_key, store, sans,
+            self, certificate_id, certificate, private_key, store, domain, sans,
             issuer, not_before, not_after, is_valid, days_remaining, folder_name, email, status
         )
     
@@ -226,6 +229,10 @@ class CertificateDatabase:
             not_after, is_valid, days_remaining
         )
     
+    def update_all_days_remaining(self) -> Tuple[int, int]:
+        """批量更新所有证书的剩余天数和有效性状态"""
+        return update_all_days_remaining(self)
+    
     def delete_certificate(
         self,
         domain: str,
@@ -241,3 +248,14 @@ class CertificateDatabase:
     ) -> int:
         """删除指定 store 和 source 的所有证书"""
         return delete_certificates_by_store(self, store, source)
+    
+    def search_certificates(
+        self,
+        keyword: str,
+        store: Optional[str] = None,
+        source: Optional[str] = None,
+        page: int = 1,
+        page_size: int = 20
+    ) -> Tuple[List[Dict], int]:
+        """搜索证书（根据关键词匹配域名、文件夹名等）"""
+        return search_certificates(self, keyword, store, source, page, page_size)

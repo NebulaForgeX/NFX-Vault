@@ -17,12 +17,12 @@ const DomainController = memo(() => {
   return (
     <div className={styles.formControl}>
       <label className={styles.label}>
-        {t("form.domain") || "域名"} <span className={styles.required}>*</span>
+        {t("form.domain")} <span className={styles.required}>*</span>
       </label>
       <Input
         {...register("domain")}
         type="text"
-        placeholder={t("form.domainPlaceholder") || "例如：example.com"}
+        placeholder={t("form.domainPlaceholder")}
         error={!!errors.domain}
       />
       {errors.domain && <p className={styles.errorMessage}>{errors.domain.message}</p>}

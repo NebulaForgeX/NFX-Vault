@@ -20,7 +20,36 @@
     "create": "创建证书",
     "creating": "创建中...",
     "update": "更新证书",
-    "updating": "更新中..."
+    "updating": "更新中...",
+    "sans": "SANs (可选)",
+    "sansPlaceholder": "每行一个域名，例如：\nwww.example.com\napi.example.com",
+    "sansHelp": "每行输入一个域名，留空则只申请主域名",
+    "sansReadOnly": "SANs 不可修改",
+    "verification": "验证选项",
+    "webroot": "Webroot 路径",
+    "webrootPlaceholder": "/var/www/html",
+    "webrootHelp": "用于 HTTP-01 验证的 Web 根目录路径，留空使用默认路径",
+    "forceRenewal": "启用强制申请",
+    "forceRenewalHelp": "开启后将强制重新申请证书（即使未过期），不开启则使用缓存证书",
+    "rateLimitTitle": "速率限制说明",
+    "rateLimitInfo": "Let's Encrypt 限制：同一个域名集合在 168 小时（7 天）内最多只能申请 5 个证书。如果开启强制申请，即使证书未过期也会重新申请，可能触发速率限制。"
+  },
+  "apply": {
+    "title": "申请证书",
+    "applying": "正在申请证书，请稍候..."
+  },
+  "reapply": {
+    "confirmTitle": "确认重新申请",
+    "confirmMessage": "确定要重新申请证书 \"{{domain}}\" 吗？\n\n将使用缓存证书（如果可用）。",
+    "confirmMessageForce": "确定要强制重新申请证书 \"{{domain}}\" 吗？\n\n注意：强制申请会忽略缓存，即使证书未过期也会重新申请，可能触发 Let's Encrypt 的速率限制。",
+    "confirm": "确认",
+    "cancel": "取消"
+  },
+  "messages": {
+    "certificateApplySuccess": "证书申请成功",
+    "certificateApplyFailed": "证书申请失败",
+    "errorReason": "错误原因",
+    "checkFormErrors": "请检查表单错误"
   },
   "certType": {
     "websites": "网站证书",

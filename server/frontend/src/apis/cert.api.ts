@@ -8,7 +8,12 @@ import type {
   UpdateManualApplyCertificateRequest,
   DeleteCertificateRequest,
   ApplyCertificateRequest,
+  ReapplyAutoCertificateRequest,
+  ReapplyManualApplyCertificateRequest,
+  ReapplyManualAddCertificateRequest,
+  SearchCertificateRequest,
   CertificateResponse,
+  SearchCertificateResponse,
 } from "@/apis/domain";
 import { CertificateSource } from "@/apis/domain";
 
@@ -84,6 +89,32 @@ export interface InvalidateCacheResponse {
 
 export const InvalidateCache = async (certType: CertType): Promise<InvalidateCacheResponse> => {
   const { data } = await publicClient.post<InvalidateCacheResponse>(`${baseUrl}/invalidate-cache/${certType}`);
+  return data;
+};
+
+export const ReapplyAutoCertificate = async (request: ReapplyAutoCertificateRequest): Promise<CertificateResponse> => {
+  const { data } = await publicClient.post<CertificateResponse>(`${baseUrl}/reapply/auto`, request, {
+    timeout: 360000, // 360 秒 = 6 分钟
+  });
+  return data;
+};
+
+export const ReapplyManualApplyCertificate = async (request: ReapplyManualApplyCertificateRequest): Promise<CertificateResponse> => {
+  const { data } = await publicClient.post<CertificateResponse>(`${baseUrl}/reapply/manual-apply`, request, {
+    timeout: 360000, // 360 秒 = 6 分钟
+  });
+  return data;
+};
+
+export const ReapplyManualAddCertificate = async (request: ReapplyManualAddCertificateRequest): Promise<CertificateResponse> => {
+  const { data } = await publicClient.post<CertificateResponse>(`${baseUrl}/reapply/manual-add`, request, {
+    timeout: 360000, // 360 秒 = 6 分钟
+  });
+  return data;
+};
+
+export const SearchCertificate = async (request: SearchCertificateRequest): Promise<SearchCertificateResponse> => {
+  const { data } = await publicClient.post<SearchCertificateResponse>(`${baseUrl}/search`, request);
   return data;
 };
 

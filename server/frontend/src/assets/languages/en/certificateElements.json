@@ -20,7 +20,36 @@
     "create": "Create Certificate",
     "creating": "Creating...",
     "update": "Update Certificate",
-    "updating": "Updating..."
+    "updating": "Updating...",
+    "sans": "SANs (Optional)",
+    "sansPlaceholder": "One domain per line, e.g.:\nwww.example.com\napi.example.com",
+    "sansHelp": "Enter one domain per line, leave empty to apply for main domain only",
+    "sansReadOnly": "SANs cannot be modified",
+    "verification": "Verification Options",
+    "webroot": "Webroot Path",
+    "webrootPlaceholder": "/var/www/html",
+    "webrootHelp": "Web root directory path for HTTP-01 verification, leave empty to use default path",
+    "forceRenewal": "Enable Force Renewal",
+    "forceRenewalHelp": "When enabled, will force re-apply certificate (even if not expired). When disabled, will use cached certificate if available.",
+    "rateLimitTitle": "Rate Limit Information",
+    "rateLimitInfo": "Let's Encrypt limit: A maximum of 5 certificates can be issued for the same set of identifiers within 168 hours (7 days). If force renewal is enabled, the certificate will be re-applied even if not expired, which may trigger rate limits."
+  },
+  "apply": {
+    "title": "Apply Certificate",
+    "applying": "Applying certificate, please wait..."
+  },
+  "reapply": {
+    "confirmTitle": "Confirm Re-apply",
+    "confirmMessage": "Are you sure you want to re-apply certificate \"{{domain}}\"?\n\nWill use cached certificate if available.",
+    "confirmMessageForce": "Are you sure you want to force re-apply certificate \"{{domain}}\"?\n\nNote: Force renewal will ignore cache and re-apply even if certificate is not expired, which may trigger Let's Encrypt rate limits.",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "messages": {
+    "certificateApplySuccess": "Certificate applied successfully",
+    "certificateApplyFailed": "Certificate application failed",
+    "errorReason": "Error reason",
+    "checkFormErrors": "Please check form errors"
   },
   "certType": {
     "websites": "Website Certificates",

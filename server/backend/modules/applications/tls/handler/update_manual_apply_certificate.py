@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 def update_manual_apply_certificate(
     app: CertificateAppLike,
     domain: str,
-    folder_name: str
+    folder_name: str,
+    store: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     更新手动申请的证书（MANUAL_APPLY）
@@ -29,18 +30,13 @@ def update_manual_apply_certificate(
     Returns:
         更新结果（包含 success, message 等）
     """
-    if not folder_name:
-        return {
-            "success": False,
-            "message": "folder_name is required for MANUAL_APPLY certificates"
-        }
-    
     try:
-        # 只更新 folder_name
+        # 只更新 folder_name 和 store（如果提供）
         cert_obj = app.database_repo.update_certificate(
             domain=domain,
             source=CertificateSource.MANUAL_APPLY.value,
-            folder_name=folder_name
+            folder_name=folder_name,
+            store=store
         )
         
         if cert_obj:

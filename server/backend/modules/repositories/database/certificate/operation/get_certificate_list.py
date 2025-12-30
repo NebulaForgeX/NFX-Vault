@@ -57,7 +57,9 @@ def get_certificate_list(
                     "not_before": cert.not_before,
                     "not_after": cert.not_after,
                     "is_valid": cert.is_valid,
-                    "days_remaining": cert.days_remaining
+                    "days_remaining": cert.days_remaining,
+                    "last_error_message": cert.last_error_message,
+                    "last_error_time": cert.last_error_time.isoformat() if cert.last_error_time else None
                 }
                 for cert in certs
             ]

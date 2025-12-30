@@ -23,21 +23,3 @@ export const createCertificateFormSchema = (t: TFunction) => {
       .default([]),
   });
 };
-
-// 向后兼容：导出一个默认 schema（使用英文作为后备）
-export const CertificateFormSchema = z.object({
-  store: z.enum(["websites", "apis", "database"]),
-  domain: z.string().trim().min(1, "Please enter domain name"),
-  folderName: z
-    .string()
-    .trim()
-    .min(1, "Please enter folder name")
-    .regex(/^[a-zA-Z0-9_-]+$/, "Folder name can only contain letters, numbers, underscores, and hyphens")
-    .optional(),
-  email: z.string().trim().email("Please enter a valid email address").optional(),
-  issuer: z.string().trim().optional(),
-  certificate: z.string().trim().min(1, "Please enter certificate content (PEM format)"),
-  privateKey: z.string().trim().min(1, "Please enter private key content (PEM format)"),
-  sans: z.array(z.string().trim().min(1, "SANs item cannot be empty")).optional().default([]),
-});
-

@@ -6,4 +6,7 @@ export { default as EmailControllerForAdd } from "./EmailControllerForAdd";
 export { default as IssuerController } from "./IssuerController";
 export { default as CertificateController } from "./CertificateController";
 export { default as PrivateKeyController } from "./PrivateKeyController";
+export { default as ForceRenewalController } from "./ForceRenewalController";
+export { default as SANsController } from "./SANsController";
+export { default as WebrootController } from "./WebrootController";
 

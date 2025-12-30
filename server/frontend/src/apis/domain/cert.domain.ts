@@ -20,14 +20,18 @@ export enum CertificateStore {
 
 export interface CertificateInfo {
   domain: string;
+  store?: string;
   source?: CertificateSource;
   status?: CertificateStatus;
   email?: string;
+  folderName?: string;
   issuer?: string;
   notBefore?: string;
   notAfter?: string;
   isValid?: boolean;
   daysRemaining?: number;
+  lastErrorMessage?: string;
+  lastErrorTime?: string;
 }
 
 export interface CertificateListResponse {
@@ -58,6 +62,8 @@ export interface CertificateDetailResponse {
   certificate: string; // PEM格式的证书内容
   privateKey: string; // PEM格式的私钥内容
   sans?: string[];
+  lastErrorMessage?: string;
+  lastErrorTime?: string;
 }
 
 export interface CreateCertificateRequest {
@@ -102,9 +108,52 @@ export interface CertificateResponse {
 export interface ApplyCertificateRequest {
   domain: string;
   email: string;
-  folderName: string; 
+  folderName: string;
   sans?: string[];
   webroot?: string;
+}
+
+export interface ReapplyAutoCertificateRequest {
+  certificateId: string;
+  email: string;
+  sans?: string[];
+  webroot?: string;
+  forceRenewal?: boolean;
+}
+
+export interface ReapplyManualApplyCertificateRequest {
+  certificateId: string;
+  domain: string;
+  email: string;
+  folderName: string;
+  sans?: string[];
+  webroot?: string;
+  forceRenewal?: boolean;
+}
+
+export interface ReapplyManualAddCertificateRequest {
+  certificateId: string;
+  email: string;
+  sans?: string[];
+  webroot?: string;
+  forceRenewal?: boolean;
+}
+
+export interface SearchCertificateRequest {
+  keyword: string;
+  store?: CertType;
+  source?: CertificateSource;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface SearchCertificateResponse {
+  success: boolean;
+  message: string;
+  certificates: CertificateInfo[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
 
 export interface ExportCertificateItem {

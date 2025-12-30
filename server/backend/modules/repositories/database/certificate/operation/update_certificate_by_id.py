@@ -19,6 +19,7 @@ def update_certificate_by_id(
     certificate: Optional[str] = None,
     private_key: Optional[str] = None,
     store: Optional[str] = None,
+    domain: Optional[str] = None,
     sans: Optional[List[str]] = None,
     issuer: Optional[str] = None,
     not_before: Optional[datetime] = None,
@@ -27,7 +28,9 @@ def update_certificate_by_id(
     days_remaining: Optional[int] = None,
     folder_name: Optional[str] = None,
     email: Optional[str] = None,
-    status: Optional[str] = None
+    status: Optional[str] = None,
+    last_error_message: Optional[str] = None,
+    last_error_time: Optional[datetime] = None
 ) -> Optional[TLSCertificate]:
     """
     根据 ID 更新证书
@@ -47,6 +50,8 @@ def update_certificate_by_id(
         folder_name: 文件夹名称，可选
         email: 邮箱地址，可选
         status: 证书状态，可选
+        last_error_message: 最新错误消息，可选
+        last_error_time: 最新错误消息时间，可选
     
     Returns:
         更新后的证书对象，如果不存在则返回 None
@@ -70,6 +75,8 @@ def update_certificate_by_id(
                 cert.folder_name = folder_name
             if store is not None:
                 cert.store = store
+            if domain is not None:
+                cert.domain = domain
             if certificate is not None:
                 cert.certificate = certificate
             if private_key is not None:
@@ -90,6 +97,10 @@ def update_certificate_by_id(
                 cert.email = email
             if status is not None:
                 cert.status = status
+            if last_error_message is not None:
+                cert.last_error_message = last_error_message
+            if last_error_time is not None:
+                cert.last_error_time = last_error_time
             
             cert.updated_at = datetime.now()
             # 在 session 内访问 id 属性，确保它被加载

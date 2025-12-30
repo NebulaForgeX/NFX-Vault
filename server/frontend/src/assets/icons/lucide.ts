@@ -1,6 +1,7 @@
 export type { LucideIcon } from "lucide-react";
 
 export { default as AlertCircle } from "lucide-react/icons/alert-circle";
+export { default as AlertTriangle } from "lucide-react/icons/alert-triangle";
 export { default as ArrowLeft } from "lucide-react/icons/arrow-left";
 export { default as ArrowRight } from "lucide-react/icons/arrow-right";
 export { default as Ban } from "lucide-react/icons/ban";

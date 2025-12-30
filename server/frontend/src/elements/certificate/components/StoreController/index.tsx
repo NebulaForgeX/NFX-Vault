@@ -16,13 +16,13 @@ const StoreController = memo(() => {
   return (
     <div className={styles.formControl}>
       <label className={styles.label}>
-        {t("form.store") || "证书类型"} <span className={styles.required}>*</span>
+        {t("form.store")} <span className={styles.required}>*</span>
       </label>
       <select
         {...register("store")}
         className={`${styles.select} ${errors.store ? styles.inputError : ""}`}
       >
-        <option value="database">{t("certType.database") || "Database"}</option>
+        <option value="database">{t("certType.database")}</option>
         <option value="websites">{t("certType.websites")}</option>
         <option value="apis">{t("certType.apis")}</option>
       </select>

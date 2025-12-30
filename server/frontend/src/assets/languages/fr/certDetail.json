@@ -10,7 +10,9 @@
     "expiryDate": "Date d'expiration",
     "sans": "Noms alternatifs du sujet (SANs)",
     "content": "Contenu du certificat",
-    "privateKey": "Clé privée"
+    "privateKey": "Clé privée",
+    "lastError": "Dernière erreur",
+    "errorTime": "Heure de l'erreur"
   },
   "actions": {
     "operations": "Opérations",

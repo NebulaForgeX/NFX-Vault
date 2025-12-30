@@ -13,6 +13,7 @@ import time
 # 在 Docker 中，工作目录是 backend 根目录，所以可以直接导入
 from modules.configs import load_config, DatabaseConfig, CertConfig
 from modules.server import init_connections, cleanup_connections
+from tasks import setup_scheduler, shutdown_scheduler
 
 # 配置日志
 logging.basicConfig(
@@ -62,6 +63,9 @@ def run_pipeline_server():
         else:
             logger.error("❌ Kafka Consumer 启动失败")
     
+    # 启动定时任务调度器（读取文件夹、更新剩余天数等）
+    scheduler = setup_scheduler(cert_config, connections)
+    
     # 主循环：持续运行（Kafka 监听在后台线程运行）
     logger.info("🔄 Pipeline 服务器正在运行，等待 Kafka 事件...")
     
@@ -79,6 +83,9 @@ def run_pipeline_server():
         logger.info("\n🛑 收到键盘中断信号")
     except Exception as e:
         logger.error(f"❌ 主循环出错: {e}", exc_info=True)
+    
+    # 停止定时任务调度器
+    shutdown_scheduler(scheduler)
     
     # 停止 Kafka Consumer 线程
     if kafka_consumer_thread and connections.kafka_consumer:

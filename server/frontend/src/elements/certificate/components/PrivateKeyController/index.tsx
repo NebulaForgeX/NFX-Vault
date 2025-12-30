@@ -35,12 +35,12 @@ const PrivateKeyController = memo(() => {
   return (
     <div className={styles.formControl}>
       <label className={styles.label}>
-        {t("form.privateKey") || "私钥内容"} <span className={styles.required}>*</span>
+        {t("form.privateKey")} <span className={styles.required}>*</span>
       </label>
       <div className={styles.uploadArea}>
         <label className={styles.uploadLabel}>
           <Upload size={20} />
-          <span>{t("form.uploadPrivateKey") || "上传私钥文件"}</span>
+          <span>{t("form.uploadPrivateKey")}</span>
           <input
             type="file"
             accept=".key,.pem"
@@ -51,7 +51,7 @@ const PrivateKeyController = memo(() => {
       </div>
       <textarea
         {...register("privateKey")}
-        placeholder={t("form.privateKeyPlaceholder") || "请输入PEM格式的私钥内容或上传私钥文件"}
+        placeholder={t("form.privateKeyPlaceholder")}
         className={`${styles.textarea} ${errors.privateKey ? styles.inputError : ""}`}
         rows={10}
         value={privateKeyValue || ""}

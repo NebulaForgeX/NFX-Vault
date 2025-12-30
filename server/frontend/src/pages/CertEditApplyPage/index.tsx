@@ -6,8 +6,11 @@ import { useTranslation } from "react-i18next";
 
 import { Suspense } from "@/components";
 import { useInitApplyCertificateForm, useSubmitApplyCertificate } from "@/elements/certificate";
+import { useCertificateDetail } from "@/hooks";
+import { CertificateSource } from "@/apis/domain";
+import type { CertType } from "@/types";
 
-import { EditApplyForm } from "./components";
+import { AutoForm, ManualApplyForm, ManualAddForm } from "./components";
 import styles from "./styles.module.css";
 
 const CertEditApplyPageContent = memo(() => {
@@ -16,18 +19,67 @@ const CertEditApplyPageContent = memo(() => {
   const [searchParams] = useSearchParams();
 
   const domain = searchParams.get("domain");
+  const sourceParam = searchParams.get("source") || CertificateSource.AUTO;
+  const certType = searchParams.get("certType") as CertType | null;
 
-  if (!domain) {
+  const source = (sourceParam === CertificateSource.AUTO || 
+                  sourceParam === CertificateSource.MANUAL_APPLY || 
+                  sourceParam === CertificateSource.MANUAL_ADD)
+    ? (sourceParam as CertificateSource)
+    : CertificateSource.AUTO;
+
+  if (!domain || !certType) {
     navigate(-1);
     return null;
   }
 
-  // Form setup
-  const methods = useInitApplyCertificateForm();
-  const { onSubmit, onSubmitError, isPending } = useSubmitApplyCertificate();
+  // 获取证书详情用于回填
+  const { data: certificate } = useCertificateDetail(certType, domain, source);
+  
+  // Form setup - 传入证书数据用于回填
+  const methods = useInitApplyCertificateForm(certificate || null);
+  const { onSubmit, onSubmitError, isPending } = useSubmitApplyCertificate(source, certificate);
 
   const handleBack = () => {
     navigate(-1);
+  };
+
+  // 等待证书数据加载完成
+  if (!certificate) {
+    return null;
+  }
+
+  // 根据 source 选择不同的表单组件
+  const renderForm = () => {
+    switch (source) {
+      case CertificateSource.AUTO:
+        return (
+          <AutoForm
+            onSubmit={onSubmit}
+            onSubmitError={onSubmitError}
+            isPending={isPending}
+          />
+        );
+      case CertificateSource.MANUAL_APPLY:
+        return (
+          <ManualApplyForm
+            onSubmit={onSubmit}
+            onSubmitError={onSubmitError}
+            isPending={isPending}
+          />
+        );
+      case CertificateSource.MANUAL_ADD:
+        return (
+          <ManualAddForm
+            onSubmit={onSubmit}
+            onSubmitError={onSubmitError}
+            isPending={isPending}
+            certificate={certificate}
+          />
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -39,22 +91,22 @@ const CertEditApplyPageContent = memo(() => {
           </button>
           <div>
             <h1 className={styles.title}>
-              {t("title") || "编辑申请证书"} - {domain}
+              {t("title")} - {domain}
             </h1>
             <p className={styles.subtitle}>
-              {t("subtitle") || `重新申请「${domain}」的 Let's Encrypt 证书`}
+              {t("subtitle", { domain })}
+              {certificate.source && (
+                <span className={styles.sourceBadge}>
+                  ({t(`source.${certificate.source}`)})
+                </span>
+              )}
             </p>
           </div>
         </div>
 
         <div className={styles.content}>
           <div className={styles.rightColumn}>
-            <EditApplyForm 
-              onSubmit={onSubmit} 
-              onSubmitError={onSubmitError} 
-              isPending={isPending}
-              domain={domain}
-            />
+            {renderForm()}
           </div>
         </div>
       </div>
@@ -70,7 +122,7 @@ const CertEditApplyPage = memo(() => {
   return (
     <Suspense
       loadingType="truck"
-      loadingText={t("loading") || "Loading..."}
+      loadingText={t("loading")}
       loadingSize="medium"
     >
       <CertEditApplyPageContent />

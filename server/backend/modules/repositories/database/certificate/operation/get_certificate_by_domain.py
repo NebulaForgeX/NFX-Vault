@@ -64,7 +64,9 @@ def get_certificate_by_domain(
                 "not_before": cert.not_before,
                 "not_after": cert.not_after,
                 "is_valid": cert.is_valid,
-                "days_remaining": cert.days_remaining
+                "days_remaining": cert.days_remaining,
+                "last_error_message": cert.last_error_message,
+                "last_error_time": cert.last_error_time.isoformat() if cert.last_error_time else None
             }
     except Exception as e:
         logger.error(f"❌ 查询证书失败: {e}", exc_info=True)

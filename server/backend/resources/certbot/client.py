@@ -60,7 +60,8 @@ class CertbotClient:
         domain: str,
         email: str,
         sans: Optional[List[str]] = None,
-        folder_name: Optional[str] = None
+        folder_name: Optional[str] = None,
+        force_renewal: bool = False
     ) -> Dict[str, Any]:
         """
         使用 certbot 申请 Let's Encrypt 证书
@@ -70,6 +71,7 @@ class CertbotClient:
             email: 邮箱地址（用于 Let's Encrypt 通知）
             sans: SANs 列表（可选）
             folder_name: 证书存储文件夹名称（可选，默认使用域名）
+            force_renewal: 是否强制更新证书（即使证书未过期也重新申请）
         
         Returns:
             包含 success, message, certificate, private_key, status, error 的字典
@@ -123,6 +125,11 @@ class CertbotClient:
                 "--work-dir", custom_work_dir,
                 "--logs-dir", custom_logs_dir,
             ]
+            
+            # 如果强制更新，添加 --force-renewal 参数
+            if force_renewal:
+                cmd.append("--force-renewal")
+                logger.info(f"🔄 Force renewal enabled for domain '{domain}'")
             
             # 添加域名
             for d in domains:

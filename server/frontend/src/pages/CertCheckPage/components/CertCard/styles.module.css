@@ -60,6 +60,16 @@
   color: var(--color-danger);
 }
 
+.errorButton {
+  color: var(--color-warning);
+}
+
+.errorButton:hover {
+  background-color: var(--color-warning-light);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
 .processButton {
   cursor: pointer;
 }

@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
+import { AlertCircle } from "@/assets/icons/lucide";
 import type { CertificateDetailResponse } from "@/apis/domain";
 import { useCertificateSource } from "@/hooks";
 import styles from "./styles.module.css";
@@ -20,6 +21,12 @@ const CertificateInfo = memo(({ certDetail }: CertificateInfoProps) => {
           <label>{t("certificate.domain") || "Domain"}</label>
           <span>{certDetail.domain}</span>
         </div>
+        {certDetail.store && (
+          <div className={styles.infoItem}>
+            <label>{t("certificate.store") || "Certificate Type"}</label>
+            <span>{certDetail.store}</span>
+          </div>
+        )}
         {certDetail.source && (
           <div className={styles.infoItem}>
             <label>{t("certificate.source") || "Source"}</label>
@@ -54,6 +61,22 @@ const CertificateInfo = memo(({ certDetail }: CertificateInfoProps) => {
               {certDetail.sans.map((san, idx) => (
                 <span key={idx} className={styles.sanTag}>{san}</span>
               ))}
+            </div>
+          </div>
+        )}
+        {certDetail.lastErrorMessage && (
+          <div className={styles.errorSection}>
+            <div className={styles.errorHeader}>
+              <AlertCircle size={18} className={styles.errorIcon} />
+              <label>{t("certificate.lastError") || "Last Error"}</label>
+            </div>
+            <div className={styles.errorContent}>
+              <p className={styles.errorMessage}>{certDetail.lastErrorMessage}</p>
+              {certDetail.lastErrorTime && (
+                <p className={styles.errorTime}>
+                  {t("certificate.errorTime") || "Error Time"}: {new Date(certDetail.lastErrorTime).toLocaleString()}
+                </p>
+              )}
             </div>
           </div>
         )}

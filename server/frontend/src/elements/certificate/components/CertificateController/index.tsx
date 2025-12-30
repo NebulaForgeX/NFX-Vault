@@ -35,12 +35,12 @@ const CertificateController = memo(() => {
   return (
     <div className={styles.formControl}>
       <label className={styles.label}>
-        {t("form.certificate") || "证书内容"} <span className={styles.required}>*</span>
+        {t("form.certificate")} <span className={styles.required}>*</span>
       </label>
       <div className={styles.uploadArea}>
         <label className={styles.uploadLabel}>
           <Upload size={20} />
-          <span>{t("form.uploadCertificate") || "上传证书文件"}</span>
+          <span>{t("form.uploadCertificate")}</span>
           <input
             type="file"
             accept=".crt,.pem,.cert"
@@ -51,7 +51,7 @@ const CertificateController = memo(() => {
       </div>
       <textarea
         {...register("certificate")}
-        placeholder={t("form.certificatePlaceholder") || "请输入PEM格式的证书内容或上传证书文件"}
+        placeholder={t("form.certificatePlaceholder")}
         className={`${styles.textarea} ${errors.certificate ? styles.inputError : ""}`}
         rows={10}
         value={certificateValue || ""}

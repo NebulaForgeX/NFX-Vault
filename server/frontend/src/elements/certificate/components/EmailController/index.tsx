@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import styles from "./styles.module.css";
 
 const EmailController = memo(() => {
-  const { t } = useTranslation("certApply");
+  const { t } = useTranslation("certificateElements");
   const {
     register,
     formState: { errors },
@@ -16,12 +16,12 @@ const EmailController = memo(() => {
   return (
     <div className={styles.formControl}>
       <label className={styles.label}>
-        {t("apply.email") || "邮箱地址"} <span className={styles.required}>*</span>
+        {t("form.email")} <span className={styles.required}>*</span>
       </label>
       <input
         {...register("email")}
         type="email"
-        placeholder={t("apply.emailPlaceholder") || "admin@example.com"}
+        placeholder={t("form.emailPlaceholder")}
         className={`${styles.input} ${errors.email ? styles.inputError : ""}`}
       />
       {errors.email && <p className={styles.errorMessage}>{errors.email.message}</p>}

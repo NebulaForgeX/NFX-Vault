@@ -19,9 +19,9 @@ from resources.kafka import (
     KafkaConsumerThread,
 )
 from resources.kafka.client import KafkaClient
-from modules.interfaces.http.handler.certificate import CertificateHTTPHandler
-from modules.interfaces.http.handler.file import FileHTTPHandler
-from modules.interfaces.http.handler.analysis import AnalysisHTTPHandler
+from modules.interfaces.http.handler.tls.tls import CertificateHTTPHandler
+from modules.interfaces.http.handler.file.file import FileHTTPHandler
+from modules.interfaces.http.handler.analysis.analysis import AnalysisHTTPHandler
 from modules.interfaces.kafka.handler.certificate import CertificateKafkaHandler
 from modules.applications.tls import CertificateApplication
 from modules.applications.file import FileApplication

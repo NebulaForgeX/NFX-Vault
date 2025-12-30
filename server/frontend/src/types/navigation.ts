@@ -8,6 +8,7 @@ export const ROUTES = {
   CERT_EDIT: "/cert/edit",
   CERT_EDIT_APPLY: "/cert/edit-apply",
   CERT_DETAIL: "/cert/:certType",
+  CERT_SEARCH: "/cert/search",
   ANALYSIS_TLS: "/analysis/tls",
   FILE_FOLDER_APIS: "/filefolder/apis",
   FILE_FOLDER_WEBSITES: "/filefolder/websites",

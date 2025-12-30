@@ -3,9 +3,10 @@ import { useTranslation } from "react-i18next";
 import type { CertType } from "@/apis/domain";
 import type { CertificateInfo } from "@/apis/domain";
 import { CertificateStatus } from "@/apis/domain";
-import { Edit, Eye, Trash2, Loader2 } from "@/assets/icons/lucide";
+import { Edit, Eye, Trash2, Loader2, AlertCircle } from "@/assets/icons/lucide";
 import { useCertificateStatus, useCertificateTime, useCertificateSource } from "@/hooks";
 import { useActionCertificateItem } from "../../hooks";
+import { showInfo } from "@/stores/modalStore";
 import styles from "./styles.module.css";
 
 interface CertCardProps {
@@ -27,6 +28,17 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
     
     // 点击卡片本身，跳转到查看页面
     handleView(cert, certType)();
+  };
+
+  const handleShowError = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (cert.lastErrorMessage && cert.lastErrorTime) {
+      const errorTime = new Date(cert.lastErrorTime).toLocaleString();
+      showInfo(
+        `${cert.lastErrorMessage}\n\n${t("certificate.errorTime") || "Error Time"}: ${errorTime}`,
+        t("certificate.lastError") || "Last Error"
+      );
+    }
   };
 
   return (
@@ -78,6 +90,15 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
                 title={t("actions.view") || "View"}
               >
                 <Loader2 size={18} className={styles.rotating} />
+              </button>
+            )}
+            {cert.lastErrorMessage && (
+              <button
+                className={`${styles.actionButton} ${styles.errorButton}`}
+                onClick={handleShowError}
+                title={t("certificate.lastError") || "Last Error"}
+              >
+                <AlertCircle size={18} />
               </button>
             )}
             <button

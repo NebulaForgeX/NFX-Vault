@@ -17,17 +17,17 @@ const FolderNameController = memo(() => {
   return (
     <div className={styles.formControl}>
       <label className={styles.label}>
-        {t("form.folderName") || "文件夹名称"}
+        {t("form.folderName")}
       </label>
       <Input
         {...register("folderName")}
         type="text"
-        placeholder={t("form.folderNamePlaceholder") || "例如: api_lucaslyu_com"}
+        placeholder={t("form.folderNamePlaceholder")}
         error={!!errors.folderName}
       />
       {errors.folderName && <p className={styles.errorMessage}>{errors.folderName.message}</p>}
       <p className={styles.helpText}>
-        {t("form.folderNameHelp") || "唯一标识符，只能包含字母、数字、下划线和连字符"}
+        {t("form.folderNameHelp")}
       </p>
     </div>
   );

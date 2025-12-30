@@ -18,8 +18,6 @@ from modules.server import init_connections, cleanup_connections
 from modules.interfaces.http import register_routers
 from modules.applications.acme import ACMEChallengeStorage
 from modules.applications.file.handler.read_folders_and_store import read_folders_and_store_certificates
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.cron import CronTrigger
 import uvicorn
 
 # 配置日志
@@ -57,7 +55,7 @@ async def lifespan(app: FastAPI):
     acme_storage = ACMEChallengeStorage(challenge_dir=cert_config.ACME_CHALLENGE_DIR)
     
     # 注册所有路由（统一入口）
-    from modules.interfaces.http.handler.analysis import AnalysisHTTPHandler
+    from modules.interfaces.http.handler.analysis.analysis import AnalysisHTTPHandler
     from modules.applications.analysis import AnalysisApplication
     
     analysis_application = AnalysisApplication()
@@ -89,59 +87,7 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.error(f"❌ 启动时读取文件夹失败: {e}", exc_info=True)
     
-    # 启动定时任务（每周读取文件夹）
-    scheduler = None
-    if cert_config.SCHEDULE_ENABLED:
-        scheduler = AsyncIOScheduler()
-        
-        async def read_folders_job(store: str):
-            """定时任务：读取文件夹"""
-            global connections
-            if connections and connections.file_http_handler:
-                try:
-                    # 从 handler 获取 file_application
-                    file_application = connections.file_http_handler.file_application
-                    result = await read_folders_and_store_certificates(
-                        file_application,
-                        store
-                    )
-                    logger.info(f"✅ 定时任务完成: store={store}, processed={result.get('processed', 0)}")
-                except Exception as e:
-                    logger.error(f"❌ 定时任务失败: store={store}, error={e}", exc_info=True)
-        
-        # 每周一凌晨 2:00 执行
-        scheduler.add_job(
-            read_folders_job,
-            CronTrigger(day_of_week=cert_config.SCHEDULE_WEEKLY_DAY,
-                       hour=cert_config.SCHEDULE_WEEKLY_HOUR,
-                       minute=cert_config.SCHEDULE_WEEKLY_MINUTE),
-            args=["websites"],
-            id="weekly_read_websites",
-            replace_existing=True
-        )
-        
-        scheduler.add_job(
-            read_folders_job,
-            CronTrigger(day_of_week=cert_config.SCHEDULE_WEEKLY_DAY,
-                       hour=cert_config.SCHEDULE_WEEKLY_HOUR,
-                       minute=cert_config.SCHEDULE_WEEKLY_MINUTE),
-            args=["apis"],
-            id="weekly_read_apis",
-            replace_existing=True
-        )
-        
-        scheduler.start()
-        logger.info(f"✅ 定时任务已启动：每周 {cert_config.SCHEDULE_WEEKLY_DAY} {cert_config.SCHEDULE_WEEKLY_HOUR}:{cert_config.SCHEDULE_WEEKLY_MINUTE:02d} 读取文件夹")
-        
-        yield
-    
-        # 关闭时执行
-        if scheduler:
-            scheduler.shutdown()
-            logger.info("✅ 定时任务已关闭")
-    else:
-        logger.info("ℹ️  定时任务已禁用")
-        yield
+    yield
     
     # 清理连接（不清理 Kafka Consumer，因为它在 Pipeline 服务中）
     cleanup_connections(connections)

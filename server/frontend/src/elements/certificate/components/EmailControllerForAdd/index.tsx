@@ -5,7 +5,7 @@ import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 import { Input } from "@/components";
-import styles from "../DomainController/styles.module.css";
+import styles from "./styles.module.css";
 
 const EmailControllerForAdd = memo(() => {
   const { t } = useTranslation("certificateElements");
@@ -17,12 +17,12 @@ const EmailControllerForAdd = memo(() => {
   return (
     <div className={styles.formControl}>
       <label className={styles.label}>
-        {t("form.email") || "邮箱地址"}
+        {t("form.email")}
       </label>
       <Input
         {...register("email")}
         type="email"
-        placeholder={t("form.emailPlaceholder") || "admin@example.com"}
+        placeholder={t("form.emailPlaceholder")}
         error={!!errors.email}
       />
       {errors.email && <p className={styles.errorMessage}>{errors.email.message}</p>}

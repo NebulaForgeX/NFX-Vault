@@ -172,24 +172,6 @@ def apply_certificate(
         - message: 结果消息
     """
     try:
-        # 验证 email 格式（简单验证）
-        if not email or "@" not in email:
-            return {
-                "success": False,
-                "message": "Invalid email address",
-                "status": CertificateStatus.FAIL.value,
-                "error": "Invalid email address"
-            }
-        
-        # 检查 TLS repository 是否初始化
-        if not hasattr(app, 'tls_repo') or not app.tls_repo:
-            return {
-                "success": False,
-                "message": "TLS repository not initialized",
-                "status": CertificateStatus.FAIL.value,
-                "error": "TLS repository not initialized"
-            }
-        
         logger.info(f"🚀 Starting certificate application for domain '{domain}' (async)")
         
         # 先记录申请中的状态（用户主动申请的，source 为 MANUAL_APPLY）

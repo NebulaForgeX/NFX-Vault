@@ -5,5 +5,6 @@ export { default as CertAddPage } from "./CertAddPage";
 export { default as CertApplyPage } from "./CertApplyPage";
 export { default as CertEditPage } from "./CertEditPage";
 export { default as CertEditApplyPage } from "./CertEditApplyPage";
+export { default as CertSearchPage } from "./CertSearchPage";
 export { default as TLSAnalysisPage } from "./TLSAnalysisPage";
 export { default as FileFolderPage } from "./FileFolderPage";

@@ -39,7 +39,8 @@ class TLSCertificateRepository:
         email: str,
         sans: Optional[List[str]] = None,
         webroot: Optional[str] = None,  # 保留此参数以保持接口兼容，但实际使用 challenge_dir
-        folder_name: Optional[str] = None
+        folder_name: Optional[str] = None,
+        force_renewal: bool = False
     ) -> Dict[str, Any]:
         """
         使用 Certbot 申请 Let's Encrypt 证书
@@ -50,6 +51,7 @@ class TLSCertificateRepository:
             sans: SANs 列表（可选）
             webroot: Webroot 路径（保留以保持接口兼容，但实际使用 challenge_dir）
             folder_name: 证书存储文件夹名称（可选，默认使用域名）
+            force_renewal: 是否强制更新证书（即使证书未过期也重新申请）
         
         Returns:
             包含 success, message, certificate, private_key, status, error 的字典
@@ -60,7 +62,8 @@ class TLSCertificateRepository:
                 domain=domain,
                 email=email,
                 sans=sans,
-                folder_name=folder_name
+                folder_name=folder_name,
+                force_renewal=force_renewal
             )
             
             # 确保状态字段存在

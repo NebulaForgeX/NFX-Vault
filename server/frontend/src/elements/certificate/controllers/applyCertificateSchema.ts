@@ -17,19 +17,7 @@ export const createApplyCertificateFormSchema = (t: TFunction) => {
       .optional()
       .default([]),
     webroot: z.string().trim().optional(),
+    forceRenewal: z.boolean().optional().default(false),
   });
 };
-
-// 向后兼容：导出一个默认 schema（使用英文作为后备）
-export const ApplyCertificateFormSchema = z.object({
-  domain: z.string().trim().min(1, "Please enter domain name"),
-  email: z.string().trim().email("Please enter a valid email address"),
-  folderName: z
-    .string()
-    .trim()
-    .min(1, "Please enter folder name")
-    .regex(/^[a-zA-Z0-9_-]+$/, "Folder name can only contain letters, numbers, underscores, and hyphens"),
-  sans: z.array(z.string().trim().min(1, "SANs content cannot be empty")).optional().default([]),
-  webroot: z.string().trim().optional(),
-});
 

@@ -13,6 +13,10 @@ from .update_manual_add_certificate import update_manual_add_certificate
 from .update_manual_apply_certificate import update_manual_apply_certificate
 from .delete_certificate import delete_certificate
 from .apply_certificate import apply_certificate
+from .reapply_auto_certificate import reapply_auto_certificate
+from .reapply_manual_apply_certificate import reapply_manual_apply_certificate
+from .reapply_manual_add_certificate import reapply_manual_add_certificate
+from .search_certificate import search_certificate
 from .invalidate_cache import invalidate_cache
 
 __all__ = [
@@ -24,5 +28,9 @@ __all__ = [
     "update_manual_apply_certificate",
     "delete_certificate",
     "apply_certificate",
+    "reapply_auto_certificate",
+    "reapply_manual_apply_certificate",
+    "reapply_manual_add_certificate",
+    "search_certificate",
     "invalidate_cache",
 ]

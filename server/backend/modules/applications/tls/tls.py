@@ -25,6 +25,10 @@ from .handler import (
     update_manual_apply_certificate,
     delete_certificate,
     apply_certificate,
+    reapply_auto_certificate,
+    reapply_manual_apply_certificate,
+    reapply_manual_add_certificate,
+    search_certificate,
     invalidate_cache,
 )
 from modules.applications.analysis.handler import parse_certificate
@@ -152,6 +156,52 @@ class CertificateApplication:
     ) -> Dict[str, Any]:
         """申请证书（统一存储在 database）"""
         return apply_certificate(self, domain, email, folder_name, sans, webroot)
+    
+    def reapply_auto_certificate(
+        self,
+        certificate_id: str,
+        email: str,
+        sans: Optional[list] = None,
+        webroot: Optional[str] = None,
+        force_renewal: bool = False
+    ) -> Dict[str, Any]:
+        """AUTO 证书重新申请（apply 后写回文件夹，不修改 domain 和 folder_name）"""
+        return reapply_auto_certificate(self, certificate_id, email, sans, webroot, force_renewal)
+    
+    def reapply_manual_apply_certificate(
+        self,
+        certificate_id: str,
+        domain: str,
+        email: str,
+        folder_name: str,
+        sans: Optional[list] = None,
+        webroot: Optional[str] = None,
+        force_renewal: bool = False
+    ) -> Dict[str, Any]:
+        """MANUAL_APPLY 证书重新申请（正常 apply 流程）"""
+        return reapply_manual_apply_certificate(self, certificate_id, domain, email, folder_name, sans, webroot, force_renewal)
+    
+    def reapply_manual_add_certificate(
+        self,
+        certificate_id: str,
+        email: str,
+        sans: Optional[list] = None,
+        webroot: Optional[str] = None,
+        force_renewal: bool = False
+    ) -> Dict[str, Any]:
+        """MANUAL_ADD 证书重新申请（只更新证书内容和私钥）"""
+        return reapply_manual_add_certificate(self, certificate_id, email, sans, webroot, force_renewal)
+    
+    def search_certificate(
+        self,
+        keyword: str,
+        store: Optional[str] = None,
+        source: Optional[str] = None,
+        page: int = 1,
+        page_size: int = 20
+    ) -> Dict[str, Any]:
+        """搜索证书"""
+        return search_certificate(self, keyword, store, source, page, page_size)
     
     def invalidate_cache(
         self,

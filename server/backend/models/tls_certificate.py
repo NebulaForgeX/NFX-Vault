@@ -18,6 +18,7 @@ class TLSCertificate(Base):
     __tablename__ = "tls_certificates"
     __table_args__ = (
         UniqueConstraint('folder_name', name='uq_folder_name'),  # 唯一约束：folder_name
+        UniqueConstraint('domain', 'source', 'store', name='uq_domain_source_store'),  # 唯一约束：domain + source + store
         Index('idx_store_domain', 'store', 'domain', 'source'),  # 复合索引：store + domain + source
         Index('idx_domain', 'domain'),  # 单列索引：domain
         Index('idx_source', 'source'),  # 单列索引：source
@@ -40,6 +41,8 @@ class TLSCertificate(Base):
     not_after = Column(DateTime, nullable=True, comment="有效期结束时间")
     is_valid = Column(Boolean, nullable=True, default=True, comment="是否有效")
     days_remaining = Column(Integer, nullable=True, comment="剩余天数")
+    last_error_message = Column(Text, nullable=True, comment="最新错误消息")
+    last_error_time = Column(DateTime, nullable=True, comment="最新错误消息时间")
     created_at = Column(DateTime, server_default=func.now(), nullable=False, comment="创建时间")
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False, comment="更新时间")
     
@@ -64,6 +67,8 @@ class TLSCertificate(Base):
             "not_after": self.not_after.isoformat() if self.not_after else None,
             "is_valid": self.is_valid,
             "days_remaining": self.days_remaining,
+            "last_error_message": self.last_error_message,
+            "last_error_time": self.last_error_time.isoformat() if self.last_error_time else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

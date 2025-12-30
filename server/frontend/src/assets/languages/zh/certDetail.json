@@ -10,7 +10,9 @@
     "expiryDate": "到期日期",
     "sans": "主题备用名称 (SANs)",
     "content": "证书内容",
-    "privateKey": "私钥内容"
+    "privateKey": "私钥内容",
+    "lastError": "最新错误",
+    "errorTime": "错误时间"
   },
   "actions": {
     "operations": "操作",
