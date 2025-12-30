@@ -16,12 +16,11 @@ acme.json
 
 # 证书存储文件（敏感信息）
 # 忽略 Websites 和 Apis 目录下的所有内容（包含证书和密钥）
-Websites/
-Apis/
-
-# 但保留目录结构（如果需要的话，可以取消注释下面的行）
-# !Websites/.gitkeep
-# !Apis/.gitkeep
+# 但保留目录本身和 .gitkeep 文件
+Websites/*
+!Websites/.gitkeep
+Apis/*
+!Apis/.gitkeep
 
 # 导出的证书文件
 exported/
