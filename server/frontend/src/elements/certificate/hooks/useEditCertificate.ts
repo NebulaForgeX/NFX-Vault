@@ -5,6 +5,8 @@ import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useUpdateCertificate } from "@/hooks";
+import { CertificateSource } from "@/apis/domain";
+import type { CertType } from "@/types";
 import { showError, showSuccess } from "@/stores/modalStore";
 import { ROUTES } from "@/types/navigation";
 
@@ -13,16 +15,35 @@ export const useEditCertificate = (domain: string, source: string) => {
   const { mutateAsync, isPending } = useUpdateCertificate();
 
   const onSubmit = useCallback(
-    async (values: CertificateFormValues) => {
+    async (values: CertificateFormValues & { folder_name?: string }) => {
       try {
-        const result = await mutateAsync({
+        // 根据 source 类型决定传递哪些字段
+        const sourceEnum = source as CertificateSource;
+        const request: {
+          domain: string;
+          source: CertificateSource;
+          certificate?: string;
+          privateKey?: string;
+          store?: CertType;
+          sans?: string[];
+          folder_name?: string;
+        } = {
           domain,
-          source: source as any,
-          certificate: values.certificate.trim(),
-          privateKey: values.privateKey.trim(),
-          store: values.store,
-          sans: values.sans && values.sans.length > 0 ? values.sans : undefined,
-        });
+          source: sourceEnum,
+        };
+
+        if (sourceEnum === CertificateSource.MANUAL_APPLY) {
+          // MANUAL_APPLY 只能更新 folder_name
+          request.folder_name = values.folder_name;
+        } else if (sourceEnum === CertificateSource.MANUAL_ADD) {
+          // MANUAL_ADD 可以更新所有字段
+          request.certificate = values.certificate?.trim();
+          request.privateKey = values.privateKey?.trim();
+          request.store = values.store as CertType;
+          request.sans = values.sans && values.sans.length > 0 ? values.sans : undefined;
+        }
+
+        const result = await mutateAsync(request);
 
         if (result.success) {
           showSuccess(result.message || "证书更新成功！");

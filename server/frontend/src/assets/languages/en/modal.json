@@ -1,0 +1,9 @@
+{
+  "loading": {
+    "defaultMessage": "Loading, please wait..."
+  },
+  "search": {
+    "noResults": "No results found for \"{{query}}\""
+  }
+}
+

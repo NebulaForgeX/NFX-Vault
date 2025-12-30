@@ -10,7 +10,7 @@ interface CertificateContentProps {
 }
 
 const CertificateContent = memo(({ certificate, onCopy }: CertificateContentProps) => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certDetail");
 
   return (
     <div className={styles.section}>

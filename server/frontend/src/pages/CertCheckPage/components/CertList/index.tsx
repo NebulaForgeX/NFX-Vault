@@ -12,7 +12,7 @@ interface CertListProps {
 }
 
 const CertList = memo(({ certType }: CertListProps) => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certCheck");
   
   const filter = useMemo(() => ({ certType }), [certType]);
   

@@ -15,7 +15,7 @@ interface UseOperationCertificateProps {
 
 export const useOperationCertificate = ({ domain, source, certType }: UseOperationCertificateProps) => {
   const navigate = useNavigate();
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certDetail");
   const deleteMutation = useDeleteCertificate();
   const applyMutation = useApplyCertificate();
 

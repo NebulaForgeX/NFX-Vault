@@ -19,7 +19,10 @@ def create_certificate(
     domain: str,
     certificate: str,
     private_key: str,
-    sans: Optional[List[str]] = None
+    sans: Optional[List[str]] = None,
+    folder_name: Optional[str] = None,
+    email: Optional[str] = None,
+    issuer: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     创建证书（手动添加，source='manual'，默认存到 database，status='process'）
@@ -46,25 +49,30 @@ def create_certificate(
         actual_store = CertificateStore.DATABASE.value
         
         # 检查 domain + source='manual' 是否已存在
-        existing = app.database_repo.get_certificate_by_domain(actual_store, domain, source=CertificateSource.MANUAL.value)
+        existing = app.database_repo.get_certificate_by_domain(actual_store, domain, source=CertificateSource.MANUAL_ADD.value)
         if existing:
             return {
                 "success": False,
-                "message": f"Certificate with domain '{domain}' and source 'manual' already exists"
+                "message": f"Certificate with domain '{domain}' and source 'manual_add' already exists"
             }
         
         # 创建证书（默认存到 database，status='process'）
+        # 使用传入的 issuer 或从证书中提取
+        final_issuer = issuer or cert_info.get("issuer", "Unknown")
+        
         cert_obj = app.database_repo.create_certificate(
             store=actual_store,
             domain=domain,
             certificate=certificate,
             private_key=private_key,
             sans=sans,
-            issuer=cert_info.get("issuer", "Unknown"),
+            issuer=final_issuer,
             not_before=cert_info.get("not_before"),
             not_after=cert_info.get("not_after"),
             is_valid=cert_info.get("is_valid", True),
-            days_remaining=cert_info.get("days_remaining")
+            days_remaining=cert_info.get("days_remaining"),
+            folder_name=folder_name,
+            email=email
         )
         
         if cert_obj:

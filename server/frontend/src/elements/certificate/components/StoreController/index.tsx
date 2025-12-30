@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import styles from "./styles.module.css";
 
 const StoreController = memo(() => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certificateElements");
   const {
     register,
     formState: { errors },
@@ -22,6 +22,7 @@ const StoreController = memo(() => {
         {...register("store")}
         className={`${styles.select} ${errors.store ? styles.inputError : ""}`}
       >
+        <option value="database">{t("certType.database") || "Database"}</option>
         <option value="websites">{t("certType.websites")}</option>
         <option value="apis">{t("certType.apis")}</option>
       </select>

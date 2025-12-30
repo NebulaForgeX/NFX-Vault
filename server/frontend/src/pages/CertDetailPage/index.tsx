@@ -19,14 +19,16 @@ import styles from "./styles.module.css";
 
 // 内部组件：实际渲染证书详情
 const CertDetailContent = memo(() => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certDetail");
   const { certType } = useParams<{ certType: CertType }>();
   const [searchParams] = useSearchParams();
 
   // 从查询参数获取 domain 和 source
   const domain = searchParams.get("domain") || "";
   const sourceParam = searchParams.get("source") || CertificateSource.AUTO;
-  const source = (sourceParam === CertificateSource.AUTO || sourceParam === CertificateSource.MANUAL)
+  const source = (sourceParam === CertificateSource.AUTO || 
+                  sourceParam === CertificateSource.MANUAL_APPLY || 
+                  sourceParam === CertificateSource.MANUAL_ADD)
     ? (sourceParam as CertificateSource)
     : CertificateSource.AUTO;
   
@@ -74,7 +76,7 @@ const CertDetailPage = memo(() => {
   const { certType } = useParams<{ certType: CertType }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certDetail");
 
   const domain = searchParams.get("domain");
 

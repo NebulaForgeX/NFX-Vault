@@ -20,8 +20,11 @@ export default function useInitCertificateForm(certificate?: CertificateDetailRe
           sans: certificate.sans || [],
         }
       : {
-          store: "websites",
+          store: "database",
           domain: "",
+          folder_name: "",
+          email: "",
+          issuer: "",
           certificate: "",
           privateKey: "",
           sans: [],
@@ -31,8 +34,11 @@ export default function useInitCertificateForm(certificate?: CertificateDetailRe
   useEffect(() => {
     if (certificate) {
       form.reset({
-        store: (certificate.store as "websites" | "apis") || "websites",
+        store: (certificate.store as "websites" | "apis" | "database") || "database",
         domain: certificate.domain,
+        folder_name: certificate.folder_name || "",
+        email: certificate.email || "",
+        issuer: certificate.issuer || "",
         certificate: certificate.certificate,
         privateKey: certificate.privateKey,
         sans: certificate.sans || [],

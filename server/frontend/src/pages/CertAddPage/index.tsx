@@ -10,7 +10,7 @@ import { CertForm } from "./components";
 import styles from "./styles.module.css";
 
 const CertAddPage = memo(() => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certAdd");
   const navigate = useNavigate();
 
   // Form setup
@@ -28,7 +28,7 @@ const CertAddPage = memo(() => {
           <button onClick={handleBack} className={styles.backBtn}>
             <ArrowLeft size={20} />
           </button>
-          <h1 className={styles.title}>{t("form.title") || "创建新证书"}</h1>
+          <h1 className={styles.title}>{t("title") || "创建新证书"}</h1>
         </div>
 
         <div className={styles.content}>

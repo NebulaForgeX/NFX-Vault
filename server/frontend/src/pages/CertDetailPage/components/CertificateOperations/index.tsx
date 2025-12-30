@@ -18,7 +18,7 @@ const CertificateOperations = memo(({
   source,
   certType,
 }: CertificateOperationsProps) => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certDetail");
   const { handleUpdate, handleReapply, handleDelete, isDeleting, isReapplying } = useOperationCertificate({
     domain,
     source,
@@ -45,7 +45,7 @@ const CertificateOperations = memo(({
           disabled={isReapplying}
           title={t("actions.reapply") || "Re-apply Certificate"}
         >
-          {isReapplying ? (t("apply.applying") || "Applying...") : (t("actions.reapply") || "Re-apply")}
+          {isReapplying ? (t("reapply.applying") || "重新申请中...") : (t("actions.reapply") || "重新申请")}
         </IconButton>
         <IconButton
           onClick={handleDelete}

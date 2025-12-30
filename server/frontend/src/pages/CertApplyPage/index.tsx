@@ -10,7 +10,7 @@ import { ApplyForm } from "./components";
 import styles from "./styles.module.css";
 
 const CertApplyPage = memo(() => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certApply");
   const navigate = useNavigate();
 
   // Form setup

@@ -14,7 +14,7 @@ interface CertCardProps {
 }
 
 const CertCard = memo(({ cert, certType }: CertCardProps) => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certCheck");
   const statusColor = useCertificateStatus(cert); // 用于边框颜色
   const timeInfo = useCertificateTime(cert); // 用于时间状态显示
   const { handleEdit, handleView, handleDelete } = useActionCertificateItem();

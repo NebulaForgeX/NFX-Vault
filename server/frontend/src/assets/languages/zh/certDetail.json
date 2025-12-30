@@ -1,0 +1,58 @@
+{
+  "back": "返回",
+  "certificate.source": "来源",
+  "certificate.source.auto": "自动申请",
+  "certificate.source.manual_apply": "手动申请",
+  "certificate.source.manual_add": "手动添加",
+  "certificate": {
+    "info": "证书信息",
+    "validFrom": "有效期从",
+    "content": "证书内容",
+    "privateKey": "私钥内容"
+  },
+  "actions": {
+    "operations": "操作",
+    "update": "更新",
+    "delete": "删除",
+    "reapply": "重新申请"
+  },
+  "delete": {
+    "confirm": {
+      "title": "删除证书",
+      "message": "确定要删除证书 \"{{domain}}\" 吗？此操作只删除数据库记录，不会影响 acme.json 文件。",
+      "confirm": "删除",
+      "cancel": "取消"
+    },
+    "success": "证书删除成功",
+    "error": "删除证书失败",
+    "deleting": "删除中..."
+  },
+  "update": {
+    "notImplemented": "更新功能即将推出",
+    "autoNotEditable": "自动申请的证书不能手动修改，请通过重新申请来更新。"
+  },
+  "reapply": {
+    "title": "重新申请证书",
+    "confirm": "确定要重新申请证书 \"{{domain}}\" 吗？",
+    "applying": "重新申请中..."
+  },
+  "loading": "加载中...",
+  "error": {
+    "loadFailed": "加载证书失败"
+  },
+  "copy": {
+    "success": "已复制到剪贴板",
+    "certificate": "复制证书",
+    "privateKey": "复制私钥"
+  },
+  "download": {
+    "success": "已下载",
+    "certificate": "下载证书",
+    "privateKey": "下载私钥",
+    "both": "下载全部"
+  },
+  "export": {
+    "title": "导出证书"
+  }
+}
+

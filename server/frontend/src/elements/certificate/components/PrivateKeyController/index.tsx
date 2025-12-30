@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import styles from "./styles.module.css";
 
 const PrivateKeyController = memo(() => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certificateElements");
   const {
     register,
     formState: { errors },

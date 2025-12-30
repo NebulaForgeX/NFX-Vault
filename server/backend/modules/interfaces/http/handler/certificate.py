@@ -48,11 +48,14 @@ class CertificateHTTPHandler:
     
     def create_certificate(
         self,
-        store: str,  # 存储位置（websites 或 apis）
+        store: str,  # 存储位置（websites、apis 或 database）
         domain: str,  # 域名
         certificate: str,  # 证书内容（PEM格式）
         private_key: str,  # 私钥内容（PEM格式）
-        sans: Optional[list] = None  # SANs 列表，可选
+        sans: Optional[list] = None,  # SANs 列表，可选
+        folder_name: Optional[str] = None,  # 文件夹名称，可选
+        email: Optional[str] = None,  # 邮箱地址，可选
+        issuer: Optional[str] = None  # 颁发者，可选
     ):
         """创建证书（手动添加）"""
         return self.certificate_application.create_certificate(
@@ -60,17 +63,21 @@ class CertificateHTTPHandler:
             domain=domain,
             certificate=certificate,
             private_key=private_key,
-            sans=sans
+            sans=sans,
+            folder_name=folder_name,
+            email=email,
+            issuer=issuer
         )
     
     def update_certificate(
         self,
         domain: str,  # 域名
-        source: CertificateSource,  # 来源（auto 或 manual）
+        source: CertificateSource,  # 来源（auto, manual_apply, manual_add）
         certificate: Optional[str] = None,  # 证书内容（PEM格式），可选
         private_key: Optional[str] = None,  # 私钥内容（PEM格式），可选
         store: Optional[str] = None,  # 存储位置，可选
-        sans: Optional[list] = None  # SANs 列表，可选
+        sans: Optional[list] = None,  # SANs 列表，可选
+        folder_name: Optional[str] = None  # 文件夹名称，可选（仅 MANUAL_APPLY 需要）
     ):
         """更新证书"""
         return self.certificate_application.update_certificate(
@@ -79,7 +86,8 @@ class CertificateHTTPHandler:
             certificate=certificate,
             private_key=private_key,
             store=store,
-            sans=sans
+            sans=sans,
+            folder_name=folder_name
         )
     
     def delete_certificate(

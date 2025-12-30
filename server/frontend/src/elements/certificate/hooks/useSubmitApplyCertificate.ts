@@ -13,7 +13,7 @@ import { cacheEventEmitter, cacheEvents } from "@/events";
 
 export const useSubmitApplyCertificate = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certApply");
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async (data: { values: ApplyCertificateFormValues }) => {

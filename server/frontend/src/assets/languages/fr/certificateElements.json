@@ -1,0 +1,29 @@
+{
+  "form": {
+    "basicInfo": "Informations de base",
+    "store": "Type de certificat",
+    "domain": "Domaine",
+    "domainPlaceholder": "par exemple : example.com",
+    "folderName": "Nom du dossier",
+    "folderNamePlaceholder": "par exemple : api_lucaslyu_com",
+    "folderNameHelp": "Identifiant unique, ne peut contenir que des lettres, des chiffres, des traits de soulignement et des tirets",
+    "email": "Adresse e-mail",
+    "emailPlaceholder": "admin@example.com",
+    "issuer": "Émetteur",
+    "issuerPlaceholder": "par exemple : Let's Encrypt",
+    "certificate": "Contenu du certificat",
+    "certificatePlaceholder": "Veuillez entrer le contenu du certificat au format PEM",
+    "privateKey": "Contenu de la clé privée",
+    "privateKeyPlaceholder": "Veuillez entrer le contenu de la clé privée au format PEM",
+    "create": "Créer un certificat",
+    "creating": "Création...",
+    "update": "Mettre à jour le certificat",
+    "updating": "Mise à jour..."
+  },
+  "certType": {
+    "websites": "Certificats de site web",
+    "apis": "Certificats API",
+    "database": "Certificats de base de données"
+  }
+}
+

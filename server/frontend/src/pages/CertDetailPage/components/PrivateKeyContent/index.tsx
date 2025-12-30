@@ -10,7 +10,7 @@ interface PrivateKeyContentProps {
 }
 
 const PrivateKeyContent = memo(({ privateKey, onCopy }: PrivateKeyContentProps) => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certDetail");
 
   return (
     <div className={styles.section}>

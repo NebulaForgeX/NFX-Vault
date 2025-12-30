@@ -115,15 +115,18 @@ def create_tls_router(handler: CertificateHTTPHandler) -> APIRouter:
     @router.post("/create", response_model=CertificateResponse)
     async def create_certificate(request: CreateCertificateRequest):
         """创建证书（手动添加）"""
-        if request.store not in ["websites", "apis"]:
-            raise HTTPException(status_code=400, detail="store must be 'websites' or 'apis'")
+        if request.store not in ["websites", "apis", "database"]:
+            raise HTTPException(status_code=400, detail="store must be 'websites', 'apis' or 'database'")
         try:
             result = handler.create_certificate(
                 store=request.store,
                 domain=request.domain,
                 certificate=request.certificate,
                 private_key=request.private_key,
-                sans=request.sans
+                sans=request.sans,
+                folder_name=request.folder_name,
+                email=request.email,
+                issuer=request.issuer
             )
             return CertificateResponse(**result)
         except HTTPException:
@@ -144,7 +147,8 @@ def create_tls_router(handler: CertificateHTTPHandler) -> APIRouter:
                 certificate=request.certificate,
                 private_key=request.private_key,
                 store=request.store,
-                sans=request.sans
+                sans=request.sans,
+                folder_name=request.folder_name
             )
             return CertificateResponse(**result)
         except HTTPException:

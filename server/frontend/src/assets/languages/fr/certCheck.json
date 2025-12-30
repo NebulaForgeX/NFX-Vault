@@ -1,0 +1,55 @@
+{
+  "title": "Gestion des certificats",
+  "subtitle": "Vérifier et gérer l'état des certificats SSL/TLS",
+  "certType": {
+    "label": "Type de certificat",
+    "websites": "Certificats de site web",
+    "apis": "Certificats API",
+    "database": "Certificats de base de données"
+  },
+  "actions": {
+    "check": "Vérifier les certificats",
+    "export": "Exporter les certificats",
+    "checking": "Vérification des certificats...",
+    "exporting": "Exportation...",
+    "refresh": "Actualiser les certificats",
+    "refreshing": "Actualisation...",
+    "add": "Ajouter un certificat",
+    "apply": "Demander un certificat",
+    "view": "Voir"
+  },
+  "status": {
+    "valid": "Valide",
+    "expired": "Expiré",
+    "expiringSoon": "Expire bientôt",
+    "remainingDays": "{{days}} jours restants",
+    "remaining": "Restant"
+  },
+  "certificate": {
+    "domain": "Domaine",
+    "issuer": "Émetteur",
+    "expiryDate": "Date d'expiration",
+    "unknown": "Inconnu",
+    "list": "Liste des certificats",
+    "total": "total",
+    "empty": "Aucun certificat trouvé"
+  },
+  "export": {
+    "success": "Exportation réussie",
+    "failed": "Échec de l'exportation",
+    "error": "Échec de l'exportation des certificats"
+  },
+  "check": {
+    "error": "Échec de la vérification des certificats"
+  },
+  "refresh": {
+    "success": "Actualisation réussie",
+    "error": "Échec de l'actualisation"
+  },
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page"
+  }
+}
+

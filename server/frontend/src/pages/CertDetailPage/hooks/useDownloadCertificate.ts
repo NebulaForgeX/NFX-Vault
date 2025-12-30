@@ -9,7 +9,7 @@ interface UseDownloadCertificateProps {
 }
 
 export const useDownloadCertificate = ({ certificate, privateKey, domain }: UseDownloadCertificateProps) => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certDetail");
 
   const downloadCertificate = useCallback(() => {
     const blob = new Blob([certificate], { type: "application/x-x509-ca-cert" });

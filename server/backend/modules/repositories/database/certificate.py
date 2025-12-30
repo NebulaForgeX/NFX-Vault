@@ -434,7 +434,8 @@ class CertificateDatabase:
         not_after: Optional[datetime] = None,
         is_valid: Optional[bool] = True,
         days_remaining: Optional[int] = None,
-        folder_name: Optional[str] = None
+        folder_name: Optional[str] = None,
+        email: Optional[str] = None
     ) -> Optional[TLSCertificate]:
         """
         创建证书（手动添加，source 固定为 manual，默认存到 database）
@@ -451,6 +452,7 @@ class CertificateDatabase:
             is_valid: 是否有效
             days_remaining: 剩余天数
             folder_name: 文件夹名称（可选）
+            folder_name: 文件夹名称（可选，用于更新）
             
         Returns:
             证书对象，如果已存在则返回 None
@@ -461,14 +463,15 @@ class CertificateDatabase:
             folder_name=folder_name,
             certificate=certificate,
             private_key=private_key,
-            source='manual',
+            source='manual_add',
             status='process',  # 用户添加时显示 process
             sans=sans,
             issuer=issuer,
             not_before=not_before,
             not_after=not_after,
             is_valid=is_valid,
-            days_remaining=days_remaining
+            days_remaining=days_remaining,
+            email=email
         )
     
     def update_certificate(
@@ -483,7 +486,8 @@ class CertificateDatabase:
         not_before: Optional[datetime] = None,
         not_after: Optional[datetime] = None,
         is_valid: Optional[bool] = None,
-        days_remaining: Optional[int] = None
+        days_remaining: Optional[int] = None,
+        folder_name: Optional[str] = None
     ) -> Optional[TLSCertificate]:
         """
         更新证书（根据 domain + source）
@@ -522,6 +526,8 @@ class CertificateDatabase:
                     return None
                 
                 # 只更新提供的字段，保持原有 source
+                if folder_name is not None:
+                    cert.folder_name = folder_name
                 if store is not None:
                     cert.store = store
                 if certificate is not None:

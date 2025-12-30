@@ -14,22 +14,24 @@ import {
 
 import styles from "./styles.module.css";
 
-interface CertFormProps {
+interface ManualAddFormProps {
   onSubmit: (data: CertificateFormValues) => Promise<void>;
   onSubmitError: (errors: FieldErrors<CertificateFormValues>) => void;
   isPending: boolean;
-  isEditMode?: boolean;
 }
 
-const CertForm = memo(({ onSubmit, onSubmitError, isPending, isEditMode = false }: CertFormProps) => {
-  const { t } = useTranslation("cert");
+/**
+ * MANUAL_ADD 源证书表单 - 所有字段都可以编辑
+ */
+const ManualAddForm = memo(({ onSubmit, onSubmitError, isPending }: ManualAddFormProps) => {
+  const { t } = useTranslation("certificateElements");
   const methods = useFormContext<CertificateFormValues>();
 
   return (
     <div className={styles.container}>
       <div className={styles.formCard}>
         <h2 className={styles.formTitle}>
-          {isEditMode ? (t("form.editTitle") || "编辑证书") : (t("form.title") || "创建新证书")}
+          {t("form.editTitle") || "编辑证书"}
         </h2>
 
         <form
@@ -38,7 +40,7 @@ const CertForm = memo(({ onSubmit, onSubmitError, isPending, isEditMode = false 
           }}
           className={styles.form}
         >
-          {/* Basic Information */}
+          {/* Basic Information - 所有字段可编辑 */}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>{t("form.basicInfo") || "基本信息"}</h3>
             <div className={styles.basicInfoGrid}>
@@ -49,13 +51,13 @@ const CertForm = memo(({ onSubmit, onSubmitError, isPending, isEditMode = false 
             </div>
           </div>
 
-          {/* Certificate Content */}
+          {/* Certificate Content - 可编辑 */}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>{t("form.certificate") || "证书内容"}</h3>
             <CertificateController />
           </div>
 
-          {/* Private Key */}
+          {/* Private Key - 可编辑 */}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>{t("form.privateKey") || "私钥内容"}</h3>
             <PrivateKeyController />
@@ -69,12 +71,8 @@ const CertForm = memo(({ onSubmit, onSubmitError, isPending, isEditMode = false 
               onClick={methods.handleSubmit(onSubmit, onSubmitError)}
             >
               {isPending
-                ? isEditMode
-                  ? (t("form.updating") || "更新中...")
-                  : (t("form.creating") || "创建中...")
-                : isEditMode
-                  ? (t("form.update") || "更新证书")
-                  : (t("form.create") || "创建证书")}
+                ? (t("form.updating") || "更新中...")
+                : (t("form.update") || "更新证书")}
             </button>
           </div>
         </form>
@@ -83,7 +81,7 @@ const CertForm = memo(({ onSubmit, onSubmitError, isPending, isEditMode = false 
   );
 });
 
-CertForm.displayName = "CertForm";
+ManualAddForm.displayName = "ManualAddForm";
 
-export default CertForm;
+export default ManualAddForm;
 

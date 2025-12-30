@@ -1,0 +1,55 @@
+{
+  "title": "Certificate Management",
+  "subtitle": "Check and manage SSL/TLS certificate status",
+  "certType": {
+    "label": "Certificate Type",
+    "websites": "Website Certificates",
+    "apis": "API Certificates",
+    "database": "Database Certificates"
+  },
+  "actions": {
+    "check": "Check Certificates",
+    "export": "Export Certificates",
+    "checking": "Checking certificates...",
+    "exporting": "Exporting...",
+    "refresh": "Refresh Certificates",
+    "refreshing": "Refreshing...",
+    "add": "Add Certificate",
+    "apply": "Apply Certificate",
+    "view": "View"
+  },
+  "status": {
+    "valid": "Valid",
+    "expired": "Expired",
+    "expiringSoon": "Expiring Soon",
+    "remainingDays": "Remaining {{days}} days",
+    "remaining": "Remaining"
+  },
+  "certificate": {
+    "domain": "Domain",
+    "issuer": "Issuer",
+    "expiryDate": "Expiry Date",
+    "unknown": "Unknown",
+    "list": "Certificate List",
+    "total": "total",
+    "empty": "No certificates found"
+  },
+  "export": {
+    "success": "Export successful",
+    "failed": "Export failed",
+    "error": "Failed to export certificates"
+  },
+  "check": {
+    "error": "Failed to check certificates"
+  },
+  "refresh": {
+    "success": "Refresh successful",
+    "error": "Refresh failed"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page"
+  }
+}
+

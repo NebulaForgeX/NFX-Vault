@@ -32,7 +32,7 @@ const SearchModal = memo(() => {
   const inputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["common", "modal"]);
 
   // 定义所有可搜索的功能
   const searchItems: SearchItem[] = useMemo(
@@ -177,7 +177,7 @@ const SearchModal = memo(() => {
             })
           ) : (
             <div className={styles.noResults}>
-              <p>{t("search.noResults", { ns: "common", query: searchQuery }) || `No results found for "${searchQuery}"`}</p>
+              <p>{t("search.noResults", { ns: "modal", query: searchQuery }) || `No results found for "${searchQuery}"`}</p>
             </div>
           )}
         </div>

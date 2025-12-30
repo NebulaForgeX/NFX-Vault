@@ -20,7 +20,8 @@ def update_certificate(
     certificate: Optional[str] = None,
     private_key: Optional[str] = None,
     store: Optional[str] = None,
-    sans: Optional[List[str]] = None
+    sans: Optional[List[str]] = None,
+    folder_name: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     更新证书
@@ -43,6 +44,22 @@ def update_certificate(
             "success": False,
             "message": "Auto source certificates cannot be manually updated. Please refresh from folders instead."
         }
+    
+    # manual_apply 源的证书只能编辑 folder_name
+    if source == CertificateSource.MANUAL_APPLY:
+        if folder_name is None:
+            return {
+                "success": False,
+                "message": "folder_name is required for MANUAL_APPLY certificates"
+            }
+        # 只更新 folder_name，不允许更新其他字段
+        if certificate is not None or private_key is not None or store is not None or sans is not None:
+            return {
+                "success": False,
+                "message": "MANUAL_APPLY certificates can only update folder_name"
+            }
+    
+    # manual_add 源的证书可以编辑所有字段
     
     try:
         # 如果提供了证书内容，需要重新解析证书信息
@@ -72,7 +89,8 @@ def update_certificate(
             not_before=not_before,
             not_after=not_after,
             is_valid=is_valid,
-            days_remaining=days_remaining
+            days_remaining=days_remaining,
+            folder_name=folder_name
         )
         
         if cert_obj:

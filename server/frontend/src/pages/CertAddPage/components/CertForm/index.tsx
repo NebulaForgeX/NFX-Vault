@@ -8,9 +8,12 @@ import { useTranslation } from "react-i18next";
 import {
   StoreController,
   DomainController,
+  FolderNameController,
+  IssuerController,
   CertificateController,
   PrivateKeyController,
 } from "@/elements/certificate/components";
+import EmailControllerForAdd from "@/elements/certificate/components/EmailControllerForAdd";
 
 import styles from "./styles.module.css";
 
@@ -22,14 +25,14 @@ interface CertFormProps {
 }
 
 const CertForm = memo(({ onSubmit, onSubmitError, isPending, isEditMode = false }: CertFormProps) => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certificateElements");
   const methods = useFormContext<CertificateFormValues>();
 
   return (
     <div className={styles.container}>
       <div className={styles.formCard}>
         <h2 className={styles.formTitle}>
-          {isEditMode ? (t("form.editTitle") || "编辑证书") : (t("form.title") || "创建新证书")}
+          {isEditMode ? (t("form.editTitle") || "编辑证书") : (t("form.create") || "创建新证书")}
         </h2>
 
         <form
@@ -45,6 +48,9 @@ const CertForm = memo(({ onSubmit, onSubmitError, isPending, isEditMode = false 
               <div className={styles.leftColumn}>
                 <StoreController />
                 <DomainController />
+                <FolderNameController />
+                <EmailControllerForAdd />
+                <IssuerController />
               </div>
             </div>
           </div>

@@ -16,7 +16,7 @@ const ExportCertificate = memo(({
   privateKey,
   domain,
 }: ExportCertificateProps) => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certDetail");
   const { downloadCertificate, downloadPrivateKey, downloadBoth } = useDownloadCertificate({
     certificate,
     privateKey,

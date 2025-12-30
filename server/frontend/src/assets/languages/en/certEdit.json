@@ -1,0 +1,23 @@
+{
+  "title": "Edit Certificate",
+  "subtitle": "Update certificate information",
+  "form": {
+    "editTitle": "Edit Certificate",
+    "editSubtitle": "Update certificate information",
+    "readOnly": "(Read Only)",
+    "autoNotEditable": "Auto-discovered certificates cannot be manually edited. Please refresh from folders to update.",
+    "manualApplyEditable": "Manually applied certificates can only edit folder name",
+    "basicInfo": "Basic Information",
+    "store": "Certificate Type",
+    "domain": "Domain",
+    "folderName": "Folder Name",
+    "folderNamePlaceholder": "e.g., api_lucaslyu_com",
+    "folderNameHelp": "Unique identifier, can only contain letters, numbers, underscores, and hyphens",
+    "certificate": "Certificate Content",
+    "privateKey": "Private Key Content",
+    "update": "Update Certificate",
+    "updating": "Updating..."
+  },
+  "loading": "Loading certificate..."
+}
+

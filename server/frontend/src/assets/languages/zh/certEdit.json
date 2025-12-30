@@ -1,0 +1,23 @@
+{
+  "title": "编辑证书",
+  "subtitle": "更新证书信息",
+  "form": {
+    "editTitle": "编辑证书",
+    "editSubtitle": "更新证书信息",
+    "readOnly": "（只读）",
+    "autoNotEditable": "自动发现的证书无法手动编辑，请通过刷新文件夹来更新",
+    "manualApplyEditable": "手动申请的证书只能编辑文件夹名称",
+    "basicInfo": "基本信息",
+    "store": "证书类型",
+    "domain": "域名",
+    "folderName": "文件夹名称",
+    "folderNamePlaceholder": "例如: api_lucaslyu_com",
+    "folderNameHelp": "唯一标识符，只能包含字母、数字、下划线和连字符",
+    "certificate": "证书内容",
+    "privateKey": "私钥内容",
+    "update": "更新证书",
+    "updating": "更新中..."
+  },
+  "loading": "加载中..."
+}
+

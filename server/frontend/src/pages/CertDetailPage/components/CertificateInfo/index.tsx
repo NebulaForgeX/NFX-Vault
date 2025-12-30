@@ -9,7 +9,7 @@ interface CertificateInfoProps {
 }
 
 const CertificateInfo = memo(({ certDetail }: CertificateInfoProps) => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certDetail");
 
   return (
     <div className={styles.section}>

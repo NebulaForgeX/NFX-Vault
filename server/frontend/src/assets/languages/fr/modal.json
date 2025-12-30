@@ -1,0 +1,9 @@
+{
+  "loading": {
+    "defaultMessage": "Chargement en cours, veuillez patienter..."
+  },
+  "search": {
+    "noResults": "Aucun résultat trouvé pour \"{{query}}\""
+  }
+}
+

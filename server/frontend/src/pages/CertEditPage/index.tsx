@@ -10,11 +10,11 @@ import { useCertificateDetail } from "@/hooks";
 import { CertificateSource } from "@/apis/domain";
 import type { CertType } from "@/types";
 
-import { CertForm } from "./components";
+import { AutoForm, ManualApplyForm, ManualAddForm } from "./components";
 import styles from "./styles.module.css";
 
 const CertEditPageContent = memo(() => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certEdit");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -22,7 +22,9 @@ const CertEditPageContent = memo(() => {
   const sourceParam = searchParams.get("source") || CertificateSource.AUTO;
   const certType = searchParams.get("certType") as CertType | null;
 
-  const source = (sourceParam === CertificateSource.AUTO || sourceParam === CertificateSource.MANUAL)
+  const source = (sourceParam === CertificateSource.AUTO || 
+                  sourceParam === CertificateSource.MANUAL_APPLY || 
+                  sourceParam === CertificateSource.MANUAL_ADD)
     ? (sourceParam as CertificateSource)
     : CertificateSource.AUTO;
 
@@ -39,15 +41,38 @@ const CertEditPageContent = memo(() => {
     navigate(-1);
   };
 
-  // 如果是 AUTO 源的证书，不允许编辑，重定向回列表页
-  if (certificate && source === CertificateSource.AUTO) {
-    navigate(-1);
-    return null;
-  }
-
-  if (!certificate) {
-    return null;
-  }
+  if (!certificate)  return null;
+  // 根据 source 选择不同的表单组件
+  const renderForm = () => {
+    switch (source) {
+      case CertificateSource.AUTO:
+        return (
+          <AutoForm
+            onSubmit={onSubmit}
+            onSubmitError={onSubmitError}
+            isPending={isPending}
+          />
+        );
+      case CertificateSource.MANUAL_APPLY:
+        return (
+          <ManualApplyForm
+            onSubmit={onSubmit}
+            onSubmitError={onSubmitError}
+            isPending={isPending}
+          />
+        );
+      case CertificateSource.MANUAL_ADD:
+        return (
+          <ManualAddForm
+            onSubmit={onSubmit}
+            onSubmitError={onSubmitError}
+            isPending={isPending}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <FormProvider {...methods}>
@@ -68,12 +93,7 @@ const CertEditPageContent = memo(() => {
 
         <div className={styles.content}>
           <div className={styles.rightColumn}>
-            <CertForm
-              onSubmit={onSubmit}
-              onSubmitError={onSubmitError}
-              isPending={isPending}
-              isEditMode
-            />
+            {renderForm()}
           </div>
         </div>
       </div>
@@ -84,7 +104,7 @@ const CertEditPageContent = memo(() => {
 CertEditPageContent.displayName = "CertEditPageContent";
 
 const CertEditPage = memo(() => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certEdit");
 
   return (
     <Suspense

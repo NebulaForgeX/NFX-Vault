@@ -1,0 +1,29 @@
+{
+  "form": {
+    "basicInfo": "基本信息",
+    "store": "证书类型",
+    "domain": "域名",
+    "domainPlaceholder": "例如：example.com",
+    "folderName": "文件夹名称",
+    "folderNamePlaceholder": "例如：api_lucaslyu_com",
+    "folderNameHelp": "唯一标识符，只能包含字母、数字、下划线和连字符",
+    "email": "邮箱地址",
+    "emailPlaceholder": "admin@example.com",
+    "issuer": "颁发者",
+    "issuerPlaceholder": "例如：Let's Encrypt",
+    "certificate": "证书内容",
+    "certificatePlaceholder": "请输入PEM格式的证书内容",
+    "privateKey": "私钥内容",
+    "privateKeyPlaceholder": "请输入PEM格式的私钥内容",
+    "create": "创建证书",
+    "creating": "创建中...",
+    "update": "更新证书",
+    "updating": "更新中..."
+  },
+  "certType": {
+    "websites": "网站证书",
+    "apis": "API 证书",
+    "database": "数据库证书"
+  }
+}
+

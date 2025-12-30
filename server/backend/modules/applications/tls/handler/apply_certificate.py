@@ -64,7 +64,7 @@ def _apply_certificate_background(
                     app.database_repo.create_or_update_certificate(
                         store=CertificateStore.DATABASE.value,
                         domain=domain,
-                        source=CertificateSource.MANUAL.value,  # 用户主动申请的证书
+                        source=CertificateSource.MANUAL_APPLY.value,  # 用户主动申请的证书
                         status=CertificateStatus.SUCCESS.value,
                         email=email,
                         sans=sans,
@@ -84,7 +84,7 @@ def _apply_certificate_background(
                     app.database_repo.create_or_update_certificate(
                         store=CertificateStore.DATABASE.value,
                         domain=domain,
-                        source=CertificateSource.MANUAL.value,  # 用户主动申请的证书
+                        source=CertificateSource.MANUAL_APPLY.value,  # 用户主动申请的证书
                         status=CertificateStatus.SUCCESS.value,
                         email=email,
                         sans=sans,
@@ -100,7 +100,7 @@ def _apply_certificate_background(
                 app.database_repo.create_or_update_certificate(
                     store=CertificateStore.DATABASE.value,
                     domain=domain,
-                    source=CertificateSource.MANUAL.value,  # 用户主动申请的证书
+                    source=CertificateSource.MANUAL_APPLY.value,  # 用户主动申请的证书
                     status=CertificateStatus.FAIL.value,
                     email=email,
                     sans=sans,
@@ -112,7 +112,7 @@ def _apply_certificate_background(
             app.database_repo.create_or_update_certificate(
                 store=CertificateStore.DATABASE.value,
                 domain=domain,
-                source=CertificateSource.MANUAL.value,  # 用户主动申请的证书
+                source=CertificateSource.MANUAL_APPLY.value,  # 用户主动申请的证书
                 status=CertificateStatus.FAIL.value,
                 email=email,
                 sans=sans,
@@ -127,7 +127,7 @@ def _apply_certificate_background(
             app.database_repo.create_or_update_certificate(
                 store=CertificateStore.DATABASE.value,
                 domain=domain,
-                source=CertificateSource.MANUAL.value,  # 用户主动申请的证书
+                source=CertificateSource.MANUAL_APPLY.value,  # 用户主动申请的证书
                 status=CertificateStatus.FAIL.value,
                 email=email,
                 sans=sans,
@@ -192,11 +192,11 @@ def apply_certificate(
         
         logger.info(f"🚀 Starting certificate application for domain '{domain}' (async)")
         
-        # 先记录申请中的状态（用户主动申请的，source 为 MANUAL）
+        # 先记录申请中的状态（用户主动申请的，source 为 MANUAL_APPLY）
         app.database_repo.create_or_update_certificate(
             store=CertificateStore.DATABASE.value,
             domain=domain,
-            source=CertificateSource.MANUAL.value,  # 用户主动申请的证书
+            source=CertificateSource.MANUAL_APPLY.value,  # 用户主动申请的证书
             status=CertificateStatus.PROCESS.value,  # 申请中，状态为 process
             email=email,
             sans=sans,
@@ -228,7 +228,7 @@ def apply_certificate(
             app.database_repo.create_or_update_certificate(
                 store=CertificateStore.DATABASE.value,
                 domain=domain,
-                source=CertificateSource.MANUAL.value,  # 用户主动申请的证书
+                source=CertificateSource.MANUAL_APPLY.value,  # 用户主动申请的证书
                 status=CertificateStatus.FAIL.value,
                 email=email,
                 sans=sans,

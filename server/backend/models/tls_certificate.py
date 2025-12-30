@@ -29,7 +29,7 @@ class TLSCertificate(Base):
     store = Column(Enum(CertificateStore), nullable=False, comment="存储位置（websites/apis/databases）")
     domain = Column(String(255), nullable=False, comment="主域名")
     folder_name = Column(String(255), nullable=True, unique=True, comment="文件夹名称（唯一，用于标识不同的域名）")
-    source = Column(Enum(CertificateSource), nullable=False, default=CertificateSource.MANUAL, comment="来源（auto: 自动申请, manual: 手动添加）")
+    source = Column(Enum(CertificateSource), nullable=False, default=CertificateSource.MANUAL_ADD, comment="来源（auto: 自动发现, manual_apply: 手动申请, manual_add: 手动添加）")
     status = Column(Enum(CertificateStatus), nullable=True, default=CertificateStatus.PROCESS, comment="申请状态（success: 成功, fail: 失败, process: 处理中）")
     email = Column(String(255), nullable=True, comment="邮箱地址（用于 Let's Encrypt 通知）")
     certificate = Column(Text, nullable=True, comment="证书内容（PEM格式）")

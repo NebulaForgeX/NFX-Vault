@@ -13,11 +13,14 @@ from enums.certificate_source import CertificateSource
 
 class CreateCertificateRequest(BaseModel):
     """创建证书请求"""
-    store: str = Field(..., description="存储位置（websites 或 apis）")
+    store: str = Field(..., description="存储位置（websites、apis 或 database）")
     domain: str = Field(..., description="域名")
     certificate: str = Field(..., description="证书内容（PEM格式）")
     private_key: str = Field(..., description="私钥内容（PEM格式）")
     sans: Optional[List[str]] = Field(None, description="SANs 列表")
+    folder_name: Optional[str] = Field(None, description="文件夹名称")
+    email: Optional[str] = Field(None, description="邮箱地址")
+    issuer: Optional[str] = Field(None, description="颁发者")
 
 
 class UpdateCertificateRequest(BaseModel):
@@ -28,6 +31,7 @@ class UpdateCertificateRequest(BaseModel):
     private_key: Optional[str] = Field(None, description="私钥内容（PEM格式）")
     store: Optional[str] = Field(None, description="存储位置（websites 或 apis）")
     sans: Optional[List[str]] = Field(None, description="SANs 列表")
+    folder_name: Optional[str] = Field(None, description="文件夹名称（仅 MANUAL_APPLY 需要）")
 
 
 class DeleteCertificateRequest(BaseModel):

@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 
 export const useActionCertificateItem = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certCheck");
   const deleteMutation = useDeleteCertificate();
 
   const handleEdit = useCallback(

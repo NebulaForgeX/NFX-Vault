@@ -1,0 +1,28 @@
+{
+  "title": "Apply Let's Encrypt Certificate",
+  "subtitle": "Automatically apply SSL/TLS certificate through Let's Encrypt",
+  "loading": "Loading...",
+  "apply": {
+    "title": "Apply Let's Encrypt Certificate",
+    "basicInfo": "Basic Information",
+    "folderName": "Folder Name",
+    "folderNamePlaceholder": "e.g., api_lucaslyu_com",
+    "folderNameHelp": "Unique identifier, can only contain letters, numbers, underscores, and hyphens",
+    "email": "Email Address",
+    "emailPlaceholder": "admin@example.com",
+    "sans": "SANs (Optional)",
+    "sansPlaceholder": "One domain per line, e.g.:\nwww.example.com\napi.example.com",
+    "sansHelp": "Enter one domain per line, leave empty to apply only for the main domain",
+    "verification": "Verification Options",
+    "webroot": "Webroot Path",
+    "webrootPlaceholder": "/var/www/html",
+    "webrootHelp": "Web root directory path for HTTP-01 verification",
+    "standalone": "Use Standalone Mode",
+    "standaloneHelp": "Standalone mode: certbot will temporarily start a web server listening on port 80 to complete verification. Using this mode requires stopping your existing web server (e.g., Nginx, Apache) first, otherwise there will be a port conflict. Certbot will automatically exit after verification is complete.",
+    "submit": "Apply Certificate",
+    "applying": "Applying...",
+    "success": "Certificate applied successfully",
+    "error": "Failed to apply certificate"
+  }
+}
+

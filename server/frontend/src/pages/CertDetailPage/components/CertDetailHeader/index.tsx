@@ -12,7 +12,7 @@ interface CertDetailHeaderProps {
 }
 
 const CertDetailHeader = memo(({ certDetail }: CertDetailHeaderProps) => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certDetail");
   const navigate = useNavigate();
   const timeInfo = useCertificateTime(certDetail);
 

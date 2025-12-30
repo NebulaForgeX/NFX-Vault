@@ -16,7 +16,7 @@ interface ApplyFormProps {
 }
 
 const ApplyForm = memo(({ onSubmit, onSubmitError, isPending }: ApplyFormProps) => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certApply");
   const methods = useFormContext<ApplyCertificateFormValues>();
 
   return (

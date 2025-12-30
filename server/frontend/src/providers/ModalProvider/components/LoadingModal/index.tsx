@@ -5,7 +5,7 @@ import { useModalStore } from "@/stores/modalStore";
 import styles from "./styles.module.css";
 
 const LoadingModal = memo(() => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("modal");
   const isOpen = useModalStore((state) => state.loadingModal.isOpen);
   const title = useModalStore((state) => state.loadingModal.title);
   const message = useModalStore((state) => state.loadingModal.message);
@@ -19,7 +19,7 @@ const LoadingModal = memo(() => {
           <TruckLoading size="large" />
           {title && <h3 className={styles.title}>{title}</h3>}
           <p className={styles.message}>
-            {message || t("apply.applying") || "正在申请证书，请稍候..."}
+            {message || t("loading.defaultMessage") || "正在加载中，请稍候..."}
           </p>
         </div>
       </div>

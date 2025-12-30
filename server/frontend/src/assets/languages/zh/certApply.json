@@ -1,0 +1,28 @@
+{
+  "title": "申请 Let's Encrypt 证书",
+  "subtitle": "通过 Let's Encrypt 自动申请 SSL/TLS 证书",
+  "loading": "加载中...",
+  "apply": {
+    "title": "申请 Let's Encrypt 证书",
+    "basicInfo": "基本信息",
+    "folderName": "文件夹名称",
+    "folderNamePlaceholder": "例如：api_lucaslyu_com",
+    "folderNameHelp": "唯一标识符，只能包含字母、数字、下划线和连字符",
+    "email": "邮箱地址",
+    "emailPlaceholder": "admin@example.com",
+    "sans": "SANs (可选)",
+    "sansPlaceholder": "每行一个域名，例如：\nwww.example.com\napi.example.com",
+    "sansHelp": "每行输入一个域名，留空则只申请主域名",
+    "verification": "验证选项",
+    "webroot": "Webroot 路径",
+    "webrootPlaceholder": "/var/www/html",
+    "webrootHelp": "用于 HTTP-01 验证的 Web 根目录路径",
+    "standalone": "使用 Standalone 模式",
+    "standaloneHelp": "Standalone 模式：certbot 会临时启动一个 Web 服务器监听 80 端口来完成验证。使用此模式需要先停止您现有的 Web 服务器（如 Nginx、Apache），否则会端口冲突。验证完成后 certbot 会自动退出。",
+    "submit": "申请证书",
+    "applying": "申请中...",
+    "success": "证书申请成功",
+    "error": "证书申请失败"
+  }
+}
+

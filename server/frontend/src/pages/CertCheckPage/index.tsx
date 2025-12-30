@@ -12,7 +12,7 @@ import styles from "./styles.module.css";
 
 // 内部组件：实际渲染证书列表
 const CertCheckPage = memo(() => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certCheck");
   const [certType, setCertType] = useState<CertType>("websites");
   const invalidateCacheMutation = useInvalidateCache();
 

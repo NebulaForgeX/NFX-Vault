@@ -1,0 +1,23 @@
+{
+  "title": "Modifier le certificat",
+  "subtitle": "Mettre à jour les informations du certificat",
+  "form": {
+    "editTitle": "Modifier le certificat",
+    "editSubtitle": "Mettre à jour les informations du certificat",
+    "readOnly": "(Lecture seule)",
+    "autoNotEditable": "Les certificats découverts automatiquement ne peuvent pas être modifiés manuellement. Veuillez actualiser depuis les dossiers pour mettre à jour.",
+    "manualApplyEditable": "Les certificats appliqués manuellement ne peuvent modifier que le nom du dossier",
+    "basicInfo": "Informations de base",
+    "store": "Type de certificat",
+    "domain": "Domaine",
+    "folderName": "Nom du dossier",
+    "folderNamePlaceholder": "par exemple : api_lucaslyu_com",
+    "folderNameHelp": "Identifiant unique, ne peut contenir que des lettres, des chiffres, des traits de soulignement et des tirets",
+    "certificate": "Contenu du certificat",
+    "privateKey": "Contenu de la clé privée",
+    "update": "Mettre à jour le certificat",
+    "updating": "Mise à jour..."
+  },
+  "loading": "Chargement du certificat..."
+}
+

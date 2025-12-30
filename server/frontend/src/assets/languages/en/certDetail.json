@@ -1,0 +1,58 @@
+{
+  "back": "Back",
+  "certificate.source": "Source",
+  "certificate.source.auto": "Auto",
+  "certificate.source.manual_apply": "Manual Apply",
+  "certificate.source.manual_add": "Manual Add",
+  "certificate": {
+    "info": "Certificate Information",
+    "validFrom": "Valid From",
+    "content": "Certificate Content",
+    "privateKey": "Private Key"
+  },
+  "actions": {
+    "operations": "Operations",
+    "update": "Update",
+    "delete": "Delete",
+    "reapply": "Re-apply"
+  },
+  "delete": {
+    "confirm": {
+      "title": "Delete Certificate",
+      "message": "Are you sure you want to delete the certificate for domain \"{{domain}}\"? This will only delete the database record and will not affect the acme.json file.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "success": "Certificate deleted successfully",
+    "error": "Failed to delete certificate",
+    "deleting": "Deleting..."
+  },
+  "update": {
+    "notImplemented": "Update functionality coming soon",
+    "autoNotEditable": "Auto source certificates cannot be manually updated. Please re-apply instead."
+  },
+  "reapply": {
+    "title": "Re-apply Certificate",
+    "confirm": "Are you sure you want to re-apply certificate for \"{{domain}}\"?",
+    "applying": "Re-applying..."
+  },
+  "loading": "Loading...",
+  "error": {
+    "loadFailed": "Failed to load certificate"
+  },
+  "copy": {
+    "success": "Copied to clipboard",
+    "certificate": "Copy Certificate",
+    "privateKey": "Copy Private Key"
+  },
+  "download": {
+    "success": "Downloaded",
+    "certificate": "Download Certificate",
+    "privateKey": "Download Private Key",
+    "both": "Download Both"
+  },
+  "export": {
+    "title": "Export Certificate"
+  }
+}
+

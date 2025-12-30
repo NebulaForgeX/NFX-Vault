@@ -10,7 +10,7 @@ import styles from "./styles.module.css";
 
 export default function DashboardPage() {
   const { t } = useTranslation("common");
-  const { t: tCert } = useTranslation("cert");
+  const { t: tCert } = useTranslation("certCheck");
   const [selectedCertType, setSelectedCertType] = useState<CertType>("websites");
   const refreshMutation = useRefreshCertificates();
 

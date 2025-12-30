@@ -46,7 +46,7 @@ export const useCertificateStatus = (cert: CertificateInfo | undefined): string 
  * @returns Time-based status display information including label, bgColor, and textColor
  */
 export const useCertificateTime = (cert: CertificateInfo | undefined): CertificateTimeInfo => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certCheck");
 
   const timeInfo = useMemo(() => {
     if (!cert) {

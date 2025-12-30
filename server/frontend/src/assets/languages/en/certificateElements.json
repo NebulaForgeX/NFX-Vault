@@ -1,0 +1,29 @@
+{
+  "form": {
+    "basicInfo": "Basic Information",
+    "store": "Certificate Type",
+    "domain": "Domain",
+    "domainPlaceholder": "e.g., example.com",
+    "folderName": "Folder Name",
+    "folderNamePlaceholder": "e.g., api_lucaslyu_com",
+    "folderNameHelp": "Unique identifier, can only contain letters, numbers, underscores, and hyphens",
+    "email": "Email Address",
+    "emailPlaceholder": "admin@example.com",
+    "issuer": "Issuer",
+    "issuerPlaceholder": "e.g., Let's Encrypt",
+    "certificate": "Certificate Content",
+    "certificatePlaceholder": "Please enter certificate content in PEM format",
+    "privateKey": "Private Key Content",
+    "privateKeyPlaceholder": "Please enter private key content in PEM format",
+    "create": "Create Certificate",
+    "creating": "Creating...",
+    "update": "Update Certificate",
+    "updating": "Updating..."
+  },
+  "certType": {
+    "websites": "Website Certificates",
+    "apis": "API Certificates",
+    "database": "Database Certificates"
+  }
+}
+

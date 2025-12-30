@@ -2,7 +2,8 @@ export type CertType = "websites" | "apis" | "database";
 
 export enum CertificateSource {
   AUTO = "auto",
-  MANUAL = "manual",
+  MANUAL_APPLY = "manual_apply",
+  MANUAL_ADD = "manual_add",
 }
 
 export enum CertificateStatus {
@@ -47,6 +48,7 @@ export interface CertificateDetailResponse {
   source?: CertificateSource;
   status?: CertificateStatus;
   email?: string;
+  folder_name?: string;
   issuer?: string;
   notBefore?: string;
   notAfter?: string;
@@ -58,11 +60,14 @@ export interface CertificateDetailResponse {
 }
 
 export interface CreateCertificateRequest {
-  store: CertType;
+  store: CertType | "database";
   domain: string;
   certificate: string;
   privateKey: string;
   sans?: string[];
+  folder_name?: string;
+  email?: string;
+  issuer?: string;
 }
 
 export interface UpdateCertificateRequest {
@@ -72,6 +77,7 @@ export interface UpdateCertificateRequest {
   privateKey?: string;
   store?: CertType;
   sans?: string[];
+  folder_name?: string;
 }
 
 export interface DeleteCertificateRequest {

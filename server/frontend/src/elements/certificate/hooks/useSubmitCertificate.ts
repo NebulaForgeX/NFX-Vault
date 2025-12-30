@@ -21,6 +21,9 @@ export const useSubmitCertificate = () => {
           certificate: values.certificate.trim(),
           privateKey: values.privateKey.trim(),
           sans: values.sans && values.sans.length > 0 ? values.sans : undefined,
+          folder_name: values.folder_name?.trim() || undefined,
+          email: values.email?.trim() || undefined,
+          issuer: values.issuer?.trim() || undefined,
         });
 
         if (result.success) {

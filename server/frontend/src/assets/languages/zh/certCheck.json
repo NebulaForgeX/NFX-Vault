@@ -1,0 +1,55 @@
+{
+  "title": "证书管理",
+  "subtitle": "检查和管理 SSL/TLS 证书状态",
+  "certType": {
+    "label": "证书类型",
+    "websites": "网站证书",
+    "apis": "API 证书",
+    "database": "数据库证书"
+  },
+  "actions": {
+    "check": "检查证书",
+    "export": "导出证书",
+    "checking": "检查证书中...",
+    "exporting": "导出中...",
+    "refresh": "刷新证书",
+    "refreshing": "刷新中...",
+    "add": "添加证书",
+    "apply": "申请证书",
+    "view": "查看"
+  },
+  "status": {
+    "valid": "有效",
+    "expired": "已过期",
+    "expiringSoon": "即将过期",
+    "remainingDays": "剩余 {{days}} 天",
+    "remaining": "剩余"
+  },
+  "certificate": {
+    "domain": "域名",
+    "issuer": "颁发者",
+    "expiryDate": "到期时间",
+    "unknown": "未知",
+    "list": "证书列表",
+    "total": "总计",
+    "empty": "暂无证书数据"
+  },
+  "export": {
+    "success": "导出成功",
+    "failed": "导出失败",
+    "error": "导出证书失败"
+  },
+  "check": {
+    "error": "检查证书失败"
+  },
+  "refresh": {
+    "success": "刷新成功",
+    "error": "刷新失败"
+  },
+  "pagination": {
+    "previous": "上一页",
+    "next": "下一页",
+    "page": "第"
+  }
+}
+

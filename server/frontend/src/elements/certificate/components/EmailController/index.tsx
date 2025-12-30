@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import styles from "./styles.module.css";
 
 const EmailController = memo(() => {
-  const { t } = useTranslation("cert");
+  const { t } = useTranslation("certApply");
   const {
     register,
     formState: { errors },
