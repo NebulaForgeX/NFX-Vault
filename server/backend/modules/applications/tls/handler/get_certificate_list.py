@@ -32,11 +32,10 @@ def get_certificate_list(
         包含 certificates 和 total 的字典
     """
     # 1. 尝试从缓存获取
-    if use_cache:
-        cached = app.cache_repo.get_certificate_list(store, page, page_size)
-        if cached:
-            logger.debug(f"✅ 从缓存获取证书列表: store={store}, page={page}")
-            return cached
+        if use_cache:
+            cached = app.cache_repo.get_certificate_list(store, page, page_size)
+            if cached:
+                return cached
     
     # 2. 从数据库获取（已经是字典格式）
     cert_dicts, total = app.database_repo.get_certificate_list(store, page, page_size)

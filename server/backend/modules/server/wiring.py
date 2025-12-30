@@ -128,7 +128,7 @@ def init_connections(db_config: DatabaseConfig, cert_config: CertConfig) -> Conn
             # 使用路由分发器注册事件处理器（将 interface 的方法注册到 Kafka consumer）
             for event_type, handler in event_router.routes.items():
                 resources.kafka_consumer.register_handler(event_type, handler)
-                logger.debug(f"✅ 注册 Kafka 事件处理器: {event_type}")
+                logger.info(f"✅ 注册 Kafka 事件处理器: {event_type}")
         except Exception as e:
             logger.error(f"❌ 注册 Kafka 事件处理器失败: {e}")
     

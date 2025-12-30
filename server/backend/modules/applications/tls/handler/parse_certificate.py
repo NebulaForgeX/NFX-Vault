@@ -50,9 +50,6 @@ def parse_certificate(
         # 解析证书
         cert_info = extract_cert_info_from_pem_sync(cert_obj["certificate"])
         
-        # 打印解析结果用于调试
-        logger.info(f"🔍 证书解析结果: {cert_info}")
-        
         if not cert_info:
             # 解析失败，更新状态为 fail，但保存基本信息
             app.database_repo.update_certificate_parse_result(
@@ -93,9 +90,6 @@ def parse_certificate(
                 if san and san not in all_domains:
                     all_domains.append(san)
         
-        # 打印调试信息
-        logger.info(f"🔍 解析结果: domain={parsed_domain}, sans={parsed_sans}, all_domains={all_domains}")
-        
         # 检查域名是否匹配
         original_domain = cert_obj.get("domain")
         domain_match = parsed_domain == original_domain if parsed_domain else False
@@ -122,14 +116,9 @@ def parse_certificate(
             days_remaining=parsed_days_remaining
         )
         
-        logger.info(f"🔍 保存到数据库: sans={all_domains if all_domains else []}, "
-                   f"issuer={parsed_issuer}, is_valid={parsed_is_valid}, days_remaining={parsed_days_remaining}")
-        
         # 发布缓存失效事件
         store = cert_obj.get("store", CertificateStore.DATABASE.value)
         app.invalidate_cache([store], trigger="parse")
-        
-        logger.info(f"✅ 证书解析完成: certificate_id={certificate_id}, status={status}, domain_match={domain_match}")
         
         return {
             "success": status == CertificateStatus.SUCCESS.value,

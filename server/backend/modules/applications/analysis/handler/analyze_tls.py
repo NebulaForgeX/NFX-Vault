@@ -42,9 +42,6 @@ def analyze_tls_certificate(
         # 解析证书
         cert_info = extract_cert_info_from_pem_sync(certificate)
         
-        # 打印解析结果用于调试
-        logger.info(f"🔍 证书解析结果: {cert_info}")
-        
         if not cert_info:
             logger.warning("⚠️  证书解析失败")
             return {
@@ -66,23 +63,14 @@ def analyze_tls_certificate(
         parsed_days_remaining = cert_info.get("days_remaining")
         parsed_subject = cert_info.get("subject", {})
         
-        # 打印提取的字段用于调试
-        logger.info(f"🔍 提取的字段: domain={parsed_domain}, issuer={parsed_issuer}")
-        logger.info(f"🔍 日期信息: not_before={parsed_not_before} (type: {type(parsed_not_before)}), "
-                   f"not_after={parsed_not_after} (type: {type(parsed_not_after)})")
-        logger.info(f"🔍 有效性: is_valid={parsed_is_valid} (type: {type(parsed_is_valid)}), "
-                   f"days_remaining={parsed_days_remaining} (type: {type(parsed_days_remaining)})")
-        
         # 如果 is_valid 是 None，根据 not_after 判断
         if parsed_is_valid is None:
             if parsed_not_after:
                 # 有有效期，但 is_valid 是 None，说明可能解析有问题，默认有效
                 parsed_is_valid = True
-                logger.warning(f"⚠️  is_valid 为 None，但有 not_after，默认设置为 True")
             else:
                 # 没有有效期信息，无法判断，默认有效
                 parsed_is_valid = True
-                logger.warning(f"⚠️  is_valid 为 None，且没有 not_after，默认设置为 True")
         
         # 合并所有域名（包括 CN 和 SANs）
         all_domains = cert_info.get("all_domains") or []
@@ -137,12 +125,6 @@ def analyze_tls_certificate(
                 "key_valid": key_valid,
             }
         }
-        
-        # 打印最终返回的数据用于调试
-        logger.info(f"✅ TLS 证书分析完成: domain={parsed_domain}, is_valid={result_data['certificate']['is_valid']}, "
-                   f"days_remaining={parsed_days_remaining}, not_before={result_data['certificate']['not_before']}, "
-                   f"not_after={result_data['certificate']['not_after']}")
-        logger.debug(f"📋 完整返回数据: {result_data}")
         
         return {
             "success": True,

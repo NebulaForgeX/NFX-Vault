@@ -79,22 +79,19 @@ publicClient.defaults.transformRequest = [
 protectedClient.interceptors.response.use(
   (response) => response,
   async (error: unknown) => {
-    if (!(error instanceof AxiosError)) {
-      return Promise.reject(error);
-    }
-
+    if (!(error instanceof AxiosError)) return Promise.reject(error);
     const errorData = error.response?.data as { message?: string } | undefined;
     const errorMessage = errorData?.message;
 
     if (errorMessage) {
-      console.log("❌ API Error:", {
+      console.error("❌ API Error:", {
         message: errorMessage,
         status: error.response?.status,
         url: error.config?.url,
         method: error.config?.method,
       });
     } else if (import.meta.env.DEV && error.response?.status) {
-      console.log("❌ HTTP Error:", {
+      console.error("❌ HTTP Error:", {
         status: error.response.status,
         url: error.config?.url,
         method: error.config?.method,
@@ -108,22 +105,20 @@ protectedClient.interceptors.response.use(
 publicClient.interceptors.response.use(
   (response) => response,
   async (error: unknown) => {
-    if (!(error instanceof AxiosError)) {
-      return Promise.reject(error);
-    }
+    if (!(error instanceof AxiosError))  return Promise.reject(error);
 
     const errorData = error.response?.data as { message?: string } | undefined;
     const errorMessage = errorData?.message;
 
     if (errorMessage) {
-      console.log("❌ API Error:", {
+      console.error("❌ API Error:", {
         message: errorMessage,
         status: error.response?.status,
         url: error.config?.url,
         method: error.config?.method,
       });
     } else if (import.meta.env.DEV && error.response?.status) {
-      console.log("❌ HTTP Error:", {
+      console.error("❌ HTTP Error:", {
         status: error.response.status,
         url: error.config?.url,
         method: error.config?.method,

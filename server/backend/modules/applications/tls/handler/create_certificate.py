@@ -106,7 +106,6 @@ def create_certificate(
             if certificate_id and app.pipeline_repo:
                 try:
                     app.pipeline_repo.send_parse_certificate_event(certificate_id=certificate_id)
-                    logger.info(f"✅ Certificate created, parse event sent for certificate_id '{certificate_id}'")
                 except Exception as e:
                     logger.warning(f"⚠️ Failed to send parse event: {e}")
             

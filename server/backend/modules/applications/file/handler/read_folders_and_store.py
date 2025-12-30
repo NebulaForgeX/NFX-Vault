@@ -73,7 +73,6 @@ async def read_folders_and_store_certificates(
             key_file = os.path.join(folder_path, "key.key")
             
             if not os.path.exists(cert_file) or not os.path.exists(key_file):
-                logger.debug(f"⚠️  证书文件不完整: {folder_path}")
                 continue
             
             try:
@@ -127,7 +126,6 @@ async def read_folders_and_store_certificates(
                         days_remaining=cert_info.get("days_remaining"),
                         status=CertificateStatus.SUCCESS.value
                     )
-                    logger.debug(f"✅ 更新证书: folder_name={folder_name}, domain={domain}, sans={all_domains}")
                 else:
                     # 创建新记录（source='auto'）
                     app.database_repo.create_certificate_with_folder(
@@ -145,7 +143,6 @@ async def read_folders_and_store_certificates(
                         is_valid=cert_info.get("is_valid", True),
                         days_remaining=cert_info.get("days_remaining")
                     )
-                    logger.debug(f"✅ 创建证书: folder_name={folder_name}, domain={domain}, source=auto, sans={all_domains}")
                 
                 processed_count += 1
                 

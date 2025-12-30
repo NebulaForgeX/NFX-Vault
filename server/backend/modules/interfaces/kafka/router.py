@@ -64,7 +64,6 @@ class KafkaEventRouter:
             return False
         
         try:
-            logger.debug(f"🔄 路由事件: {event_type} -> {handler.__name__}")
             handler(event_data)
             return True
         except Exception as e:

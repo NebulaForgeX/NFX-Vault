@@ -61,7 +61,6 @@ def update_certificate_parse_result(
             # sans 可以是空列表 []，表示没有 SANs，所以需要特殊处理
             if sans is not None:
                 cert.sans = sans
-                logger.debug(f"🔍 更新 sans: {sans} (type: {type(sans)})")
             if issuer is not None:
                 cert.issuer = issuer
             if not_before is not None:
@@ -76,7 +75,6 @@ def update_certificate_parse_result(
             cert.updated_at = datetime.now()
             session.commit()
             
-            logger.debug(f"✅ 更新证书解析结果: certificate_id={certificate_id}, status={status}")
             return True
     except Exception as e:
         logger.error(f"❌ 更新证书解析结果失败: {e}", exc_info=True)

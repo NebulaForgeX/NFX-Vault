@@ -91,7 +91,6 @@ def update_certificate_by_folder_name(
             # 在 session 内访问 id 属性，确保它被加载（避免 detached instance 错误）
             _ = cert.id  # 触发属性加载
             # session.commit() 由 context manager 自动处理
-            logger.debug(f"✅ 更新证书: folder_name={folder_name}, source={cert.source} (保持原有)")
             return cert
     except Exception as e:
         logger.error(f"❌ 更新证书失败: folder_name={folder_name}, error={e}", exc_info=True)

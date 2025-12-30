@@ -93,7 +93,6 @@ def update_certificate(
             # 在 session 内访问 id 属性，确保它被加载（避免 detached instance 错误）
             _ = cert.id  # 触发属性加载
             # session.commit() 由 context manager 自动处理
-            logger.debug(f"✅ 更新证书: domain={domain}, source={source}")
             return cert
     except Exception as e:
         logger.error(f"❌ 更新证书失败: domain={domain}, source={source}, error={e}", exc_info=True)

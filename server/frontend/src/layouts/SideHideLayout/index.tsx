@@ -56,10 +56,6 @@ const SideHideLayout = memo(({ children }: SideHideLayoutProps) => {
     closeSidebar();
   }, [ closeSidebar ]);
 
-  console.log("headerHeight", headerHeight);
-  console.log("footerHeight", footerHeight);
-
-
   return (
     <div className={styles.layout}>
 

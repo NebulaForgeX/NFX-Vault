@@ -59,16 +59,10 @@ const TLSAnalysisPage = memo(() => {
         certificate: certificate.trim(),
         privateKey: privateKey.trim() || undefined,
       });
-      console.log("🔍 API Response:", response);
-      console.log("🔍 Response data:", response.data);
-      console.log("🔍 Summary:", response.data?.summary);
-      console.log("🔍 Certificate:", response.data?.certificate);
       setResult(response);
-      if (!response.success) {
-        setError(response.message);
-      }
+      if (!response.success)  setError(response.message);
+      
     } catch (err: any) {
-      console.error("❌ API Error:", err);
       setError(err?.response?.data?.message || err?.message || "Failed to analyze certificate");
     } finally {
       setIsLoading(false);

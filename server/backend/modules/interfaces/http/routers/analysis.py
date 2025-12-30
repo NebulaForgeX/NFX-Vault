@@ -47,9 +47,6 @@ def create_analysis_router(handler: AnalysisHTTPHandler) -> APIRouter:
                 certificate=request.certificate,
                 private_key=request.private_key
             )
-            # 打印返回结果用于调试
-            import json
-            logger.info(f"🔍 返回结果: {json.dumps(result, default=str, ensure_ascii=False)}")
             return result
         except Exception as e:
             logger.error(f"❌ 分析 TLS 证书失败: {e}", exc_info=True)

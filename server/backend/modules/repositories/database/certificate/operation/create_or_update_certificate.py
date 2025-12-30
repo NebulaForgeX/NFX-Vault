@@ -98,7 +98,6 @@ def create_or_update_certificate(
                 cert_id = existing.id
                 # 提交更改
                 session.commit()
-                logger.debug(f"✅ 更新证书（upsert）: folder_name={folder_name}, domain={domain}, source={existing.source}, id={cert_id}")
             else:
                 # 创建新记录（upsert 的 insert 部分）
                 new_cert = TLSCertificate(
@@ -124,7 +123,6 @@ def create_or_update_certificate(
                 cert_id = new_cert.id
                 # 提交更改
                 session.commit()
-                logger.debug(f"✅ 创建证书（upsert）: folder_name={folder_name}, domain={domain}, source={source}, id={cert_id}")
         
         # 第二步：使用 ID 在新会话中重新查询对象（避免 detached instance 错误）
         if cert_id:
