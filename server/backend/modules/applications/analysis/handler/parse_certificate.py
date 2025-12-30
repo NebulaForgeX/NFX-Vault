@@ -2,11 +2,13 @@
 
 """
 解析证书 Handler
+
+从 TLS handler 移动到 Analysis handler
 """
 import logging
 from typing import Dict, Any, Optional
 
-from .protocol import CertificateAppLike
+from modules.applications.tls.handler.protocol import CertificateAppLike
 from utils.certificate import extract_cert_info_from_pem_sync
 from enums.certificate_status import CertificateStatus
 

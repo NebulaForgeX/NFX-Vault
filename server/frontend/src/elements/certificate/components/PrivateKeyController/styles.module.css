@@ -13,6 +13,31 @@
   color: var(--color-danger);
 }
 
+.uploadArea {
+  margin-bottom: 0.5rem;
+}
+
+.uploadLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-bg-3);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 0.875rem;
+}
+
+.uploadLabel:hover {
+  background-color: var(--color-bg-4);
+}
+
+.fileInput {
+  display: none;
+}
+
 .textarea {
   padding: 0.5rem;
   border: 1px solid var(--color-border);

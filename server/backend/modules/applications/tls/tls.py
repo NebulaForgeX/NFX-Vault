@@ -25,8 +25,8 @@ from .handler import (
     delete_certificate,
     apply_certificate,
     invalidate_cache,
-    parse_certificate,
 )
+from modules.applications.analysis.handler import parse_certificate
 
 logger = logging.getLogger(__name__)
 

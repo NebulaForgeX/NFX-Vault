@@ -176,12 +176,13 @@ class CertificateDatabase:
         not_after: Optional[datetime] = None,
         is_valid: Optional[bool] = None,
         days_remaining: Optional[int] = None,
-        folder_name: Optional[str] = None
+        folder_name: Optional[str] = None,
+        email: Optional[str] = None
     ) -> Optional[TLSCertificate]:
         """更新证书（根据 domain + source）"""
         return update_certificate(
             self, domain, source, certificate, private_key, store, sans,
-            issuer, not_before, not_after, is_valid, days_remaining, folder_name
+            issuer, not_before, not_after, is_valid, days_remaining, folder_name, email
         )
     
     def update_certificate_parse_result(

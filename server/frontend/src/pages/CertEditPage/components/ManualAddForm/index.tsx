@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import {
   StoreController,
   DomainController,
+  FolderNameController,
+  EmailControllerForAdd,
   CertificateController,
   PrivateKeyController,
 } from "@/elements/certificate/components";
@@ -44,18 +46,15 @@ const ManualAddForm = memo(({ onSubmit, onSubmitError, isPending }: ManualAddFor
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>{t("form.basicInfo") || "基本信息"}</h3>
             <div className={styles.basicInfoGrid}>
-              <div className={styles.leftColumn}>
-                <StoreController />
-                <DomainController />
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>{t("form.source") || "来源"}</label>
-                  <input
-                    type="text"
-                    value={t("source.manual_add") || "Manual Add"}
-                    disabled
-                    className={styles.input}
-                  />
-                </div>
+              <StoreController />
+              <DomainController />
+              <FolderNameController />
+              <EmailControllerForAdd />
+              <div className={styles.formGroup}>
+                <label className={styles.label}>{t("form.source") || "来源"}</label>
+                <span className={styles.sourceBadge}>
+                  {t("source.manual_add") || "Manual Add"}
+                </span>
               </div>
             </div>
           </div>

@@ -21,7 +21,8 @@ def update_certificate(
     private_key: Optional[str] = None,
     store: Optional[str] = None,
     sans: Optional[List[str]] = None,
-    folder_name: Optional[str] = None
+    folder_name: Optional[str] = None,
+    email: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     更新证书
@@ -90,7 +91,8 @@ def update_certificate(
             not_after=not_after,
             is_valid=is_valid,
             days_remaining=days_remaining,
-            folder_name=folder_name
+            folder_name=folder_name,
+            email=email
         )
         
         if cert_obj:
@@ -103,9 +105,33 @@ def update_certificate(
                 try:
                     for s in stores_to_clear:
                         app.pipeline_repo.send_refresh_event(s, "update")
-                    logger.info(f"✅ Certificate updated, refresh event sent for domain '{domain}'")
                 except Exception as e:
                     logger.warning(f"⚠️ Failed to send refresh event: {e}")
+            
+            # 如果是 manual_add 类型且更新了证书内容，发送解析事件
+            if source == CertificateSource.MANUAL_ADD and certificate and app.pipeline_repo:
+                try:
+                    # 安全获取证书 ID（避免 detached instance 错误）
+                    certificate_id = None
+                    try:
+                        certificate_id = cert_obj.id
+                    except Exception as e:
+                        # 如果无法从对象获取 ID，使用 domain 和 source 重新查询
+                        logger.warning(f"⚠️ 无法从对象获取 ID，尝试重新查询: {e}")
+                        cert_by_domain = app.database_repo.get_certificate_by_domain(
+                            store or "database", 
+                            domain, 
+                            source=source.value if isinstance(source, CertificateSource) else source
+                        )
+                        if cert_by_domain:
+                            certificate_id = cert_by_domain.get("id")
+                        else:
+                            logger.error("❌ 无法通过 domain 查询证书 ID")
+                    
+                    if certificate_id:
+                        app.pipeline_repo.send_parse_certificate_event(certificate_id=certificate_id)
+                except Exception as e:
+                    logger.warning(f"⚠️ Failed to send parse certificate event: {e}")
             
             return {
                 "success": True,

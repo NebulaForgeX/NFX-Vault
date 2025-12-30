@@ -56,6 +56,7 @@ def get_certificate_detail(
         "folder_name": cert_dict.get("folder_name"),
         "source": cert_dict.get("source", "auto"),
         "status": cert_dict.get("status"),
+        "email": cert_dict.get("email"),
         "certificate": cert_dict["certificate"],
         "privateKey": cert_dict["private_key"],
         "sans": cert_dict.get("sans") or [],  # 确保 sans 不会是 None

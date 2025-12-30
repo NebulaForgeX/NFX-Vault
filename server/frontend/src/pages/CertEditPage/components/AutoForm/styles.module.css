@@ -50,15 +50,14 @@
 
 .basicInfoGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
-  min-height: 240px;
 }
 
-.leftColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+@media (min-width: 1024px) {
+  .basicInfoGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .formGroup {
@@ -80,6 +79,19 @@
   color: var(--color-fg-text);
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.sourceBadge {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-bg-3);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-fg-text);
+  width: 100%;
+  text-align: center;
 }
 
 .textarea {

@@ -27,6 +27,7 @@ export const useEditCertificate = (domain: string, source: string) => {
           store?: CertType;
           sans?: string[];
           folder_name?: string;
+          email?: string;
         } = {
           domain,
           source: sourceEnum,
@@ -41,6 +42,8 @@ export const useEditCertificate = (domain: string, source: string) => {
           request.privateKey = values.privateKey?.trim();
           request.store = values.store as CertType;
           request.sans = values.sans && values.sans.length > 0 ? values.sans : undefined;
+          request.folder_name = values.folder_name?.trim() || undefined;
+          request.email = values.email?.trim() || undefined;
         }
 
         const result = await mutateAsync(request);

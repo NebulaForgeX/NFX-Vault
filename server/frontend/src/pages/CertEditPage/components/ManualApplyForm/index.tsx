@@ -81,56 +81,51 @@ const ManualApplyForm = memo(({ onSubmit, isPending }: ManualApplyFormProps) => 
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>{t("form.basicInfo") || "基本信息"}</h3>
             <div className={styles.basicInfoGrid}>
-              <div className={styles.leftColumn}>
-                {/* folder_name 字段 - 可编辑 */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>
-                    {t("form.folderName") || "文件夹名称"} <span className={styles.required}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={folderName}
-                    onChange={(e) => handleFolderNameChange(e.target.value)}
-                    placeholder={t("form.folderNamePlaceholder") || "例如: api_lucaslyu_com"}
-                    className={`${styles.input} ${folderNameError ? styles.inputError : ""}`}
-                  />
-                  {folderNameError && (
-                    <p className={styles.errorText}>{folderNameError}</p>
-                  )}
-                  <p className={styles.helpText}>
-                    {t("form.folderNameHelp") || "唯一标识符，只能包含字母、数字、下划线和连字符"}
-                  </p>
-                </div>
-                {/* store 字段 - 只读 */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>{t("form.store") || "证书类型"}</label>
-                  <input
-                    type="text"
-                    value={store || ""}
-                    disabled
-                    className={`${styles.input} ${styles.inputDisabled}`}
-                  />
-                </div>
-                {/* domain 字段 - 只读 */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>{t("form.domain") || "域名"}</label>
-                  <input
-                    type="text"
-                    value={domain || ""}
-                    disabled
-                    className={`${styles.input} ${styles.inputDisabled}`}
-                  />
-                </div>
-                {/* source 字段 - 只读 */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>{t("form.source") || "来源"}</label>
-                  <input
-                    type="text"
-                    value={t("source.manual_apply") || "Manual Apply"}
-                    disabled
-                    className={`${styles.input} ${styles.inputDisabled}`}
-                  />
-                </div>
+              {/* folder_name 字段 - 可编辑 */}
+              <div className={styles.formGroup}>
+                <label className={styles.label}>
+                  {t("form.folderName") || "文件夹名称"} <span className={styles.required}>*</span>
+                </label>
+                <input
+                  type="text"
+                  value={folderName}
+                  onChange={(e) => handleFolderNameChange(e.target.value)}
+                  placeholder={t("form.folderNamePlaceholder") || "例如: api_lucaslyu_com"}
+                  className={`${styles.input} ${folderNameError ? styles.inputError : ""}`}
+                />
+                {folderNameError && (
+                  <p className={styles.errorText}>{folderNameError}</p>
+                )}
+                <p className={styles.helpText}>
+                  {t("form.folderNameHelp") || "唯一标识符，只能包含字母、数字、下划线和连字符"}
+                </p>
+              </div>
+              {/* store 字段 - 只读 */}
+              <div className={styles.formGroup}>
+                <label className={styles.label}>{t("form.store") || "证书类型"}</label>
+                <input
+                  type="text"
+                  value={store || ""}
+                  disabled
+                  className={`${styles.input} ${styles.inputDisabled}`}
+                />
+              </div>
+              {/* domain 字段 - 只读 */}
+              <div className={styles.formGroup}>
+                <label className={styles.label}>{t("form.domain") || "域名"}</label>
+                <input
+                  type="text"
+                  value={domain || ""}
+                  disabled
+                  className={`${styles.input} ${styles.inputDisabled}`}
+                />
+              </div>
+              {/* source 字段 - 只读 */}
+              <div className={styles.formGroup}>
+                <label className={styles.label}>{t("form.source") || "来源"}</label>
+                <span className={styles.sourceBadge}>
+                  {t("source.manual_apply") || "Manual Apply"}
+                </span>
               </div>
             </div>
           </div>

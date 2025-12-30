@@ -36,7 +36,7 @@ export default function useInitCertificateForm(certificate?: CertificateDetailRe
       form.reset({
         store: (certificate.store as "websites" | "apis" | "database") || "database",
         domain: certificate.domain,
-        folder_name: certificate.folder_name || "",
+        folder_name: certificate.folderName || "", // axios-case-converter 将 folder_name 转换为 folderName
         email: certificate.email || "",
         issuer: certificate.issuer || "",
         certificate: certificate.certificate,

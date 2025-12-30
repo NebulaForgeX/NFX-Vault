@@ -48,7 +48,7 @@ export interface CertificateDetailResponse {
   source?: CertificateSource;
   status?: CertificateStatus;
   email?: string;
-  folder_name?: string;
+  folderName?: string; // axios-case-converter 会将后端的 folder_name 转换为 folderName
   issuer?: string;
   notBefore?: string;
   notAfter?: string;
@@ -65,7 +65,7 @@ export interface CreateCertificateRequest {
   certificate: string;
   privateKey: string;
   sans?: string[];
-  folder_name?: string;
+  folderName?: string; // axios-case-converter 会将后端的 folder_name 转换为 folderName
   email?: string;
   issuer?: string;
 }
@@ -77,7 +77,8 @@ export interface UpdateCertificateRequest {
   privateKey?: string;
   store?: CertType;
   sans?: string[];
-  folder_name?: string;
+  folderName?: string; // axios-case-converter 会将后端的 folder_name 转换为 folderName
+  email?: string;
 }
 
 export interface DeleteCertificateRequest {
@@ -95,7 +96,7 @@ export interface CertificateResponse {
 export interface ApplyCertificateRequest {
   domain: string;
   email: string;
-  folder_name: string;
+  folderName: string; // axios-case-converter 会将后端的 folder_name 转换为 folderName
   sans?: string[];
   webroot?: string;
 }

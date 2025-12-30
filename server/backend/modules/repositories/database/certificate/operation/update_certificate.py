@@ -27,7 +27,8 @@ def update_certificate(
     not_after: Optional[datetime] = None,
     is_valid: Optional[bool] = None,
     days_remaining: Optional[int] = None,
-    folder_name: Optional[str] = None
+    folder_name: Optional[str] = None,
+    email: Optional[str] = None
 ) -> Optional[TLSCertificate]:
     """
     更新证书（根据 domain + source）
@@ -46,6 +47,7 @@ def update_certificate(
         is_valid: 是否有效，可选
         days_remaining: 剩余天数，可选
         folder_name: 文件夹名称，可选
+        email: 邮箱地址，可选
     
     Returns:
         更新后的证书对象，如果不存在则返回 None
@@ -88,6 +90,8 @@ def update_certificate(
                 cert.is_valid = is_valid
             if days_remaining is not None:
                 cert.days_remaining = days_remaining
+            if email is not None:
+                cert.email = email
             
             cert.updated_at = datetime.now()
             # 在 session 内访问 id 属性，确保它被加载（避免 detached instance 错误）

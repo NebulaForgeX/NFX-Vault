@@ -45,34 +45,29 @@ const AutoForm = memo(({ }: AutoFormProps) => {
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>{t("form.basicInfo") || "基本信息"}</h3>
             <div className={styles.basicInfoGrid}>
-              <div className={styles.leftColumn}>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>{t("form.store") || "证书类型"}</label>
-                  <input
-                    type="text"
-                    value={store || ""}
-                    disabled
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>{t("form.domain") || "域名"}</label>
-                  <input
-                    type="text"
-                    value={domain || ""}
-                    disabled
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>{t("form.source") || "来源"}</label>
-                  <input
-                    type="text"
-                    value={t("source.auto") || "Auto"}
-                    disabled
-                    className={styles.input}
-                  />
-                </div>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>{t("form.store") || "证书类型"}</label>
+                <input
+                  type="text"
+                  value={store || ""}
+                  disabled
+                  className={styles.input}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>{t("form.domain") || "域名"}</label>
+                <input
+                  type="text"
+                  value={domain || ""}
+                  disabled
+                  className={styles.input}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>{t("form.source") || "来源"}</label>
+                <span className={styles.sourceBadge}>
+                  {t("source.auto") || "Auto"}
+                </span>
               </div>
             </div>
           </div>
