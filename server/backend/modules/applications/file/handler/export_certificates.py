@@ -6,20 +6,20 @@
 import logging
 from typing import Dict, Any
 
-from .protocol import CertificateAppLike
+from .protocol import FileAppLike
 
 logger = logging.getLogger(__name__)
 
 
 def export_certificates(
-    app: CertificateAppLike,
+    app: FileAppLike,
     store: str
 ) -> Dict[str, Any]:
     """
     导出证书
     
     Args:
-        app: CertificateApplication 实例
+        app: FileApplication 实例
         store: 存储位置（websites 或 apis）
     
     Returns:
@@ -44,7 +44,6 @@ def export_certificates(
                 folder_name = cert_detail.get("folder_name")
                 if folder_name:
                     # 写入证书文件到对应文件夹
-                    from enums.certificate_store import CertificateStore
                     import os
                     
                     base_dir = app.base_dir

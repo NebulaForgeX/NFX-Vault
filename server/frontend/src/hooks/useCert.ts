@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { makeUnifiedQuery, makeUnifiedInfiniteQuery } from "@/hooks/core";
 
 import * as certApi from "@/apis/cert.api";
+import * as fileApi from "@/apis/file.api";
 import { cacheEventEmitter, cacheEvents } from "@/events";
 
 // Query keys
@@ -78,7 +79,7 @@ export const useCertificateDetail = (
  */
 export const useExportCertificates = () => {
   return useMutation({
-    mutationFn: (certType: CertType) => certApi.ExportCertificates(certType),
+    mutationFn: (certType: CertType) => fileApi.ExportCertificates({ store: certType }),
     onSuccess: (_data, certType) => {
       // 发送事件触发缓存刷新（QueryProvider 会监听这个事件）
       cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, certType);
@@ -92,6 +93,19 @@ export const useExportCertificates = () => {
 export const useRefreshCertificates = () => {
   return useMutation({
     mutationFn: (certType: CertType) => certApi.RefreshCertificates(certType),
+    onSuccess: (_data, certType) => {
+      // 发送事件触发缓存刷新（QueryProvider 会监听这个事件）
+      cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, certType);
+    },
+  });
+};
+
+/**
+ * Hook to invalidate cache (trigger Redis cache invalidation)
+ */
+export const useInvalidateCache = () => {
+  return useMutation({
+    mutationFn: (certType: CertType) => certApi.InvalidateCache(certType),
     onSuccess: (_data, certType) => {
       // 发送事件触发缓存刷新（QueryProvider 会监听这个事件）
       cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, certType);

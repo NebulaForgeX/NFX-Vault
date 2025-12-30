@@ -5,6 +5,7 @@ export { default as LanguageSwitcher } from "./LanguageSwitcher";
 export { default as Footer } from "./Footer";
 export { default as Sidebar } from "./Sidebar";
 export { default as Button } from "./Button";
+export { default as IconButton } from "./IconButton";
 export { default as ECGLoading } from "./ECGLoading";
 export { default as TruckLoading } from "./TruckLoading";
 export { default as Dropdown } from "./Dropdown";

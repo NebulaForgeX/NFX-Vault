@@ -80,6 +80,9 @@
     "privateKey": "Télécharger la clé privée",
     "both": "Télécharger les deux"
   },
+  "export": {
+    "title": "Exporter le certificat"
+  },
   "refresh": {
     "success": "Actualisation réussie",
     "error": "Échec de l'actualisation"

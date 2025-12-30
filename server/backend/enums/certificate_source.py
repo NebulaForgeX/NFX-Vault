@@ -11,8 +11,8 @@ from enum import Enum
 class CertificateSource(str, Enum):
     """证书来源枚举"""
     
-    AUTO = "auto"      # 自动申请（从文件夹读取时创建新的才是 auto，update 保持原有 source）
-    MANUAL = "manual"  # 手动添加的证书
+    AUTO = "auto"      # 自动发现（从文件夹读取时自动创建的证书）
+    MANUAL = "manual"  # 手动操作（用户主动申请的证书或手动上传的证书文件）
     
     def __str__(self) -> str:
         return self.value

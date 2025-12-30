@@ -80,6 +80,9 @@
     "privateKey": "Download Private Key",
     "both": "Download Both"
   },
+  "export": {
+    "title": "Export Certificate"
+  },
   "refresh": {
     "success": "Refresh successful",
     "error": "Refresh failed"

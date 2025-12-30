@@ -40,6 +40,27 @@ const EditApplyForm = memo(({ onSubmit, onSubmitError, isPending, domain }: Edit
             <h3 className={styles.sectionTitle}>{t("basicInfo") || "基本信息"}</h3>
             <div className={styles.basicInfoGrid}>
               <div className={styles.leftColumn}>
+                <Controller
+                  name="folder_name"
+                  control={methods.control}
+                  render={({ field, fieldState: { error } }) => (
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>{t("folderName") || "文件夹名称"} *</label>
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder={t("folderNamePlaceholder") || "例如: api_lucaslyu_com"}
+                        className={`${styles.input} ${error ? styles.inputError : ""}`}
+                      />
+                      {error && (
+                        <p className={styles.errorText}>{error.message}</p>
+                      )}
+                      <p className={styles.helpText}>
+                        {t("folderNameHelp") || "唯一标识符，只能包含字母、数字、下划线和连字符"}
+                      </p>
+                    </div>
+                  )}
+                />
                 <DomainController />
                 <EmailController />
               </div>

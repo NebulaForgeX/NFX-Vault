@@ -10,7 +10,7 @@ from typing import Dict, Any
 
 from events.operation_refresh_event import OperationRefreshEvent
 from events.cache_invalidate_event import CacheInvalidateEvent
-from modules.applications.certificate import CertificateApplication
+from modules.applications.tls import CertificateApplication
 
 logger = logging.getLogger(__name__)
 

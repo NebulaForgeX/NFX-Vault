@@ -32,10 +32,10 @@ export default defineConfig({
     host: "0.0.0.0",
     open: true,
     proxy: {
-      "/api": {
+      "/vault": {
         target: "http://localhost:10200",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
+        rewrite: (path) => path.replace(/^\/vault/, "/vault"),
       },
     },
   },

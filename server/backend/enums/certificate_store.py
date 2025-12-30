@@ -13,7 +13,7 @@ class CertificateStore(str, Enum):
     
     WEBSITES = "websites"  # 网站证书
     APIS = "apis"          # API 证书
-    DATABASE = "database"  # 数据库存储（申请的证书）
+    DATABASE = "databases"  # 数据库存储（申请的证书）
     
     def __str__(self) -> str:
         return self.value

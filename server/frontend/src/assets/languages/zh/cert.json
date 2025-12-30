@@ -79,6 +79,9 @@
     "privateKey": "下载私钥",
     "both": "下载全部"
   },
+  "export": {
+    "title": "导出证书"
+  },
   "refresh": {
     "success": "刷新成功",
     "error": "刷新失败"

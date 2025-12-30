@@ -3,14 +3,17 @@ HTTP 接口模块
 
 处理 HTTP 请求
 """
-from .router import router as http_router, set_http_handler, acme_router, set_acme_challenge_storage
 from .handler.certificate import CertificateHTTPHandler
+from .handler.file import FileHTTPHandler
+from .router import register_routers
+from .routers import create_tls_router, create_file_router, create_acme_router
 
 __all__ = [
-    "http_router",
-    "set_http_handler",
-    "acme_router",
-    "set_acme_challenge_storage",
     "CertificateHTTPHandler",
+    "FileHTTPHandler",
+    "register_routers",
+    "create_tls_router",
+    "create_file_router",
+    "create_acme_router",
 ]
 

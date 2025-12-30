@@ -24,7 +24,6 @@ from .handler import (
     create_certificate,
     update_certificate,
     delete_certificate,
-    export_certificates,
     apply_certificate,
     invalidate_cache,
 )
@@ -135,13 +134,6 @@ class CertificateApplication:
     ) -> Dict[str, Any]:
         """删除证书"""
         return delete_certificate(self, domain, source)
-    
-    def export_certificates(
-        self,
-        store: str
-    ) -> Dict[str, Any]:
-        """导出证书"""
-        return export_certificates(self, store)
     
     def apply_certificate(
         self,

@@ -1,7 +1,6 @@
 import type {
   CertType,
   CertificateListResponse,
-  ExportResponse,
   CertificateDetailResponse,
   RefreshResponse,
   CreateCertificateRequest,
@@ -14,7 +13,7 @@ import { CertificateSource } from "@/apis/domain";
 
 import { publicClient } from "@/apis/clients";
 
-const baseUrl = "/certs";
+const baseUrl = "/tls";
 
 export interface GetCertificateListParams {
   certType: CertType;
@@ -30,10 +29,6 @@ export const GetCertificateList = async (params: GetCertificateListParams): Prom
   return data;
 };
 
-export const ExportCertificates = async (certType: CertType): Promise<ExportResponse> => {
-  const { data } = await publicClient.post<ExportResponse>(`${baseUrl}/export/${certType}`);
-  return data;
-};
 
 export const GetCertificateDetail = async (
   certType: CertType,
@@ -73,6 +68,16 @@ export const ApplyCertificate = async (request: ApplyCertificateRequest): Promis
   const { data } = await publicClient.post<CertificateResponse>(`${baseUrl}/apply`, request, {
     timeout: 360000, // 360 秒 = 6 分钟
   });
+  return data;
+};
+
+export interface InvalidateCacheResponse {
+  success: boolean;
+  message: string;
+}
+
+export const InvalidateCache = async (certType: CertType): Promise<InvalidateCacheResponse> => {
+  const { data } = await publicClient.post<InvalidateCacheResponse>(`${baseUrl}/invalidate-cache/${certType}`);
   return data;
 };
 

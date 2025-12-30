@@ -78,12 +78,8 @@ class CertbotClient:
             # 使用域名作为文件夹名（替换 . 为 _）
             folder_name = domain.replace('.', '_')
         
-        # 确定存储位置（默认存到 Websites）
-        store_dir = os.path.join(self.certs_dir, "Websites", folder_name)
-        os.makedirs(store_dir, exist_ok=True)
-        
-        cert_file = os.path.join(store_dir, "cert.crt")
-        key_file = os.path.join(store_dir, "key.key")
+        # 注意：申请证书时只保存到数据库，不创建 Websites/Apis 文件夹
+        # 后续可以通过其他功能将 database 中的证书复制到 Websites/Apis 文件夹
         
         try:
             # 构建 certbot 命令
@@ -191,23 +187,16 @@ class CertbotClient:
                     "error": error_msg
                 }
             
-            # 读取证书和私钥
+            # 读取证书和私钥（只读取，不保存到文件）
+            # 证书内容将保存到数据库，不创建 Websites/Apis 文件夹
             with open(certbot_cert_file, 'r') as f:
                 certificate = f.read()
             
             with open(certbot_key_file, 'r') as f:
                 private_key = f.read()
             
-            # 复制到目标目录（cert.crt 和 key.key）
-            with open(cert_file, 'w') as f:
-                f.write(certificate)
-            
-            with open(key_file, 'w') as f:
-                f.write(private_key)
-            
             logger.info(f"✅ Certificate issued successfully: domain={domain}, folder={folder_name}")
-            logger.info(f"📁 Certificate saved to: {cert_file}")
-            logger.info(f"📁 Private key saved to: {key_file}")
+            logger.info(f"📄 Certificate content read (will be saved to database only)")
             
             return {
                 "success": True,

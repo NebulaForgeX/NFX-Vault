@@ -1,9 +1,9 @@
 # coding=utf-8
 
 """
-证书应用层模块
+TLS 证书应用层模块
 """
-from .certificate import CertificateApplication
+from .tls import CertificateApplication
 
 __all__ = [
     "CertificateApplication",

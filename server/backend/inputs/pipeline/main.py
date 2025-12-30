@@ -11,7 +11,8 @@ import logging
 import time
 
 # 在 Docker 中，工作目录是 backend 根目录，所以可以直接导入
-from modules.configs import load_config, DatabaseConfig, CertConfig, init_connections, cleanup_connections
+from modules.configs import load_config, DatabaseConfig, CertConfig
+from modules.server import init_connections, cleanup_connections
 
 # 配置日志
 logging.basicConfig(

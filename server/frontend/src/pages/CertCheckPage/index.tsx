@@ -4,7 +4,9 @@ import { Link } from "react-router-dom";
 import { Suspense } from "@/components";
 import type { CertType } from "@/apis/domain";
 import { ROUTES } from "@/types/navigation";
-import { Plus } from "@/assets/icons/lucide";
+import { Plus, RefreshCw } from "@/assets/icons/lucide";
+import { useInvalidateCache } from "@/hooks";
+import { showError, showSuccess } from "@/stores/modalStore";
 import { CertList } from "./components";
 import styles from "./styles.module.css";
 
@@ -12,10 +14,24 @@ import styles from "./styles.module.css";
 const CertCheckPage = memo(() => {
   const { t } = useTranslation("cert");
   const [certType, setCertType] = useState<CertType>("websites");
+  const invalidateCacheMutation = useInvalidateCache();
 
   const handleCertTypeChange = useCallback((newType: CertType) => {
     setCertType(newType);
   }, []);
+
+  const handleRefresh = useCallback(async () => {
+    try {
+      const result = await invalidateCacheMutation.mutateAsync(certType);
+      if (result.success) {
+        showSuccess(result.message || t("refresh.success") || "Cache invalidated successfully");
+      } else {
+        showError(result.message || t("refresh.error") || "Failed to invalidate cache");
+      }
+    } catch (error: any) {
+      showError(error?.message || t("refresh.error") || "Failed to invalidate cache");
+    }
+  }, [certType, invalidateCacheMutation, t]);
 
   return (
     <div className={styles.container}>
@@ -25,6 +41,18 @@ const CertCheckPage = memo(() => {
           <p className={styles.subtitle}>{t("subtitle")}</p>
         </div>
         <div className={styles.headerActions}>
+          <button
+            onClick={handleRefresh}
+            disabled={invalidateCacheMutation.isPending}
+            className={styles.refreshButton}
+          >
+            <RefreshCw size={20} className={invalidateCacheMutation.isPending ? styles.spinning : ""} />
+            <span>
+              {invalidateCacheMutation.isPending
+                ? (t("actions.refreshing") || "Refreshing...")
+                : (t("actions.refresh") || "Refresh")}
+            </span>
+          </button>
           <Link to={ROUTES.CERT_APPLY} className={styles.addButton}>
             <Plus size={20} />
             <span>{t("actions.apply") || "Apply Certificate"}</span>

@@ -13,10 +13,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from modules.configs import load_config, DatabaseConfig, CertConfig, init_connections, cleanup_connections
-from modules.interfaces.http import http_router, set_http_handler, acme_router, set_acme_challenge_storage
+from modules.configs import load_config, DatabaseConfig, CertConfig
+from modules.server import init_connections, cleanup_connections
+from modules.interfaces.http import register_routers
 from modules.applications.acme import ACMEChallengeStorage
-from modules.applications.certificate.handler.read_folders_and_store import read_folders_and_store_certificates
+from modules.applications.tls.handler.read_folders_and_store import read_folders_and_store_certificates
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 import uvicorn
@@ -54,10 +55,14 @@ async def lifespan(app: FastAPI):
     # 初始化 ACME 挑战存储（从配置读取）
     global acme_storage
     acme_storage = ACMEChallengeStorage(challenge_dir=cert_config.ACME_CHALLENGE_DIR)
-    set_acme_challenge_storage(acme_storage)
     
-    # 设置 HTTP 路由的全局处理器
-    set_http_handler(connections.certificate_http_handler)
+    # 注册所有路由（统一入口）
+    register_routers(
+        app=app,
+        tls_handler=connections.certificate_http_handler,
+        file_handler=connections.file_http_handler,
+        acme_storage=acme_storage
+    )
     
     # 启动时读取文件夹并存储到数据库
     if cert_config.READ_ON_STARTUP:
@@ -175,10 +180,7 @@ async def health():
     }
 
 
-# 注册 HTTP 路由
-app.include_router(http_router)
-# 注册 ACME 挑战路由（不需要 /api 前缀，用于直接访问）
-app.include_router(acme_router)
+# 路由注册在 lifespan 中完成（需要等待 connections 初始化）
 
 
 def signal_handler(sig, frame):

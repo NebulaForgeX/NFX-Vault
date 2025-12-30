@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Copy } from "@/assets/icons/lucide";
-import IconButton from "../IconButton";
+import { IconButton } from "@/components";
 import styles from "./styles.module.css";
 
 interface CertificateContentProps {

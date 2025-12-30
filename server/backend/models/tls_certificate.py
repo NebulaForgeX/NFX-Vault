@@ -8,9 +8,9 @@ TLS 证书数据模型
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, JSON, Index, UniqueConstraint, Enum
 from sqlalchemy.dialects.mysql import CHAR
 from sqlalchemy.sql import func
-from datetime import datetime
 import uuid
 from .base import Base
+from enums import CertificateStore, CertificateSource, CertificateStatus
 
 
 class TLSCertificate(Base):
@@ -26,11 +26,11 @@ class TLSCertificate(Base):
     )
     
     id = Column(CHAR(36), primary_key=True, default=lambda: str(uuid.uuid4()), comment="主键ID (UUID)")
-    store = Column(String(100), nullable=False, comment="存储位置（websites/apis/database）")
+    store = Column(Enum(CertificateStore), nullable=False, comment="存储位置（websites/apis/databases）")
     domain = Column(String(255), nullable=False, comment="主域名")
     folder_name = Column(String(255), nullable=True, unique=True, comment="文件夹名称（唯一，用于标识不同的域名）")
-    source = Column(Enum('auto', 'manual', name='certificate_source'), nullable=False, default='manual', comment="来源（auto: 自动申请, manual: 手动添加）")
-    status = Column(Enum('success', 'fail', 'process', name='certificate_status'), nullable=True, comment="申请状态（success: 成功, fail: 失败, process: 处理中）")
+    source = Column(Enum(CertificateSource), nullable=False, default=CertificateSource.MANUAL, comment="来源（auto: 自动申请, manual: 手动添加）")
+    status = Column(Enum(CertificateStatus), nullable=True, default=CertificateStatus.PROCESS, comment="申请状态（success: 成功, fail: 失败, process: 处理中）")
     email = Column(String(255), nullable=True, comment="邮箱地址（用于 Let's Encrypt 通知）")
     certificate = Column(Text, nullable=True, comment="证书内容（PEM格式）")
     private_key = Column(Text, nullable=True, comment="私钥内容（PEM格式）")

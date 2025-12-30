@@ -5,7 +5,7 @@ import type { CertificateInfo } from "@/apis/domain";
 import { CertificateSource } from "@/apis/domain";
 import { Edit, Eye, Trash2 } from "@/assets/icons/lucide";
 import { useCertificateStatus, useCertificateTime } from "@/hooks";
-import { useActionCertificateItem } from "@/elements/certificate";
+import { useActionCertificateItem } from "../../hooks";
 import styles from "./styles.module.css";
 
 interface CertCardProps {
