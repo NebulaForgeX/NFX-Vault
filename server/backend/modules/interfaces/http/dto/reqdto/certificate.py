@@ -26,7 +26,7 @@ class CreateCertificateRequest(BaseModel):
 
 class UpdateManualAddCertificateRequest(BaseModel):
     """更新手动添加证书请求（MANUAL_ADD）"""
-    domain: str = Field(..., description="域名")
+    certificate_id: str = Field(..., description="证书 ID（必需）")
     certificate: Optional[str] = Field(None, description="证书内容（PEM格式）")
     private_key: Optional[str] = Field(None, description="私钥内容（PEM格式）")
     store: Optional[str] = Field(None, description="存储位置（websites、apis 或 database）")

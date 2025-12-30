@@ -42,6 +42,12 @@ def get_certificate_detail(
             # 确保缓存中的数据包含 sans 字段（兼容旧缓存）
             if "sans" not in cached or cached.get("sans") is None:
                 cached["sans"] = []
+            # 确保缓存中的数据包含 id 字段（兼容旧缓存）
+            if "id" not in cached:
+                # 如果缓存中没有 id，需要从数据库重新获取
+                cert_dict = app.database_repo.get_certificate_by_domain(store, domain, source_str)
+                if cert_dict and cert_dict.get("id"):
+                    cached["id"] = cert_dict.get("id")
             return cached
     
     # 2. 从数据库获取（已经是字典格式）
@@ -51,6 +57,7 @@ def get_certificate_detail(
     
     # 转换为响应格式（数据库返回的是 snake_case，需要转换为 camelCase）
     result = {
+        "id": cert_dict.get("id"),  # 添加 id 字段
         "domain": cert_dict["domain"],
         "store": cert_dict["store"],
         "folder_name": cert_dict.get("folder_name"),

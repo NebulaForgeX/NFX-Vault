@@ -141,7 +141,7 @@ def create_tls_router(handler: CertificateHTTPHandler) -> APIRouter:
         """更新手动添加的证书（MANUAL_ADD）"""
         try:
             result = handler.update_manual_add_certificate(
-                domain=request.domain,
+                certificate_id=request.certificate_id,
                 certificate=request.certificate,
                 private_key=request.private_key,
                 store=request.store,

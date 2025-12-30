@@ -50,6 +50,7 @@ def get_certificate_by_domain(
             
             # 在 session 内部转换为字典，避免 DetachedInstanceError
             return {
+                "id": cert.id,  # 添加 id 字段
                 "domain": cert.domain,
                 "store": cert.store,
                 "folder_name": cert.folder_name,

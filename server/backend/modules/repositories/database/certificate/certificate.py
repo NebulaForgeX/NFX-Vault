@@ -18,6 +18,7 @@ from .operation import (
     create_or_update_certificate,
     create_certificate,
     update_certificate,
+    update_certificate_by_id,
     update_certificate_by_folder_name,
     update_certificate_parse_result,
     delete_certificate,
@@ -177,12 +178,35 @@ class CertificateDatabase:
         is_valid: Optional[bool] = None,
         days_remaining: Optional[int] = None,
         folder_name: Optional[str] = None,
-        email: Optional[str] = None
+        email: Optional[str] = None,
+        status: Optional[str] = None
     ) -> Optional[TLSCertificate]:
         """更新证书（根据 domain + source）"""
         return update_certificate(
             self, domain, source, certificate, private_key, store, sans,
-            issuer, not_before, not_after, is_valid, days_remaining, folder_name, email
+            issuer, not_before, not_after, is_valid, days_remaining, folder_name, email, status
+        )
+    
+    def update_certificate_by_id(
+        self,
+        certificate_id: str,
+        certificate: Optional[str] = None,
+        private_key: Optional[str] = None,
+        store: Optional[str] = None,
+        sans: Optional[List[str]] = None,
+        issuer: Optional[str] = None,
+        not_before: Optional[datetime] = None,
+        not_after: Optional[datetime] = None,
+        is_valid: Optional[bool] = None,
+        days_remaining: Optional[int] = None,
+        folder_name: Optional[str] = None,
+        email: Optional[str] = None,
+        status: Optional[str] = None
+    ) -> Optional[TLSCertificate]:
+        """根据证书 ID 更新证书"""
+        return update_certificate_by_id(
+            self, certificate_id, certificate, private_key, store, sans,
+            issuer, not_before, not_after, is_valid, days_remaining, folder_name, email, status
         )
     
     def update_certificate_parse_result(

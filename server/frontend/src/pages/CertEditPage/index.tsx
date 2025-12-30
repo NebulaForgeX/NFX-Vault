@@ -35,7 +35,7 @@ const CertEditPageContent = memo(() => {
 
   const { data: certificate } = useCertificateDetail(certType, domain, source);
   const methods = useInitCertificateForm(certificate || null);
-  const { onSubmit, onSubmitError, isPending } = useEditCertificate(domain, source);
+  const { onSubmit, onSubmitError, isPending } = useEditCertificate(domain, source, certificate?.id);
 
   const handleBack = () => {
     navigate(-1);

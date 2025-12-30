@@ -10,7 +10,7 @@ import type { CertType } from "@/types";
 import { showError, showSuccess } from "@/stores/modalStore";
 import { ROUTES } from "@/types/navigation";
 
-export const useEditCertificate = (domain: string, source: CertificateSource) => {
+export const useEditCertificate = (domain: string, source: CertificateSource, certificateId?: string) => {
   const navigate = useNavigate();
   const { mutateAsync: mutateManualAdd, isPending: isPendingManualAdd } = useUpdateManualAddCertificate();
   const { mutateAsync: mutateManualApply, isPending: isPendingManualApply } = useUpdateManualApplyCertificate();
@@ -34,8 +34,12 @@ export const useEditCertificate = (domain: string, source: CertificateSource) =>
           });
         } else if (source === CertificateSource.MANUAL_ADD) {
           // MANUAL_ADD 可以更新所有字段
+          if (!certificateId) {
+            showError("证书 ID 缺失，无法更新");
+            return;
+          }
           result = await mutateManualAdd({
-            domain,
+            certificateId, // 传递证书 ID（必需）
             certificate: values.certificate?.trim(),
             privateKey: values.privateKey?.trim(),
             store: values.store as CertType,
@@ -59,7 +63,7 @@ export const useEditCertificate = (domain: string, source: CertificateSource) =>
         showError(error?.message || "更新证书失败");
       }
     },
-    [mutateManualAdd, mutateManualApply, navigate, domain, source],
+    [mutateManualAdd, mutateManualApply, navigate, domain, source, certificateId],
   );
 
   const onSubmitError = useCallback(

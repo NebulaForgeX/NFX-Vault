@@ -44,6 +44,17 @@ def parse_certificate(
         # 检查证书内容是否存在
         if not cert_obj.get("certificate"):
             logger.error(f"❌ 证书内容为空: certificate_id={certificate_id}")
+            # 证书为空，更新状态为 FAIL
+            app.database_repo.update_certificate_parse_result(
+                certificate_id=certificate_id,
+                status=CertificateStatus.FAIL.value,
+                sans=None,
+                issuer=None,
+                not_before=None,
+                not_after=None,
+                is_valid=False,
+                days_remaining=None
+            )
             return {
                 "success": False,
                 "message": "Certificate content is empty"
@@ -107,6 +118,7 @@ def parse_certificate(
         # 更新数据库（无论成功还是失败，都保存解析结果）
         # 使用 all_domains 作为 sans（包含 CN 和所有 SANs）
         # 如果 all_domains 为空列表，也保存（表示没有 SANs）
+        # 如果状态为 fail，days_remaining 设置为 None
         app.database_repo.update_certificate_parse_result(
             certificate_id=certificate_id,
             status=status,
@@ -115,7 +127,7 @@ def parse_certificate(
             not_before=parsed_not_before,
             not_after=parsed_not_after,
             is_valid=parsed_is_valid,
-            days_remaining=parsed_days_remaining
+            days_remaining=None if status == CertificateStatus.FAIL.value else parsed_days_remaining
         )
         
         # 发布缓存失效事件

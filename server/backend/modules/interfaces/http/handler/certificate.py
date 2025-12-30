@@ -71,7 +71,7 @@ class CertificateHTTPHandler:
     
     def update_manual_add_certificate(
         self,
-        domain: str,  # 域名
+        certificate_id: str,  # 证书 ID（必需）
         certificate: Optional[str] = None,  # 证书内容（PEM格式），可选
         private_key: Optional[str] = None,  # 私钥内容（PEM格式），可选
         store: Optional[str] = None,  # 存储位置，可选
@@ -81,7 +81,7 @@ class CertificateHTTPHandler:
     ):
         """更新手动添加的证书（MANUAL_ADD）"""
         return self.certificate_application.update_manual_add_certificate(
-            domain=domain,
+            certificate_id=certificate_id,
             certificate=certificate,
             private_key=private_key,
             store=store,

@@ -1,23 +1,21 @@
 # coding=utf-8
 
 """
-更新证书操作
+根据 ID 更新证书操作
 """
 import logging
 from typing import List, Optional
 from datetime import datetime
 
-from sqlalchemy import and_
 from models.tls_certificate import TLSCertificate
 from .protocol import CertificateDatabaseLike
 
 logger = logging.getLogger(__name__)
 
 
-def update_certificate(
+def update_certificate_by_id(
     repo: CertificateDatabaseLike,
-    domain: str,
-    source: str,
+    certificate_id: str,
     certificate: Optional[str] = None,
     private_key: Optional[str] = None,
     store: Optional[str] = None,
@@ -32,12 +30,11 @@ def update_certificate(
     status: Optional[str] = None
 ) -> Optional[TLSCertificate]:
     """
-    更新证书（根据 domain + source）
+    根据 ID 更新证书
     
     Args:
         repo: CertificateDatabase 实例
-        domain: 域名
-        source: 来源（auto 或 manual）
+        certificate_id: 证书 ID
         certificate: 证书内容（PEM格式），可选
         private_key: 私钥内容（PEM格式），可选
         store: 存储位置，可选
@@ -61,17 +58,14 @@ def update_certificate(
     try:
         with repo.db_session.get_session() as session:
             cert = session.query(TLSCertificate).filter(
-                and_(
-                    TLSCertificate.domain == domain,
-                    TLSCertificate.source == source
-                )
+                TLSCertificate.id == certificate_id
             ).first()
             
             if not cert:
-                logger.warning(f"⚠️  证书不存在: domain={domain}, source={source}")
+                logger.warning(f"⚠️  证书不存在: certificate_id={certificate_id}")
                 return None
             
-            # 只更新提供的字段，保持原有 source
+            # 只更新提供的字段
             if folder_name is not None:
                 cert.folder_name = folder_name
             if store is not None:
@@ -98,15 +92,13 @@ def update_certificate(
                 cert.status = status
             
             cert.updated_at = datetime.now()
-            # 在 session 内访问 id 属性，确保它被加载（避免 detached instance 错误）
-            cert_id = cert.id  # 触发属性加载并保存 ID
-            # session.commit() 由 context manager 自动处理
+            # 在 session 内访问 id 属性，确保它被加载
+            cert_id = cert.id
+            session.commit()
             
-            # 返回对象前，在新会话中重新查询以确保对象完全加载
-            # 这样可以避免 detached instance 错误
+            # 在新会话中重新查询以确保对象完全加载
             if cert_id:
                 try:
-                    # 在新会话中重新查询
                     with repo.db_session.get_session() as new_session:
                         cert_obj = new_session.query(TLSCertificate).filter(
                             TLSCertificate.id == cert_id
@@ -125,6 +117,6 @@ def update_certificate(
             
             return cert
     except Exception as e:
-        logger.error(f"❌ 更新证书失败: domain={domain}, source={source}, error={e}", exc_info=True)
+        logger.error(f"❌ 更新证书失败: certificate_id={certificate_id}, error={e}", exc_info=True)
         return None
 

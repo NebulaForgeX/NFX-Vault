@@ -43,6 +43,7 @@ export interface RefreshResponse {
 }
 
 export interface CertificateDetailResponse {
+  id?: string; // 证书 ID
   domain: string;
   store?: string;
   source?: CertificateSource;
@@ -71,7 +72,7 @@ export interface CreateCertificateRequest {
 }
 
 export interface UpdateManualAddCertificateRequest {
-  domain: string;
+  certificateId: string; // 证书 ID（必需）
   certificate?: string;
   privateKey?: string;
   store?: CertType;

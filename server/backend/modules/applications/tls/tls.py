@@ -114,7 +114,7 @@ class CertificateApplication:
     
     def update_manual_add_certificate(
         self,
-        domain: str,
+        certificate_id: str,
         certificate: Optional[str] = None,
         private_key: Optional[str] = None,
         store: Optional[str] = None,
@@ -123,7 +123,7 @@ class CertificateApplication:
         email: Optional[str] = None
     ) -> Dict[str, Any]:
         """更新手动添加的证书（MANUAL_ADD）"""
-        return update_manual_add_certificate(self, domain, certificate, private_key, store, sans, folder_name, email)
+        return update_manual_add_certificate(self, certificate_id, certificate, private_key, store, sans, folder_name, email)
     
     def update_manual_apply_certificate(
         self,

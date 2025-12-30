@@ -12,6 +12,7 @@ from .get_certificate_by_folder_name import get_certificate_by_folder_name
 from .create_or_update_certificate import create_or_update_certificate
 from .create_certificate import create_certificate
 from .update_certificate import update_certificate
+from .update_certificate_by_id import update_certificate_by_id
 from .update_certificate_by_folder_name import update_certificate_by_folder_name
 from .update_certificate_parse_result import update_certificate_parse_result
 from .delete_certificate import delete_certificate
@@ -25,6 +26,7 @@ __all__ = [
     "create_or_update_certificate",
     "create_certificate",
     "update_certificate",
+    "update_certificate_by_id",
     "update_certificate_by_folder_name",
     "update_certificate_parse_result",
     "delete_certificate",
