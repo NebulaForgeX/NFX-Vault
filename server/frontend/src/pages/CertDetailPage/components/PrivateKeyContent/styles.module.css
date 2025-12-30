@@ -1,0 +1,44 @@
+.section {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-4);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-fg-text);
+  margin: 0;
+}
+
+.textArea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--color-border-4);
+  border-radius: 0.25rem;
+  background: var(--color-bg-2);
+  color: var(--color-fg-text);
+  font-family: "Courier New", monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 200px;
+}
+
+.textArea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.125rem rgba(143, 155, 179, 0.25);
+}
+

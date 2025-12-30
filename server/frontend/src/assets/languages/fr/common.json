@@ -1,0 +1,53 @@
+{
+  "title": "NFX-Vault",
+  "subtitle": "Système de gestion de certificats",
+  "certManagement": {
+    "title": "Gestion des certificats",
+    "description": "Gérer et surveiller l'état des certificats SSL/TLS, prend en charge les certificats de site Web et d'API",
+    "action": "Entrer dans la gestion des certificats →"
+  },
+  "quickCheck": {
+    "title": "Vérification rapide",
+    "description": "Afficher rapidement la validité et le statut de tous les certificats",
+    "action": "Commencer la vérification →"
+  },
+  "certExport": {
+    "title": "Export de certificat",
+    "description": "Export en un clic des fichiers de certificat pour une utilisation facile dans d'autres services",
+    "action": "Exporter le certificat →"
+  },
+  "refresh": {
+    "button": "Actualiser les certificats",
+    "refreshing": "Actualisation...",
+    "certType": "Type de certificat",
+    "description": "Cliquez pour lire les fichiers acme.json et mettre à jour la base de données des certificats",
+    "success": "Certificats actualisés avec succès",
+    "error": "Échec de l'actualisation des certificats"
+  },
+  "search": {
+    "placeholder": "Rechercher des fonctions, des pages...",
+    "noResults": "Aucun résultat trouvé pour \"{{query}}\""
+  },
+  "footer": {
+    "copyright": "NFX-Vault. Tous droits réservés.",
+    "about": "À propos de nous",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation"
+  },
+  "suspense": {
+    "errorTitle": "Échec du chargement",
+    "errorDescription": "Veuillez vérifier votre connexion réseau ou réessayer plus tard.",
+    "retryText": "Réessayer"
+  },
+  "theme": {
+    "default": "Par défaut",
+    "light": "Clair",
+    "dark": "Sombre",
+    "cosmic": "Cosmique",
+    "corporate": "Entreprise"
+  },
+  "layout": {
+    "show": "Afficher la barre latérale",
+    "hide": "Masquer la barre latérale"
+  }
+}

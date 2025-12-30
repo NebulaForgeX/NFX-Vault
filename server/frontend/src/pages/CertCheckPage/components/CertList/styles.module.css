@@ -1,0 +1,71 @@
+.section {
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: var(--color-fg-text);
+}
+
+.listContainer {
+  margin-top: 1rem;
+}
+
+.emptyState {
+  padding: 3rem;
+  text-align: center;
+  color: var(--color-fg-secondary);
+  font-size: 1rem;
+  background: var(--color-bg-2);
+  border-radius: 0.5rem;
+  border: 1px dashed var(--color-border);
+}
+
+/* Loading and end indicators */
+.loadingMore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 0;
+  color: var(--color-fg-secondary);
+  font-size: 0.875rem;
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.endState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 0;
+  color: var(--color-fg-secondary);
+}
+
+.endLine {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.endText {
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+

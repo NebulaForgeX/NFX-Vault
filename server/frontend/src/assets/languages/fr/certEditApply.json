@@ -1,0 +1,16 @@
+{
+  "title": "Modifier la demande de certificat",
+  "subtitle": "Redemander un certificat Let's Encrypt",
+  "loading": "Chargement...",
+  "basicInfo": "Informations de base",
+  "sans": "SANs (Optionnel)",
+  "sansPlaceholder": "Un domaine par ligne, par exemple :\nwww.example.com\napi.example.com",
+  "sansHelp": "Entrez un domaine par ligne, laissez vide pour demander uniquement le domaine principal",
+  "verification": "Options de vérification",
+  "webroot": "Chemin Webroot",
+  "webrootPlaceholder": "/var/www/html",
+  "webrootHelp": "Chemin du répertoire racine Web pour la vérification HTTP-01, laissez vide pour utiliser le chemin par défaut",
+  "submit": "Redemander le certificat",
+  "applying": "Demande en cours..."
+}
+

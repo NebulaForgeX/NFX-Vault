@@ -1,0 +1,53 @@
+{
+  "title": "NFX-Vault",
+  "subtitle": "Certificate Management System",
+  "certManagement": {
+    "title": "Certificate Management",
+    "description": "Manage and monitor SSL/TLS certificate status, supports website and API certificates",
+    "action": "Enter Certificate Management →"
+  },
+  "quickCheck": {
+    "title": "Quick Check",
+    "description": "Quickly view the validity and status of all certificates",
+    "action": "Start Check →"
+  },
+  "certExport": {
+    "title": "Certificate Export",
+    "description": "One-click export of certificate files for easy use in other services",
+    "action": "Export Certificate →"
+  },
+  "refresh": {
+    "button": "Refresh Certificates",
+    "refreshing": "Refreshing...",
+    "certType": "Certificate Type",
+    "description": "Click to read acme.json files and update the certificate database",
+    "success": "Certificates refreshed successfully",
+    "error": "Failed to refresh certificates"
+  },
+  "search": {
+    "placeholder": "Search functions, pages...",
+    "noResults": "No results found for \"{{query}}\""
+  },
+  "footer": {
+    "copyright": "NFX-Vault. All rights reserved.",
+    "about": "About Us",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "suspense": {
+    "errorTitle": "Failed to Load",
+    "errorDescription": "Please check your network connection or try again later.",
+    "retryText": "Retry"
+  },
+  "theme": {
+    "default": "Default",
+    "light": "Light",
+    "dark": "Dark",
+    "cosmic": "Cosmic",
+    "corporate": "Corporate"
+  },
+  "layout": {
+    "show": "Show Sidebar",
+    "hide": "Hide Sidebar"
+  }
+}

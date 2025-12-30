@@ -1,0 +1,135 @@
+// api/clients.ts
+import type { AxiosRequestTransformer, InternalAxiosRequestConfig } from "axios";
+
+import axios, { AxiosError } from "axios";
+import applyCaseMiddleware from "axios-case-converter";
+
+import { API_ENDPOINTS } from "@/apis/types";
+
+// 让 config._retry 有类型
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    _retry?: boolean;
+  }
+}
+
+// 1) 先创建实例并套 case 中间件
+export const protectedClient = applyCaseMiddleware(
+  axios.create({
+    baseURL: API_ENDPOINTS.PURE,
+    timeout: 8000,
+  }),
+);
+
+export const publicClient = applyCaseMiddleware(
+  axios.create({
+    baseURL: API_ENDPOINTS.PURE,
+    timeout: 8000,
+  }),
+);
+
+// 2) 请求拦截器（不需要认证，所以 protectedClient 和 publicClient 使用相同的配置）
+protectedClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    // 这里不需要添加 token，因为不需要认证
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
+publicClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
+// 3) 在 transformRequest 队列"末尾"追加一个调试 transformer
+function asArray<T>(v: T | T[] | undefined): T[] {
+  return v ? (Array.isArray(v) ? v : [v]) : [];
+}
+
+protectedClient.defaults.transformRequest = [
+  ...asArray<AxiosRequestTransformer>(protectedClient.defaults.transformRequest),
+  (data: unknown, _headers) => {
+    let out: unknown = data;
+    try {
+      if (typeof out === "string") out = JSON.parse(out) as unknown;
+    } catch {
+      // 忽略解析错误，继续处理
+    }
+    return data; // 不要改动 data
+  },
+];
+
+publicClient.defaults.transformRequest = [
+  ...asArray<AxiosRequestTransformer>(publicClient.defaults.transformRequest),
+  (data: unknown, _headers) => {
+    let out: unknown = data;
+    try {
+      if (typeof out === "string") out = JSON.parse(out) as unknown;
+    } catch {
+      // 忽略解析错误，继续处理
+    }
+    return data;
+  },
+];
+
+// 4) 响应拦截器：这里的 res.data 已经是 camelCase
+protectedClient.interceptors.response.use(
+  (response) => response,
+  async (error: unknown) => {
+    if (!(error instanceof AxiosError)) {
+      return Promise.reject(error);
+    }
+
+    const errorData = error.response?.data as { message?: string } | undefined;
+    const errorMessage = errorData?.message;
+
+    if (errorMessage) {
+      console.log("❌ API Error:", {
+        message: errorMessage,
+        status: error.response?.status,
+        url: error.config?.url,
+        method: error.config?.method,
+      });
+    } else if (import.meta.env.DEV && error.response?.status) {
+      console.log("❌ HTTP Error:", {
+        status: error.response.status,
+        url: error.config?.url,
+        method: error.config?.method,
+      });
+    }
+
+    return Promise.reject(error);
+  },
+);
+
+publicClient.interceptors.response.use(
+  (response) => response,
+  async (error: unknown) => {
+    if (!(error instanceof AxiosError)) {
+      return Promise.reject(error);
+    }
+
+    const errorData = error.response?.data as { message?: string } | undefined;
+    const errorMessage = errorData?.message;
+
+    if (errorMessage) {
+      console.log("❌ API Error:", {
+        message: errorMessage,
+        status: error.response?.status,
+        url: error.config?.url,
+        method: error.config?.method,
+      });
+    } else if (import.meta.env.DEV && error.response?.status) {
+      console.log("❌ HTTP Error:", {
+        status: error.response.status,
+        url: error.config?.url,
+        method: error.config?.method,
+      });
+    }
+
+    return Promise.reject(error);
+  },
+);

@@ -1,0 +1,28 @@
+# FastAPI
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic==2.9.2
+pydantic-settings==2.5.2
+python-multipart==0.0.12
+
+# Database
+sqlalchemy==2.0.36
+pymysql==1.1.1
+cryptography==43.0.3
+
+# Redis
+redis==5.2.0
+hiredis==2.3.2
+
+# Kafka
+kafka-python==2.0.2
+
+# Scheduler
+apscheduler==3.10.4
+
+# Configuration
+python-dotenv==1.0.1
+
+# Docker
+docker==7.1.0
+

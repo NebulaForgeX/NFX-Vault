@@ -1,0 +1,88 @@
+.certCard {
+  padding: 1.5rem;
+  border: 2px solid;
+  border-radius: 0.5rem;
+  background-color: var(--color-bg-2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.certCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.certHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.certHeaderRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.certActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--color-fg-text);
+}
+
+.actionButton:hover {
+  background-color: var(--color-bg-3);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.deleteButton:hover {
+  background-color: var(--color-danger-light);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.certInfo {
+  flex: 1;
+}
+
+.certDomain {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: var(--color-fg-text);
+}
+
+.certMeta {
+  margin: 0.25rem 0;
+  color: var(--color-fg-secondary);
+  font-size: 0.875rem;
+}
+
+.certStatus {
+  padding: 0.5rem 1rem;
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+

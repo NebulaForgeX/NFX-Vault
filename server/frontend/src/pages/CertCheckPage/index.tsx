@@ -1,0 +1,91 @@
+import { memo, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { Suspense } from "@/components";
+import type { CertType } from "@/apis/domain";
+import { ROUTES } from "@/types/navigation";
+import { Plus } from "@/assets/icons/lucide";
+import { CertList } from "./components";
+import styles from "./styles.module.css";
+
+// 内部组件：实际渲染证书列表
+const CertCheckPage = memo(() => {
+  const { t } = useTranslation("cert");
+  const [certType, setCertType] = useState<CertType>("websites");
+
+  const handleCertTypeChange = useCallback((newType: CertType) => {
+    setCertType(newType);
+  }, []);
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <div>
+          <h1 className={styles.title}>{t("title")}</h1>
+          <p className={styles.subtitle}>{t("subtitle")}</p>
+        </div>
+        <div className={styles.headerActions}>
+          <Link to={ROUTES.CERT_APPLY} className={styles.addButton}>
+            <Plus size={20} />
+            <span>{t("actions.apply") || "Apply Certificate"}</span>
+          </Link>
+          <Link to={ROUTES.CERT_ADD} className={styles.addButton}>
+            <Plus size={20} />
+            <span>{t("actions.add") || "Add Certificate"}</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* 证书类型选择 */}
+      <div className={styles.section}>
+        <label className={styles.label}>{t("certType.label")}</label>
+        <div className={styles.radioGroup}>
+          <label className={styles.radioLabel}>
+            <input
+              type="radio"
+              value="websites"
+              checked={certType === "websites"}
+              onChange={(e) => handleCertTypeChange(e.target.value as CertType)}
+              className={styles.radioInput}
+            />
+            <span>{t("certType.websites")}</span>
+          </label>
+          <label className={styles.radioLabel}>
+            <input
+              type="radio"
+              value="apis"
+              checked={certType === "apis"}
+              onChange={(e) => handleCertTypeChange(e.target.value as CertType)}
+              className={styles.radioInput}
+            />
+            <span>{t("certType.apis")}</span>
+          </label>
+          <label className={styles.radioLabel}>
+            <input
+              type="radio"
+              value="database"
+              checked={certType === "database"}
+              onChange={(e) => handleCertTypeChange(e.target.value as CertType)}
+              className={styles.radioInput}
+            />
+            <span>{t("certType.database")}</span>
+          </label>
+        </div>
+      </div>
+
+      {/* 证书列表 - 使用虚拟列表 */}
+      <Suspense       
+        loadingType="truck"
+        loadingText={t("actions.checking") || "Checking certificates..."}
+        loadingSize="medium"
+      >
+        <CertList certType={certType} />
+      </Suspense>
+    </div>
+  );
+});
+
+CertCheckPage.displayName = "CertCheckPage";
+
+export default CertCheckPage;
+

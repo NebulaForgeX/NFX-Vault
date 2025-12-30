@@ -1,0 +1,53 @@
+{
+  "title": "NFX-Vault",
+  "subtitle": "证书管理系统",
+  "certManagement": {
+    "title": "证书管理",
+    "description": "管理和监控 SSL/TLS 证书状态，支持网站和 API 证书",
+    "action": "进入证书管理 →"
+  },
+  "quickCheck": {
+    "title": "快速检查",
+    "description": "快速查看所有证书的有效期和状态",
+    "action": "开始检查 →"
+  },
+  "certExport": {
+    "title": "证书导出",
+    "description": "一键导出证书文件，方便在其他服务中使用",
+    "action": "导出证书 →"
+  },
+  "refresh": {
+    "button": "刷新证书",
+    "refreshing": "刷新中...",
+    "certType": "证书类型",
+    "description": "点击以读取 acme.json 文件并更新证书数据库",
+    "success": "证书刷新成功",
+    "error": "证书刷新失败"
+  },
+  "search": {
+    "placeholder": "搜索功能、页面...",
+    "noResults": "未找到 \"{{query}}\" 相关结果"
+  },
+  "footer": {
+    "copyright": "NFX-Vault. 保留所有权利.",
+    "about": "关于我们",
+    "privacy": "隐私政策",
+    "terms": "使用条款"
+  },
+  "suspense": {
+    "errorTitle": "加载失败",
+    "errorDescription": "请检查网络连接或稍后重试。",
+    "retryText": "重试"
+  },
+  "theme": {
+    "default": "默认",
+    "light": "浅色",
+    "dark": "深色",
+    "cosmic": "宇宙",
+    "corporate": "企业"
+  },
+  "layout": {
+    "show": "显示侧边栏",
+    "hide": "隐藏侧边栏"
+  }
+}

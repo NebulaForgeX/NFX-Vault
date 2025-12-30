@@ -1,0 +1,52 @@
+.header {
+  margin-bottom: 2rem;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: 1px solid var(--color-border-4);
+  border-radius: 0.25rem;
+  color: var(--color-fg-text);
+  cursor: pointer;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  transition: all 0.15s ease;
+}
+
+.backButton:hover {
+  background-color: var(--color-bg-2);
+  border-color: var(--color-primary);
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-fg-text);
+  margin: 0;
+}
+
+.statusBadge {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.5rem;
+  }
+}
+

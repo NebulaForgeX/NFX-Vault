@@ -1,0 +1,101 @@
+name: nfx-vault
+
+services:
+  # 后端 API 服务（HTTP API）
+  backend-api:
+    build:
+      context: ./server/backend
+      dockerfile: inputs/api/Dockerfile
+    container_name: NFX-Vault-Backend-API
+    restart: always
+    ports:
+      - "${BACKEND_PORT}:8000"
+    volumes:
+      - /volume1/Certs:/volume1/Certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /tmp/acme-challenges:/tmp/acme-challenges:rw
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_DATABASE_PORT=${MYSQL_DATABASE_PORT}
+      - MYSQL_ROOT_USERNAME=${MYSQL_ROOT_USERNAME}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_DATABASE_PORT=${REDIS_DATABASE_PORT}
+      - REDIS_DB=${REDIS_DB}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_CACHE_TTL=${REDIS_CACHE_TTL}
+      - KAFKA_ENABLED=${KAFKA_ENABLED}
+      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}
+      - KAFKA_EVENT_TOPIC=${KAFKA_EVENT_TOPIC}
+      - KAFKA_EVENT_POISON_TOPIC=${KAFKA_EVENT_POISON_TOPIC}
+      - KAFKA_CONSUMER_GROUP_ID=${KAFKA_CONSUMER_GROUP_ID}
+      - CERT_MAX_WAIT_TIME=${CERT_MAX_WAIT_TIME}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+      - CERTS_DIR=${CERTS_DIR}
+    labels:
+      - traefik.enable=true
+      # 注意：ACME challenge 路由通过 dynamic/acme-challenge.yml 配置
+      # 这里不需要重复配置，避免冲突
+    networks:
+      - nfx-vault
+      - websites_default
+
+  # 后端 Pipeline 服务（Kafka Consumer）
+  backend-pipeline:
+    build:
+      context: ./server/backend
+      dockerfile: inputs/pipeline/Dockerfile
+    container_name: NFX-Vault-Backend-Pipeline
+    restart: always
+    volumes:
+      - /volume1/Certs:/volume1/Certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /tmp/acme-challenges:/tmp/acme-challenges:rw
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_DATABASE_PORT=${MYSQL_DATABASE_PORT}
+      - MYSQL_ROOT_USERNAME=${MYSQL_ROOT_USERNAME}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_DATABASE_PORT=${REDIS_DATABASE_PORT}
+      - REDIS_DB=${REDIS_DB}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_CACHE_TTL=${REDIS_CACHE_TTL}
+      - KAFKA_ENABLED=${KAFKA_ENABLED}
+      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}
+      - KAFKA_EVENT_TOPIC=${KAFKA_EVENT_TOPIC}
+      - KAFKA_EVENT_POISON_TOPIC=${KAFKA_EVENT_POISON_TOPIC}
+      - KAFKA_CONSUMER_GROUP_ID=${KAFKA_CONSUMER_GROUP_ID}
+      - CERT_MAX_WAIT_TIME=${CERT_MAX_WAIT_TIME}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+      - CERTS_DIR=${CERTS_DIR}
+    networks:
+      - nfx-vault
+    depends_on:
+      - backend-api
+
+  # 前端服务
+  frontend:
+    build:
+      context: ./server/frontend
+      dockerfile: Dockerfile
+    container_name: NFX-Vault-Frontend
+    restart: always
+    ports:
+      - "${FRONTEND_PORT}:80"
+    networks:
+      - nfx-vault
+    depends_on:
+      - backend-api
+      - backend-pipeline
+
+networks:
+  nfx-vault:
+    name: nfx-vault
+    driver: bridge
+  websites_default:
+    external: true
+    name: websites_default
+

@@ -1,0 +1,104 @@
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import type { CertificateInfo } from "@/apis/domain";
+import { CertificateStatus } from "@/apis/domain";
+
+export interface CertificateStatusInfo {
+  label: string;
+  bgColor: string;
+  textColor: string;
+}
+
+export interface CertificateTimeInfo {
+  label: string;
+  bgColor: string;
+  textColor: string;
+}
+
+/**
+ * Hook to get certificate application status color (for border)
+ * @param cert - Certificate info object
+ * @returns Status color: green (success), red (fail), gray (other)
+ */
+export const useCertificateStatus = (cert: CertificateInfo | undefined): string => {
+  const statusColor = useMemo(() => {
+    if (!cert || !cert.status) {
+      return "#6b7280"; // Gray - 其他
+    }
+
+    if (cert.status === CertificateStatus.SUCCESS) {
+      return "#10b981"; // Green - success
+    }
+
+    if (cert.status === CertificateStatus.FAIL) {
+      return "#ef4444"; // Red - fail
+    }
+
+    return "#6b7280"; // Gray - 其他
+  }, [cert]);
+
+  return statusColor;
+};
+
+/**
+ * Hook to get certificate time-based status display information (for valid/expired status)
+ * @param cert - Certificate info object
+ * @returns Time-based status display information including label, bgColor, and textColor
+ */
+export const useCertificateTime = (cert: CertificateInfo | undefined): CertificateTimeInfo => {
+  const { t } = useTranslation("cert");
+
+  const timeInfo = useMemo(() => {
+    if (!cert) {
+      return {
+        label: t("status.valid"),
+        bgColor: "#6b7280", // Cool Gray
+        textColor: "#ffffff",
+      };
+    }
+
+    // 判断证书状态
+    const isExpired = !cert.isValid || (cert.daysRemaining !== undefined && cert.daysRemaining < 0);
+    
+    if (isExpired) {
+      return {
+        label: t("status.expired"),
+        bgColor: "#ef4444", // Rose Red
+        textColor: "#ffffff",
+      };
+    }
+
+    // 检查是否有剩余天数信息
+    if (cert.daysRemaining !== undefined) {
+      const days = cert.daysRemaining;
+      
+      // 即将过期：0-6天
+      if (days >= 0 && days < 7) {
+        return {
+          label: `${t("status.expiringSoon")} (${t("status.remainingDays", { days })})`,
+          bgColor: "#f59e0b", // Amber Orange
+          textColor: "#ffffff",
+        };
+      }
+      
+      // 有效且剩余天数 >= 7
+      if (days >= 7) {
+        return {
+          label: `${t("status.valid")} (${t("status.remainingDays", { days })})`,
+          bgColor: "#10b981", // Emerald Green
+          textColor: "#ffffff",
+        };
+      }
+    }
+
+    // 默认：有效但没有天数信息
+    return {
+      label: t("status.valid"),
+      bgColor: "#10b981", // Emerald Green
+      textColor: "#ffffff",
+    };
+  }, [cert, t]);
+
+  return timeInfo;
+};
+

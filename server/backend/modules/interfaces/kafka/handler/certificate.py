@@ -1,0 +1,62 @@
+# coding=utf-8
+
+"""
+证书 Kafka 处理器
+
+处理证书相关的 Kafka 事件
+"""
+import logging
+from typing import Dict, Any
+
+from events.operation_refresh_event import OperationRefreshEvent
+from modules.applications.certificate import CertificateApplication
+
+logger = logging.getLogger(__name__)
+
+
+class CertificateKafkaHandler:
+    """证书 Kafka 处理器"""
+    
+    def __init__(
+        self,
+        certificate_application: CertificateApplication
+    ):
+        """
+        初始化事件处理器
+        
+        Args:
+            certificate_application: 证书应用层实例
+        """
+        self.certificate_application = certificate_application
+    
+    def process_read_certificate_file(self, event_data: Dict[str, Any]):
+        """
+        处理读取文件夹证书（来自 Kafka 事件）
+        
+        此方法实际执行文件夹证书的读取和处理
+        
+        Args:
+            event_data: 事件数据
+        """
+        try:
+            event = OperationRefreshEvent.from_dict(event_data)
+            logger.info(f"🔄 收到读取文件夹证书请求（事件）: store={event.store}, trigger={event.trigger}")
+            
+            # 调用 Application 层处理业务逻辑
+            # 注意：将 trigger 改为 "event"，避免在 Application 层再次发送 Kafka 事件导致无限循环
+            # 在 Kafka Consumer 线程中，需要创建新的事件循环
+            import asyncio
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            
+            loop.run_until_complete(
+                self.certificate_application.read_folders_and_store_certificates(store=event.store)
+            )
+            
+        except Exception as e:
+            logger.error(f"❌ 处理读取文件夹证书失败: {e}", exc_info=True)
+            raise
+

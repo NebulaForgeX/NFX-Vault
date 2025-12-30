@@ -1,0 +1,47 @@
+.page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--color-bg-2);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.backBtn:hover {
+  background-color: var(--color-bg-3);
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: var(--color-fg-heading);
+  margin: 0;
+}
+
+.content {
+  display: flex;
+  gap: 2rem;
+}
+
+.rightColumn {
+  flex: 1;
+}
+

@@ -1,0 +1,116 @@
+# ============================================
+# Certs 证书管理项目 .gitignore
+# ============================================
+
+# 环境配置文件（包含实际配置信息）
+.env
+
+# 证书文件（敏感信息）
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+acme.json
+
+# 证书存储文件（敏感信息）
+# 忽略 Websites 和 Apis 目录下的所有内容（包含证书和密钥）
+Websites/
+Apis/
+
+# 但保留目录结构（如果需要的话，可以取消注释下面的行）
+# !Websites/.gitkeep
+# !Apis/.gitkeep
+
+# 导出的证书文件
+exported/
+*.crt
+*.key
+
+# 日志文件
+*.log
+logs/
+*.log.*
+
+# 备份文件
+*.bak
+*.backup
+*.old
+*.tmp
+*~
+
+# 系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# 编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# 临时文件
+*.tmp
+*.temp
+.cache/
+
+# ============================================
+# NFX-Vault Web 服务相关
+# ============================================
+
+# 前端
+server/frontend/node_modules/
+server/frontend/dist/
+server/frontend/dist-ssr
+server/frontend/*.local
+server/frontend/.env.local
+server/frontend/.env.*.local
+server/frontend/logs
+server/frontend/*.log
+server/frontend/npm-debug.log*
+server/frontend/yarn-debug.log*
+server/frontend/yarn-error.log*
+server/frontend/pnpm-debug.log*
+server/frontend/lerna-debug.log*
+
+# 后端
+server/backend/__pycache__/
+server/backend/*.py[cod]
+server/backend/*$py.class
+server/backend/*.pyo
+server/backend/*.pyd
+server/backend/*.so
+server/backend/.Python
+server/backend/env/
+server/backend/venv/
+server/backend/ENV/
+server/backend/.venv/
+server/backend/.env
+server/backend/.env.local
+server/backend/.pytest_cache/
+server/backend/.coverage
+server/backend/htmlcov/
+server/backend/dist/
+server/backend/build/
+server/backend/*.egg-info/
+
+# IDE
+server/.vscode/
+server/.idea/
+server/*.suo
+server/*.ntvs*
+server/*.njsproj
+server/*.sln
+server/*.sw?
+

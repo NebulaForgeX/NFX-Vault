@@ -1,0 +1,16 @@
+{
+  "title": "编辑申请证书",
+  "subtitle": "重新申请 Let's Encrypt 证书",
+  "loading": "加载中...",
+  "basicInfo": "基本信息",
+  "sans": "SANs (可选)",
+  "sansPlaceholder": "每行一个域名，例如：\nwww.example.com\napi.example.com",
+  "sansHelp": "每行输入一个域名，留空则只申请主域名",
+  "verification": "验证选项",
+  "webroot": "Webroot 路径",
+  "webrootPlaceholder": "/var/www/html",
+  "webrootHelp": "用于 HTTP-01 验证的 Web 根目录路径，留空使用默认路径",
+  "submit": "重新申请证书",
+  "applying": "申请中..."
+}
+
