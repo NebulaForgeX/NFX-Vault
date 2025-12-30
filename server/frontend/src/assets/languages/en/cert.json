@@ -109,6 +109,9 @@
   "apply": {
     "title": "Apply Let's Encrypt Certificate",
     "basicInfo": "Basic Information",
+    "folderName": "Folder Name",
+    "folderNamePlaceholder": "e.g., api_lucaslyu_com",
+    "folderNameHelp": "Unique identifier, can only contain letters, numbers, underscores, and hyphens",
     "email": "Email Address",
     "emailPlaceholder": "admin@example.com",
     "sans": "SANs (Optional)",

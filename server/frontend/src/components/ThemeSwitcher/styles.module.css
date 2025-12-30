@@ -38,14 +38,16 @@
 }
 
 .selectButton.primary:hover:not(:disabled) {
-    background-color: var(--color-primary-light);
-    border-color: var(--color-primary-light);
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    color: #ffffff;
 }
 
 .selectButton.primary:focus,
 .selectButton.primary.open {
-    background-color: var(--color-primary-light);
-    border-color: var(--color-primary-light);
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    color: #ffffff;
     box-shadow: 0 0 0 0.125rem rgba(143, 155, 179, 0.25);
 }
 

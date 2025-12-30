@@ -34,9 +34,8 @@ def delete_certificate(
         success = app.database_repo.delete_certificate(domain, source_str)
         
         if success:
-            # 清除缓存
-            app.cache_repo.clear_store_cache("websites")
-            app.cache_repo.clear_store_cache("apis")
+            # 发布缓存失效事件（通过 Kafka）
+            app.invalidate_cache(["websites", "apis", "database"], trigger="delete")
             
             # 发送 Kafka 事件通知前端刷新（删除操作不需要从 acme.json 读取，只需要通知前端刷新列表）
             if app.pipeline_repo:

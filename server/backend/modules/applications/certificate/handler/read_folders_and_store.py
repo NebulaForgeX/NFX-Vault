@@ -130,8 +130,8 @@ async def read_folders_and_store_certificates(
                 failed_count += 1
                 continue
         
-        # 清除缓存
-        app.cache_repo.clear_store_cache(store)
+        # 发布缓存失效事件（通过 Kafka）
+        app.invalidate_cache([store], trigger="read_folders")
         
         logger.info(f"✅ 文件夹读取和存储完成: store={store}, 成功={processed_count}, 失败={failed_count}")
         return {

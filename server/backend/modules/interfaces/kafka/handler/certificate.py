@@ -9,6 +9,7 @@ import logging
 from typing import Dict, Any
 
 from events.operation_refresh_event import OperationRefreshEvent
+from events.cache_invalidate_event import CacheInvalidateEvent
 from modules.applications.certificate import CertificateApplication
 
 logger = logging.getLogger(__name__)
@@ -58,5 +59,29 @@ class CertificateKafkaHandler:
             
         except Exception as e:
             logger.error(f"❌ 处理读取文件夹证书失败: {e}", exc_info=True)
+            raise
+    
+    def process_cache_invalidate(self, event_data: Dict[str, Any]):
+        """
+        处理缓存失效事件（来自 Kafka 事件）
+        
+        此方法会清除指定存储位置的缓存
+        
+        Args:
+            event_data: 事件数据
+        """
+        try:
+            event = CacheInvalidateEvent.from_dict(event_data)
+            logger.info(f"🔄 收到缓存失效事件: stores={event.stores}, trigger={event.trigger}")
+            
+            # 清除缓存
+            for store in event.stores:
+                self.certificate_application.cache_repo.clear_store_cache(store)
+                logger.info(f"✅ 已清除缓存: store={store}")
+            
+            logger.info(f"✅ 缓存失效处理完成: stores={event.stores}")
+            
+        except Exception as e:
+            logger.error(f"❌ 处理缓存失效事件失败: {e}", exc_info=True)
             raise
 

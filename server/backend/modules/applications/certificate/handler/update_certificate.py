@@ -76,10 +76,9 @@ def update_certificate(
         )
         
         if cert_obj:
-            # 清除缓存
-            stores_to_clear = [store] if store else ["websites", "apis"]
-            for s in stores_to_clear:
-                app.cache_repo.clear_store_cache(s)
+            # 发布缓存失效事件（通过 Kafka）
+            stores_to_clear = [store] if store else ["websites", "apis", "database"]
+            app.invalidate_cache(stores_to_clear, trigger="update")
             
             # 发送 Kafka 事件通知前端刷新（手动更新的证书不需要从 acme.json 读取，只需要通知前端刷新列表）
             if app.pipeline_repo:

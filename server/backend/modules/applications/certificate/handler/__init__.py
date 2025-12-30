@@ -14,6 +14,7 @@ from .update_certificate import update_certificate
 from .delete_certificate import delete_certificate
 from .export_certificates import export_certificates
 from .apply_certificate import apply_certificate
+from .invalidate_cache import invalidate_cache
 
 __all__ = [
     "get_certificate_list",
@@ -25,4 +26,5 @@ __all__ = [
     "delete_certificate",
     "export_certificates",
     "apply_certificate",
+    "invalidate_cache",
 ]

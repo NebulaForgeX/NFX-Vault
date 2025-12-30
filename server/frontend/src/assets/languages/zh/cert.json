@@ -108,6 +108,9 @@
   "apply": {
     "title": "申请 Let's Encrypt 证书",
     "basicInfo": "基本信息",
+    "folderName": "文件夹名称",
+    "folderNamePlaceholder": "例如：api_lucaslyu_com",
+    "folderNameHelp": "唯一标识符，只能包含字母、数字、下划线和连字符",
     "email": "邮箱地址",
     "emailPlaceholder": "admin@example.com",
     "sans": "SANs (可选)",

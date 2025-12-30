@@ -11,8 +11,10 @@ from typing import Optional
 from modules.configs.database_config import DatabaseConfig
 from resources.kafka.producer import send_message
 from events.operation_refresh_event import OperationRefreshEvent
+from events.cache_invalidate_event import CacheInvalidateEvent
 from events.event_type import EventType
 from resources.kafka.consumer import KafkaEventConsumer
+from typing import List
 
 logger = logging.getLogger(__name__)
 
@@ -75,5 +77,53 @@ class CertificatePipeline:
             
         except Exception as e:
             logger.error(f"❌ 发送证书刷新事件失败: {e}", exc_info=True)
+            return False
+    
+    def send_cache_invalidate_event(
+        self,
+        stores: List[str],
+        trigger: str = "manual"
+    ) -> bool:
+        """
+        发送缓存失效事件到 Kafka
+        
+        Args:
+            stores: 存储位置列表（websites, apis, database）
+            trigger: 触发来源（manual, add, update, delete）
+        
+        Returns:
+            是否发送成功
+        """
+        if not self.db_config or not self.db_config.KAFKA_ENABLED:
+            logger.debug("⚠️  Kafka 未启用，跳过发送缓存失效事件")
+            return False
+        
+        try:
+            # 创建事件对象
+            event = CacheInvalidateEvent(
+                stores=stores,
+                trigger=trigger
+            )
+            
+            # 发送事件（event_type 放在 headers 中）
+            success = send_message(
+                bootstrap_servers=self.db_config.KAFKA_BOOTSTRAP_SERVERS,
+                topic=self.db_config.KAFKA_EVENT_TOPIC,
+                data=event.to_dict(),
+                headers={
+                    KafkaEventConsumer.EVENT_TYPE_HEADER_KEY: EventType.CACHE_INVALIDATE
+                },
+                enable_kafka=self.db_config.KAFKA_ENABLED
+            )
+            
+            if success:
+                logger.info(f"✅ 已发送缓存失效事件到 Kafka: stores={stores}, trigger={trigger}")
+            else:
+                logger.warning(f"⚠️  发送缓存失效事件失败: stores={stores}")
+            
+            return success
+            
+        except Exception as e:
+            logger.error(f"❌ 发送缓存失效事件失败: {e}", exc_info=True)
             return False
 

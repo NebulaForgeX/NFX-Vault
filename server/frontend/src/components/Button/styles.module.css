@@ -25,13 +25,15 @@
 }
 
 .button.primary:hover:not(:disabled) {
-    background-color: var(--color-primary-light);
-    border-color: var(--color-primary-light);
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    color: var(--color-primary-fg);
 }
 
 .button.primary:focus:not(:disabled) {
-    background-color: var(--color-primary-light);
-    border-color: var(--color-primary-light);
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    color: var(--color-primary-fg);
     box-shadow: 0 0 0 0.125rem rgba(34, 43, 69, 0.25);
 }
 

@@ -26,6 +26,7 @@ from .handler import (
     delete_certificate,
     export_certificates,
     apply_certificate,
+    invalidate_cache,
 )
 
 logger = logging.getLogger(__name__)
@@ -146,8 +147,26 @@ class CertificateApplication:
         self,
         domain: str,
         email: str,
+        folder_name: str,
         sans: Optional[list] = None,
         webroot: Optional[str] = None
     ) -> Dict[str, Any]:
         """申请证书（统一存储在 database）"""
-        return apply_certificate(self, domain, email, sans, webroot)
+        return apply_certificate(self, domain, email, folder_name, sans, webroot)
+    
+    def invalidate_cache(
+        self,
+        stores: list,
+        trigger: str = "manual"
+    ) -> bool:
+        """
+        发布缓存失效事件（通过 Kafka）
+        
+        Args:
+            stores: 存储位置列表（websites, apis, database）
+            trigger: 触发来源（manual, add, update, delete）
+        
+        Returns:
+            是否成功发布事件
+        """
+        return invalidate_cache(self, stores, trigger)

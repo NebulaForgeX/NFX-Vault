@@ -92,8 +92,8 @@ def apply_certificate(
         # 根据申请结果更新数据库状态
         if apply_result["success"]:
             try:
-                # 清除缓存
-                app.cache_repo.clear_store_cache(CertificateStore.DATABASE.value)
+                # 发布缓存失效事件（通过 Kafka）
+                app.invalidate_cache([CertificateStore.DATABASE.value], trigger="add")
                 
                 # 触发 Kafka 事件来刷新证书（从文件夹读取并保存到数据库）
                 if app.pipeline_repo:

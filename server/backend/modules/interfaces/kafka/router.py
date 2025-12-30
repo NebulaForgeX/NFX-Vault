@@ -32,10 +32,14 @@ class KafkaEventRouter:
     
     def register_routes(self):
         """注册所有路由"""
-        # 注册 operation.refresh 路由
         if self.certificate_kafka_handler:
+            # 注册 operation.refresh 路由
             self.routes[EventType.OPERATION_REFRESH] = self.certificate_kafka_handler.process_read_certificate_file
             logger.info(f"✅ 注册路由: {EventType.OPERATION_REFRESH} -> CertificateKafkaHandler.process_read_certificate_file")
+            
+            # 注册 cache.invalidate 路由
+            self.routes[EventType.CACHE_INVALIDATE] = self.certificate_kafka_handler.process_cache_invalidate
+            logger.info(f"✅ 注册路由: {EventType.CACHE_INVALIDATE} -> CertificateKafkaHandler.process_cache_invalidate")
         
         logger.info(f"📋 共注册 {len(self.routes)} 个路由")
     

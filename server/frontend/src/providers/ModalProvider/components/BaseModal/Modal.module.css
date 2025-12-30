@@ -94,7 +94,8 @@
 }
 
 .closeButton:hover {
-    background: var(--color-primary-light);
+    background: var(--color-primary-hover);
+    color: white;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

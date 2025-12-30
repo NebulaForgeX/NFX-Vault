@@ -75,8 +75,10 @@ async def read_and_store_certificates(
                 failed_count += 1
                 continue
         
-        # 清除缓存（在数据库更新完成后）
-        app.cache_repo.clear_store_cache(store)
+        # 发布缓存失效事件（通过 Kafka）
+        # 注意：如果 trigger 是 "event"（来自 Kafka），则不再发送事件，避免无限循环
+        if trigger != "event":
+            app.invalidate_cache([store], trigger=trigger)
         
         # 发送 Kafka 事件（通知前端刷新缓存）
         # 注意：如果 trigger 是 "event"（来自 Kafka），则不再发送事件，避免无限循环

@@ -1,13 +1,13 @@
 # coding=utf-8
 
 """
-ACME HTTP-01 挑战处理
+ACME HTTP-01 挑战存储
 
 处理 Let's Encrypt HTTP-01 挑战请求
 """
 import logging
 import os
-from typing import Dict, Optional
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 

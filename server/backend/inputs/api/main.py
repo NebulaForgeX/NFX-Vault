@@ -15,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from modules.configs import load_config, DatabaseConfig, CertConfig, init_connections, cleanup_connections
 from modules.interfaces.http import http_router, set_http_handler, acme_router, set_acme_challenge_storage
-from modules.applications.certificate.acme_challenge import ACMEChallengeStorage
+from modules.applications.acme import ACMEChallengeStorage
 from modules.applications.certificate.handler.read_folders_and_store import read_folders_and_store_certificates
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger

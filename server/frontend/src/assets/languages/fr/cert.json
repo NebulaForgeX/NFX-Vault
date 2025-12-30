@@ -109,6 +109,9 @@
   "apply": {
     "title": "Demander un certificat Let's Encrypt",
     "basicInfo": "Informations de base",
+    "folderName": "Nom du dossier",
+    "folderNamePlaceholder": "par exemple : api_lucaslyu_com",
+    "folderNameHelp": "Identifiant unique, ne peut contenir que des lettres, des chiffres, des traits de soulignement et des tirets",
     "email": "Adresse e-mail",
     "emailPlaceholder": "admin@example.com",
     "sans": "SANs (Optionnel)",

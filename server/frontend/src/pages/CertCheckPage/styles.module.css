@@ -34,7 +34,8 @@
 }
 
 .addButton:hover {
-  background-color: var(--color-primary-light);
+  background-color: var(--color-primary-hover);
+  color: white;
 }
 
 .title {

@@ -68,8 +68,8 @@ def create_certificate(
         )
         
         if cert_obj:
-            # 清除缓存
-            app.cache_repo.clear_store_cache(actual_store)
+            # 发布缓存失效事件（通过 Kafka）
+            app.invalidate_cache([actual_store], trigger="add")
             
             # 发送 Kafka 事件通知前端刷新
             if app.pipeline_repo:
