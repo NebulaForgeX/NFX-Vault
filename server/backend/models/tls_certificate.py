@@ -18,7 +18,7 @@ class TLSCertificate(Base):
     __tablename__ = "tls_certificates"
     __table_args__ = (
         UniqueConstraint('folder_name', name='uq_folder_name'),  # 唯一约束：folder_name
-        Index('idx_store_domain', 'store', 'domain'),  # 复合索引：store + domain
+        Index('idx_store_domain', 'store', 'domain', 'source'),  # 复合索引：store + domain + source
         Index('idx_domain', 'domain'),  # 单列索引：domain
         Index('idx_source', 'source'),  # 单列索引：source
         Index('idx_folder_name', 'folder_name'),  # 单列索引：folder_name

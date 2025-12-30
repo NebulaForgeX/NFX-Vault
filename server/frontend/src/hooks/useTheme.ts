@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import type { CertificateInfo } from "@/apis/domain";
 import { CertificateStatus, CertificateSource } from "@/apis/domain";
@@ -156,5 +156,55 @@ export const useCertificateSource = (source?: CertificateSource | string): Certi
   }, [source, t]);
 
   return sourceInfo;
+};
+
+/**
+ * Hook to get countdown timer information until certificate expiration
+ * @param notAfter - Certificate expiration date (ISO string)
+ * @returns Countdown information including formatted time string and isExpired flag
+ */
+export const useCertificateCountdown = (notAfter?: string): { countdown: string; isExpired: boolean } => {
+  const [countdown, setCountdown] = useState<string>("");
+  const [isExpired, setIsExpired] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!notAfter) {
+      setCountdown("");
+      setIsExpired(false);
+      return;
+    }
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const expiry = new Date(notAfter).getTime();
+      const diff = expiry - now;
+
+      if (diff <= 0) {
+        setCountdown("00:00:00:00");
+        setIsExpired(true);
+        return;
+      }
+
+      setIsExpired(false);
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      const formatTime = (value: number) => value.toString().padStart(2, "0");
+      setCountdown(`${formatTime(days)}:${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`);
+    };
+
+    // 立即更新一次
+    updateCountdown();
+
+    // 每秒更新一次
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, [notAfter]);
+
+  return { countdown, isExpired };
 };
 

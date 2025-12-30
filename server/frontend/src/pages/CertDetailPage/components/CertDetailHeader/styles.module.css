@@ -36,17 +36,79 @@
   margin: 0;
 }
 
+.badges {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .statusBadge {
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
   color: white;
   font-weight: 600;
   font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.countdownBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  font-family: "Fira Code", monospace;
+  white-space: nowrap;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.countdownBadge.expired {
+  animation: blink 1s ease-in-out infinite;
+}
+
+.countdownIcon {
+  flex-shrink: 0;
+}
+
+.countdownText {
+  letter-spacing: 0.05em;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @media (max-width: 768px) {
   .title {
     font-size: 1.5rem;
+  }
+  
+  .badges {
+    gap: 0.5rem;
+  }
+  
+  .statusBadge,
+  .countdownBadge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
   }
 }
 
