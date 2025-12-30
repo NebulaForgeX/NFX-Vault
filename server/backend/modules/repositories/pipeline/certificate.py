@@ -9,12 +9,13 @@ import logging
 from typing import Optional
 
 from modules.configs.database_config import DatabaseConfig
-from resources.kafka.producer import send_message
+from resources.kafka.client import KafkaClient
 from events.operation_refresh_event import OperationRefreshEvent
 from events.cache_invalidate_event import CacheInvalidateEvent
+from events.parse_certificate_event import ParseCertificateEvent
 from events.event_type import EventType
 from resources.kafka.consumer import KafkaEventConsumer
-from typing import List
+from typing import List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -22,14 +23,20 @@ logger = logging.getLogger(__name__)
 class CertificatePipeline:
     """证书 Pipeline 仓库"""
     
-    def __init__(self, db_config: Optional[DatabaseConfig] = None):
+    def __init__(
+        self,
+        db_config: Optional[DatabaseConfig] = None,
+        kafka_client: Optional[KafkaClient] = None
+    ):
         """
         初始化 Pipeline 仓库
         
         Args:
             db_config: 数据库配置对象（包含 Kafka 配置）
+            kafka_client: Kafka 客户端实例（复用，不每次创建）
         """
         self.db_config = db_config
+        self.kafka_client = kafka_client
     
     def send_refresh_event(
         self,
@@ -50,6 +57,10 @@ class CertificatePipeline:
             logger.debug("⚠️  Kafka 未启用，跳过发送刷新事件")
             return False
         
+        if not self.kafka_client or not self.kafka_client.enable_kafka:
+            logger.warning("⚠️  Kafka 客户端未初始化或未启用")
+            return False
+        
         try:
             # 创建事件对象
             event = OperationRefreshEvent(
@@ -57,15 +68,18 @@ class CertificatePipeline:
                 trigger=trigger
             )
             
+            # 确保 topic 存在
+            topic = self.db_config.KAFKA_EVENT_TOPIC or "nfxvault.events"
+            if not self.kafka_client.ensure_topic_exists(topic):
+                logger.warning(f"⚠️  Topic '{topic}' 不存在且创建失败，但会尝试发送（依赖自动创建）")
+            
             # 发送事件（event_type 放在 headers 中）
-            success = send_message(
-                bootstrap_servers=self.db_config.KAFKA_BOOTSTRAP_SERVERS,
-                topic=self.db_config.KAFKA_EVENT_TOPIC,
+            success = self.kafka_client.send(
+                topic=topic,
                 data=event.to_dict(),
                 headers={
                     KafkaEventConsumer.EVENT_TYPE_HEADER_KEY: EventType.OPERATION_REFRESH
-                },
-                enable_kafka=self.db_config.KAFKA_ENABLED
+                }
             )
             
             if success:
@@ -98,6 +112,10 @@ class CertificatePipeline:
             logger.debug("⚠️  Kafka 未启用，跳过发送缓存失效事件")
             return False
         
+        if not self.kafka_client or not self.kafka_client.enable_kafka:
+            logger.warning("⚠️  Kafka 客户端未初始化或未启用")
+            return False
+        
         try:
             # 创建事件对象
             event = CacheInvalidateEvent(
@@ -105,15 +123,18 @@ class CertificatePipeline:
                 trigger=trigger
             )
             
+            # 确保 topic 存在
+            topic = self.db_config.KAFKA_EVENT_TOPIC or "nfxvault.events"
+            if not self.kafka_client.ensure_topic_exists(topic):
+                logger.warning(f"⚠️  Topic '{topic}' 不存在且创建失败，但会尝试发送（依赖自动创建）")
+            
             # 发送事件（event_type 放在 headers 中）
-            success = send_message(
-                bootstrap_servers=self.db_config.KAFKA_BOOTSTRAP_SERVERS,
-                topic=self.db_config.KAFKA_EVENT_TOPIC,
+            success = self.kafka_client.send(
+                topic=topic,
                 data=event.to_dict(),
                 headers={
                     KafkaEventConsumer.EVENT_TYPE_HEADER_KEY: EventType.CACHE_INVALIDATE
-                },
-                enable_kafka=self.db_config.KAFKA_ENABLED
+                }
             )
             
             if success:
@@ -125,5 +146,57 @@ class CertificatePipeline:
             
         except Exception as e:
             logger.error(f"❌ 发送缓存失效事件失败: {e}", exc_info=True)
+            return False
+    
+    def send_parse_certificate_event(
+        self,
+        certificate_id: str
+    ) -> bool:
+        """
+        发送解析证书事件到 Kafka
+        
+        Args:
+            certificate_id: 证书 ID
+        
+        Returns:
+            是否发送成功
+        """
+        if not self.db_config or not self.db_config.KAFKA_ENABLED:
+            logger.debug("⚠️  Kafka 未启用，跳过发送解析证书事件")
+            return False
+        
+        if not self.kafka_client or not self.kafka_client.enable_kafka:
+            logger.warning("⚠️  Kafka 客户端未初始化或未启用")
+            return False
+        
+        try:
+            # 创建事件对象
+            event = ParseCertificateEvent(
+                certificate_id=certificate_id
+            )
+            
+            # 确保 topic 存在
+            topic = self.db_config.KAFKA_EVENT_TOPIC or "nfxvault.events"
+            if not self.kafka_client.ensure_topic_exists(topic):
+                logger.warning(f"⚠️  Topic '{topic}' 不存在且创建失败，但会尝试发送（依赖自动创建）")
+            
+            # 发送事件（event_type 放在 headers 中）
+            success = self.kafka_client.send(
+                topic=topic,
+                data=event.to_dict(),
+                headers={
+                    KafkaEventConsumer.EVENT_TYPE_HEADER_KEY: EventType.PARSE_CERTIFICATE
+                }
+            )
+            
+            if success:
+                logger.info(f"✅ 已发送解析证书事件到 Kafka: certificate_id={certificate_id}")
+            else:
+                logger.warning(f"⚠️  发送解析证书事件失败: certificate_id={certificate_id}")
+            
+            return success
+            
+        except Exception as e:
+            logger.error(f"❌ 发送解析证书事件失败: {e}", exc_info=True)
             return False
 

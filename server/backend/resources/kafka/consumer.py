@@ -90,7 +90,7 @@ class KafkaEventConsumer:
                 consumer_timeout_ms=1000,  # 1秒超时，用于优雅退出
             )
             self.running = True
-            self.logger.info(f"✅ Kafka 连接成功: topic={self.topic}, group_id={self.group_id}")
+            self.logger.info(f"✅ Kafka 消费者启动成功: topic={self.topic}, group_id={self.group_id}")
             return True
         except Exception as e:
             self.logger.error(f"❌ Kafka 消费者启动失败: {e}")

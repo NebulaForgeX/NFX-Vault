@@ -18,6 +18,7 @@ from resources.kafka import (
     KafkaEventConsumer,
     KafkaConsumerThread,
 )
+from resources.kafka.client import KafkaClient
 from modules.interfaces.http.handler.certificate import CertificateHTTPHandler
 from modules.interfaces.http.handler.file import FileHTTPHandler
 from modules.interfaces.kafka.handler.certificate import CertificateKafkaHandler
@@ -38,6 +39,7 @@ class Connections(NamedTuple):
     """连接对象集合"""
     db_session: Optional[MySQLSession]
     redis_client: Optional[RedisClient]
+    kafka_client: Optional[KafkaClient]
     kafka_consumer: Optional[KafkaEventConsumer]
     kafka_consumer_thread: Optional[KafkaConsumerThread]
     certificate_http_handler: Optional[CertificateHTTPHandler]
@@ -66,7 +68,10 @@ def init_connections(db_config: DatabaseConfig, cert_config: CertConfig) -> Conn
     # 2.1 初始化 Repositories
     certificate_cache_repo = CertificateCache(redis_client=resources.redis_client)
     certificate_database_repo = CertificateDatabase(db_session=resources.db_session)
-    certificate_pipeline_repo = CertificatePipeline(db_config=db_config)
+    certificate_pipeline_repo = CertificatePipeline(
+        db_config=db_config,
+        kafka_client=resources.kafka_client
+    )
     
     # 初始化 TLS Repository（使用 Certbot 申请证书）
     # 所有配置从 cert_config 传入，不允许默认值
@@ -121,6 +126,7 @@ def init_connections(db_config: DatabaseConfig, cert_config: CertConfig) -> Conn
     return Connections(
         db_session=resources.db_session,
         redis_client=resources.redis_client,
+        kafka_client=resources.kafka_client,
         kafka_consumer=resources.kafka_consumer,
         kafka_consumer_thread=resources.kafka_consumer_thread,
         certificate_http_handler=certificate_http_handler,
@@ -140,6 +146,9 @@ def cleanup_connections(connections: Connections):
     
     if connections.kafka_consumer:
         connections.kafka_consumer.stop()
+    
+    if connections.kafka_client:
+        connections.kafka_client.close()
     
     if connections.redis_client:
         connections.redis_client.close()

@@ -50,6 +50,19 @@
     "previous": "Précédent",
     "next": "Suivant",
     "page": "Page"
+  },
+  "delete": {
+    "confirm": {
+      "title": "Supprimer le certificat",
+      "message": "Êtes-vous sûr de vouloir supprimer le certificat pour le domaine \"{{domain}}\" ? Cela ne supprimera que l'enregistrement de la base de données et n'affectera pas le fichier acme.json.",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
+    },
+    "success": "Certificat supprimé avec succès",
+    "error": "Échec de la suppression du certificat"
+  },
+  "update": {
+    "autoNotEditable": "Les certificats de source automatique ne peuvent pas être modifiés manuellement. Veuillez les actualiser depuis le dossier à la place."
   }
 }
 

@@ -23,6 +23,7 @@
   color: var(--color-fg-text);
   cursor: pointer;
   transition: all 0.2s;
+  padding: 0 0;
 }
 
 .backBtn:hover {

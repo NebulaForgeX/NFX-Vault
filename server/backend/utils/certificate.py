@@ -40,6 +40,7 @@ async def extract_cert_info_from_pem(cert_pem: str) -> Dict:
         issuer = "Let's Encrypt"  # 默认颁发者
         common_name = None
         subject = {}
+        sans = []  # Subject Alternative Names
         
         # 提取 subject 信息（包含域名）
         subject_line = None
@@ -55,6 +56,23 @@ async def extract_cert_info_from_pem(cert_pem: str) -> Dict:
             if cn_match:
                 common_name = cn_match.group(1).strip()
                 subject["CN"] = common_name
+        
+        # 提取 SANs (Subject Alternative Names)
+        # openssl 输出格式通常是：
+        # X509v3 Subject Alternative Name:
+        #     DNS:example.com, DNS:www.example.com, DNS:api.example.com
+        in_san_section = False
+        for line in output.split('\n'):
+            if 'Subject Alternative Name' in line or 'X509v3 Subject Alternative Name' in line:
+                in_san_section = True
+                continue
+            if in_san_section:
+                # 提取 DNS: 开头的域名
+                dns_matches = re.findall(r'DNS:\s*([^,\s]+)', line)
+                sans.extend([dns.strip() for dns in dns_matches])
+                # 如果遇到空行或下一个节，停止提取
+                if line.strip() == '' or (line.strip() and not line.strip().startswith(' ') and ':' in line):
+                    break
         
         # 提取 issuer 信息
         issuer_line = None
@@ -100,6 +118,11 @@ async def extract_cert_info_from_pem(cert_pem: str) -> Dict:
             days_remaining = delta.days
             is_valid = days_remaining >= 0
         
+        # 去重 SANs，并确保主域名也在列表中
+        all_domains = list(set(sans))
+        if common_name and common_name not in all_domains:
+            all_domains.insert(0, common_name)
+        
         return {
             "not_before": not_before,
             "not_after": not_after,
@@ -108,6 +131,8 @@ async def extract_cert_info_from_pem(cert_pem: str) -> Dict:
             "issuer": issuer,
             "common_name": common_name,
             "subject": subject,
+            "sans": sans,  # Subject Alternative Names
+            "all_domains": all_domains,  # 所有域名（包括 CN 和 SANs）
         }
     except subprocess.TimeoutExpired:
         logger.error("❌ OpenSSL 命令超时")
@@ -143,6 +168,7 @@ def extract_cert_info_from_pem_sync(cert_pem: str) -> Dict:
         issuer = "Unknown"
         common_name = None
         subject = {}
+        sans = []  # Subject Alternative Names
         
         # 提取 subject 信息（包含域名）
         subject_line = None
@@ -158,6 +184,23 @@ def extract_cert_info_from_pem_sync(cert_pem: str) -> Dict:
             if cn_match:
                 common_name = cn_match.group(1).strip()
                 subject["CN"] = common_name
+        
+        # 提取 SANs (Subject Alternative Names)
+        # openssl 输出格式通常是：
+        # X509v3 Subject Alternative Name:
+        #     DNS:example.com, DNS:www.example.com, DNS:api.example.com
+        in_san_section = False
+        for line in output.split('\n'):
+            if 'Subject Alternative Name' in line or 'X509v3 Subject Alternative Name' in line:
+                in_san_section = True
+                continue
+            if in_san_section:
+                # 提取 DNS: 开头的域名
+                dns_matches = re.findall(r'DNS:\s*([^,\s]+)', line)
+                sans.extend([dns.strip() for dns in dns_matches])
+                # 如果遇到空行或下一个节，停止提取
+                if line.strip() == '' or (line.strip() and not line.strip().startswith(' ') and ':' in line):
+                    break
         
         # 提取 issuer 信息
         issuer_line = None
@@ -199,6 +242,11 @@ def extract_cert_info_from_pem_sync(cert_pem: str) -> Dict:
             days_remaining = delta.days
             is_valid = days_remaining >= 0
         
+        # 去重 SANs，并确保主域名也在列表中
+        all_domains = list(set(sans))
+        if common_name and common_name not in all_domains:
+            all_domains.insert(0, common_name)
+        
         return {
             "not_before": not_before,
             "not_after": not_after,
@@ -207,6 +255,8 @@ def extract_cert_info_from_pem_sync(cert_pem: str) -> Dict:
             "issuer": issuer,
             "common_name": common_name,
             "subject": subject,
+            "sans": sans,  # Subject Alternative Names
+            "all_domains": all_domains,  # 所有域名（包括 CN 和 SANs）
         }
     except subprocess.TimeoutExpired:
         logger.error("❌ OpenSSL 命令超时")

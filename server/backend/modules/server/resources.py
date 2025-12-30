@@ -24,6 +24,7 @@ class ResourceConnections(NamedTuple):
     """资源连接集合（数据库、Redis、Kafka）"""
     db_session: Optional[MySQLSession]
     redis_client: Optional[RedisClient]
+    kafka_client: Optional[KafkaClient]
     kafka_consumer: Optional[KafkaEventConsumer]
     kafka_consumer_thread: Optional[KafkaConsumerThread]
 
@@ -40,6 +41,7 @@ def init_resource_connections(db_config: DatabaseConfig) -> ResourceConnections:
     """
     db_session: Optional[MySQLSession] = None
     redis_client: Optional[RedisClient] = None
+    kafka_client: Optional[KafkaClient] = None
     kafka_consumer: Optional[KafkaEventConsumer] = None
     kafka_consumer_thread: Optional[KafkaConsumerThread] = None
     
@@ -76,23 +78,26 @@ def init_resource_connections(db_config: DatabaseConfig) -> ResourceConnections:
         except Exception as e:
             logger.error(f"❌ Redis 初始化失败: {e}")
     
-    # 初始化 Kafka Consumer
+    # 初始化 Kafka Client 和 Consumer
     if db_config.KAFKA_ENABLED:
         try:
             bootstrap_servers = db_config.KAFKA_BOOTSTRAP_SERVERS or "localhost:9092"
             event_topic = db_config.KAFKA_EVENT_TOPIC or "nfxvault.events"
             group_id = db_config.KAFKA_CONSUMER_GROUP_ID or "nfxvault-server"
             
-            # 确保 Kafka topic 存在
+            # 创建 Kafka Client（单例，复用）
             kafka_client = KafkaClient(
                 bootstrap_servers=bootstrap_servers,
                 enable_kafka=True
             )
+            
+            # 确保 Kafka topic 存在
             if kafka_client.ensure_topic_exists(event_topic):
                 logger.info(f"✅ Kafka topic 已存在或创建成功: {event_topic}")
             else:
                 logger.warning(f"⚠️  Kafka topic 创建失败: {event_topic}")
             
+            # 创建 Kafka Consumer
             kafka_consumer = KafkaEventConsumer(
                 bootstrap_servers=bootstrap_servers,
                 topic=event_topic,
@@ -100,13 +105,14 @@ def init_resource_connections(db_config: DatabaseConfig) -> ResourceConnections:
             )
             
             # 注意：Kafka Consumer 线程在 main.py 中启动，这里只初始化
-            logger.info("✅ Kafka Consumer 已初始化（等待在 main.py 中启动线程）")
+            logger.info("✅ Kafka Client 和 Consumer 已初始化（Client 将复用，Consumer 等待在 main.py 中启动线程）")
         except Exception as e:
-            logger.error(f"❌ Kafka Consumer 初始化失败: {e}")
+            logger.error(f"❌ Kafka 初始化失败: {e}")
     
     return ResourceConnections(
         db_session=db_session,
         redis_client=redis_client,
+        kafka_client=kafka_client,
         kafka_consumer=kafka_consumer,
         kafka_consumer_thread=kafka_consumer_thread
     )

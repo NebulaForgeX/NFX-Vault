@@ -26,6 +26,7 @@ from .handler import (
     delete_certificate,
     apply_certificate,
     invalidate_cache,
+    parse_certificate,
 )
 
 logger = logging.getLogger(__name__)
@@ -110,10 +111,13 @@ class CertificateApplication:
         domain: str,
         certificate: str,
         private_key: str,
-        sans: Optional[list] = None
+        sans: Optional[list] = None,
+        folder_name: Optional[str] = None,
+        email: Optional[str] = None,
+        issuer: Optional[str] = None
     ) -> Dict[str, Any]:
         """创建证书"""
-        return create_certificate(self, store, domain, certificate, private_key, sans)
+        return create_certificate(self, store, domain, certificate, private_key, sans, folder_name, email, issuer)
     
     def update_certificate(
         self,
@@ -122,10 +126,11 @@ class CertificateApplication:
         certificate: Optional[str] = None,
         private_key: Optional[str] = None,
         store: Optional[str] = None,
-        sans: Optional[list] = None
+        sans: Optional[list] = None,
+        folder_name: Optional[str] = None
     ) -> Dict[str, Any]:
         """更新证书"""
-        return update_certificate(self, domain, source, certificate, private_key, store, sans)
+        return update_certificate(self, domain, source, certificate, private_key, store, sans, folder_name)
     
     def delete_certificate(
         self,
@@ -162,3 +167,18 @@ class CertificateApplication:
             是否成功发布事件
         """
         return invalidate_cache(self, stores, trigger)
+    
+    def parse_certificate(
+        self,
+        certificate_id: str
+    ) -> Dict[str, Any]:
+        """
+        解析证书内容并更新数据库
+        
+        Args:
+            certificate_id: 证书 ID
+        
+        Returns:
+            解析结果（包含 success, message 等）
+        """
+        return parse_certificate(self, certificate_id)

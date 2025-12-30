@@ -2,8 +2,8 @@ import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import type { CertType } from "@/apis/domain";
 import type { CertificateInfo } from "@/apis/domain";
-import { CertificateSource } from "@/apis/domain";
-import { Edit, Eye, Trash2 } from "@/assets/icons/lucide";
+import { CertificateSource, CertificateStatus } from "@/apis/domain";
+import { Edit, Eye, Trash2, Loader2 } from "@/assets/icons/lucide";
 import { useCertificateStatus, useCertificateTime } from "@/hooks";
 import { useActionCertificateItem } from "../../hooks";
 import styles from "./styles.module.css";
@@ -21,9 +21,8 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
 
   const handleCardClick = (e: React.MouseEvent) => {
     // 如果点击的是按钮区域，不触发卡片点击
-    if ((e.target as HTMLElement).closest(`.${styles.certActions}`)) {
-      return;
-    }
+    if ((e.target as HTMLElement).closest(`.${styles.certActions}`)) return;
+    
     
     // 点击卡片本身，跳转到查看页面
     handleView(cert, certType)();
@@ -63,6 +62,15 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
             {timeInfo.label}
           </div>
           <div className={styles.certActions} onClick={(e) => e.stopPropagation()}>
+            {cert.status === CertificateStatus.PROCESS && (
+              <button
+                className={`${styles.actionButton} ${styles.processButton}`}
+                onClick={handleView(cert, certType)}
+                title={t("actions.view") || "View"}
+              >
+                <Loader2 size={18} className={styles.rotating} />
+              </button>
+            )}
             <button
               className={styles.actionButton}
               onClick={handleEdit(cert, certType)}

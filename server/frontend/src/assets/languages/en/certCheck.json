@@ -50,6 +50,19 @@
     "previous": "Previous",
     "next": "Next",
     "page": "Page"
+  },
+  "delete": {
+    "confirm": {
+      "title": "Delete Certificate",
+      "message": "Are you sure you want to delete the certificate for domain \"{{domain}}\"? This will only delete the database record and will not affect the acme.json file.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "success": "Certificate deleted successfully",
+    "error": "Failed to delete certificate"
+  },
+  "update": {
+    "autoNotEditable": "Auto source certificates cannot be manually updated. Please refresh from folder instead."
   }
 }
 

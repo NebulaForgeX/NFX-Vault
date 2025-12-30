@@ -1,0 +1,144 @@
+# coding=utf-8
+
+"""
+解析证书 Handler
+"""
+import logging
+from typing import Dict, Any, Optional
+
+from .protocol import CertificateAppLike
+from utils.certificate import extract_cert_info_from_pem_sync
+from enums.certificate_status import CertificateStatus
+
+logger = logging.getLogger(__name__)
+
+
+def parse_certificate(
+    app: CertificateAppLike,
+    certificate_id: str
+) -> Dict[str, Any]:
+    """
+    解析证书内容并更新数据库
+    
+    Args:
+        app: CertificateApplication 实例
+        certificate_id: 证书 ID
+    
+    Returns:
+        解析结果（包含 success, message 等）
+    """
+    try:
+        from enums.certificate_store import CertificateStore
+        
+        # 从数据库获取证书
+        cert_obj = app.database_repo.get_certificate_by_id(certificate_id)
+        if not cert_obj:
+            logger.error(f"❌ 证书不存在: certificate_id={certificate_id}")
+            return {
+                "success": False,
+                "message": f"Certificate not found: {certificate_id}"
+            }
+        
+        # 检查证书内容是否存在
+        if not cert_obj.get("certificate"):
+            logger.error(f"❌ 证书内容为空: certificate_id={certificate_id}")
+            return {
+                "success": False,
+                "message": "Certificate content is empty"
+            }
+        
+        # 解析证书
+        cert_info = extract_cert_info_from_pem_sync(cert_obj["certificate"])
+        
+        if not cert_info:
+            # 解析失败，更新状态为 fail，但保存基本信息
+            app.database_repo.update_certificate_parse_result(
+                certificate_id=certificate_id,
+                status=CertificateStatus.FAIL.value,
+                sans=None,
+                issuer=None,
+                not_before=None,
+                not_after=None,
+                is_valid=False,
+                days_remaining=None
+            )
+            logger.warning(f"⚠️  证书解析失败: certificate_id={certificate_id}")
+            return {
+                "success": False,
+                "message": "Failed to parse certificate"
+            }
+        
+        # 提取解析结果
+        parsed_domain = cert_info.get("common_name")
+        parsed_sans = cert_info.get("sans", [])
+        parsed_issuer = cert_info.get("issuer")
+        parsed_not_before = cert_info.get("not_before")
+        parsed_not_after = cert_info.get("not_after")
+        parsed_is_valid = cert_info.get("is_valid", False)
+        parsed_days_remaining = cert_info.get("days_remaining")
+        
+        # 合并所有域名（包括 CN 和 SANs）
+        all_domains = cert_info.get("all_domains", [])
+        if parsed_domain and parsed_domain not in all_domains:
+            all_domains.insert(0, parsed_domain)
+        
+        # 检查域名是否匹配
+        original_domain = cert_obj.get("domain")
+        domain_match = parsed_domain == original_domain if parsed_domain else False
+        
+        # 确定状态
+        if domain_match and parsed_is_valid:
+            status = CertificateStatus.SUCCESS.value
+        else:
+            status = CertificateStatus.FAIL.value
+            if not domain_match:
+                logger.warning(f"⚠️  域名不匹配: original={original_domain}, parsed={parsed_domain}")
+        
+        # 更新数据库（无论成功还是失败，都保存解析结果）
+        app.database_repo.update_certificate_parse_result(
+            certificate_id=certificate_id,
+            status=status,
+            sans=all_domains if all_domains else None,
+            issuer=parsed_issuer,
+            not_before=parsed_not_before,
+            not_after=parsed_not_after,
+            is_valid=parsed_is_valid,
+            days_remaining=parsed_days_remaining
+        )
+        
+        # 发布缓存失效事件
+        store = cert_obj.get("store", CertificateStore.DATABASE.value)
+        app.invalidate_cache([store], trigger="parse")
+        
+        logger.info(f"✅ 证书解析完成: certificate_id={certificate_id}, status={status}, domain_match={domain_match}")
+        
+        return {
+            "success": status == CertificateStatus.SUCCESS.value,
+            "message": f"Certificate parsed successfully" if status == CertificateStatus.SUCCESS.value else "Certificate parsed but validation failed",
+            "domain_match": domain_match,
+            "parsed_domain": parsed_domain,
+            "original_domain": original_domain
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ 解析证书失败: {e}", exc_info=True)
+        # 即使解析失败，也尝试更新状态为 fail
+        try:
+            app.database_repo.update_certificate_parse_result(
+                certificate_id=certificate_id,
+                status=CertificateStatus.FAIL.value,
+                sans=None,
+                issuer=None,
+                not_before=None,
+                not_after=None,
+                is_valid=False,
+                days_remaining=None
+            )
+        except Exception as update_error:
+            logger.error(f"❌ 更新证书状态失败: {update_error}")
+        
+        return {
+            "success": False,
+            "message": f"Error parsing certificate: {str(e)}"
+        }
+

@@ -60,6 +60,29 @@
   color: var(--color-danger);
 }
 
+.processButton {
+  cursor: pointer;
+}
+
+.processButton:hover {
+  background-color: var(--color-bg-3);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.rotating {
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .certInfo {
   flex: 1;
 }

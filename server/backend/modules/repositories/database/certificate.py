@@ -136,6 +136,36 @@ class CertificateDatabase:
             logger.error(f"❌ 查询证书失败: {e}", exc_info=True)
             return None
     
+    def get_certificate_by_id(
+        self,
+        certificate_id: str
+    ) -> Optional[Dict[str, Any]]:
+        """
+        根据证书 ID 获取证书
+        
+        Args:
+            certificate_id: 证书 ID
+        
+        Returns:
+            证书字典，如果不存在则返回 None
+        """
+        if not self.db_session or not hasattr(self.db_session, 'get_session'):
+            logger.warning("⚠️  数据库会话未初始化，返回 None")
+            return None
+        
+        try:
+            with self.db_session.get_session() as session:
+                cert = session.query(TLSCertificate).filter(
+                    TLSCertificate.id == certificate_id
+                ).first()
+                
+                if cert:
+                    return cert.to_dict()
+                return None
+        except Exception as e:
+            logger.error(f"❌ 查询证书失败: {e}", exc_info=True)
+            return None
+    
     def get_certificate_by_folder_name(
         self,
         folder_name: str
@@ -260,8 +290,9 @@ class CertificateDatabase:
                     existing.days_remaining = days_remaining
                     existing.updated_at = datetime.now()
                     # 不更新 source，保持原有 source
+                    session.flush()  # 刷新以确保对象状态同步
                     # session.commit() 由 context manager 自动处理
-                    logger.debug(f"✅ 更新证书（upsert）: folder_name={folder_name}, domain={domain}, source={existing.source}")
+                    logger.debug(f"✅ 更新证书（upsert）: folder_name={folder_name}, domain={domain}, source={existing.source}, id={existing.id}")
                     return existing
                 else:
                     # 创建新记录（upsert 的 insert 部分）
@@ -282,8 +313,9 @@ class CertificateDatabase:
                         days_remaining=days_remaining
                     )
                     session.add(new_cert)
+                    session.flush()  # 刷新以获取 ID，但不提交（commit 由 context manager 处理）
                     # session.commit() 由 context manager 自动处理
-                    logger.debug(f"✅ 创建证书（upsert）: folder_name={folder_name}, domain={domain}, source={source}")
+                    logger.debug(f"✅ 创建证书（upsert）: folder_name={folder_name}, domain={domain}, source={source}, id={new_cert.id}")
                     return new_cert
         except Exception as e:
             logger.error(f"❌ Upsert 证书失败: folder_name={folder_name}, domain={domain}, source={source}, error={e}", exc_info=True)

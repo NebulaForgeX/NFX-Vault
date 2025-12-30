@@ -71,7 +71,7 @@ class KafkaClient:
                     request_timeout_ms=30000,
                     retries=3,
                 )
-                self.logger.info(f"✅ Kafka 连接成功: {bootstrap_servers}")
+                self.logger.debug(f"✅ Kafka 客户端初始化成功: {bootstrap_servers}")
             except Exception as e:
                 self.logger.error(f"❌ Kafka 生产者初始化失败: {e}")
                 self.enable_kafka = False

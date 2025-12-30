@@ -76,20 +76,23 @@ def create_certificate(
         )
         
         if cert_obj:
+            # 在 session 关闭前获取 ID（避免 detached instance 错误）
+            certificate_id = cert_obj.id
+            
             # 发布缓存失效事件（通过 Kafka）
             app.invalidate_cache([actual_store], trigger="add")
             
-            # 发送 Kafka 事件通知前端刷新
+            # 发送解析证书事件（通过 Kafka）
             if app.pipeline_repo:
                 try:
-                    app.pipeline_repo.send_refresh_event(actual_store, "create")
-                    logger.info(f"✅ Certificate created, refresh event sent for domain '{domain}'")
+                    app.pipeline_repo.send_parse_certificate_event(certificate_id=certificate_id)
+                    logger.info(f"✅ Certificate created, parse event sent for certificate_id '{certificate_id}'")
                 except Exception as e:
-                    logger.warning(f"⚠️ Failed to send refresh event: {e}")
+                    logger.warning(f"⚠️ Failed to send parse event: {e}")
             
             return {
                 "success": True,
-                "message": f"Certificate created successfully for domain '{domain}' (stored in database)"
+                "message": f"Certificate created successfully for domain '{domain}' (stored in database, parsing in background)"
             }
         else:
             return {

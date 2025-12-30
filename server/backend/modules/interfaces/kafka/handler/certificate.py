@@ -10,6 +10,7 @@ from typing import Dict, Any
 
 from events.operation_refresh_event import OperationRefreshEvent
 from events.cache_invalidate_event import CacheInvalidateEvent
+from events.parse_certificate_event import ParseCertificateEvent
 from modules.applications.tls import CertificateApplication
 
 logger = logging.getLogger(__name__)
@@ -83,5 +84,32 @@ class CertificateKafkaHandler:
             
         except Exception as e:
             logger.error(f"❌ 处理缓存失效事件失败: {e}", exc_info=True)
+            raise
+    
+    def process_parse_certificate(self, event_data: Dict[str, Any]):
+        """
+        处理解析证书事件（来自 Kafka 事件）
+        
+        此方法会解析证书内容并更新数据库
+        
+        Args:
+            event_data: 事件数据
+        """
+        try:
+            event = ParseCertificateEvent.from_dict(event_data)
+            logger.info(f"🔄 收到解析证书请求（事件）: certificate_id={event.certificate_id}")
+            
+            # 调用 Application 层处理业务逻辑
+            result = self.certificate_application.parse_certificate(
+                certificate_id=event.certificate_id
+            )
+            
+            if result.get("success"):
+                logger.info(f"✅ 证书解析成功: certificate_id={event.certificate_id}")
+            else:
+                logger.warning(f"⚠️  证书解析失败: certificate_id={event.certificate_id}, message={result.get('message')}")
+            
+        except Exception as e:
+            logger.error(f"❌ 处理解析证书事件失败: {e}", exc_info=True)
             raise
 

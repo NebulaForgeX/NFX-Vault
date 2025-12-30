@@ -50,6 +50,19 @@
     "previous": "上一页",
     "next": "下一页",
     "page": "第"
+  },
+  "delete": {
+    "confirm": {
+      "title": "删除证书",
+      "message": "确定要删除证书 \"{{domain}}\" 吗？此操作只删除数据库记录，不会影响 acme.json 文件。",
+      "confirm": "删除",
+      "cancel": "取消"
+    },
+    "success": "证书删除成功",
+    "error": "删除证书失败"
+  },
+  "update": {
+    "autoNotEditable": "自动申请的证书不能手动修改，请通过重新申请来更新。"
   }
 }
 
