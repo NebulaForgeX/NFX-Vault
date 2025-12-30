@@ -75,29 +75,6 @@
   color: var(--color-danger);
 }
 
-.input {
-  padding: 0.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background-color: var(--color-bg);
-  color: var(--color-fg-text);
-  font-size: 1rem;
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-}
-
-.inputError {
-  border-color: var(--color-danger);
-}
-
-.inputDisabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
 .sourceBadge {
   display: inline-block;
   padding: 0.5rem 0.75rem;

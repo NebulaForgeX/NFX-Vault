@@ -5,10 +5,11 @@
 
 定义创建、更新、删除证书的请求模型
 """
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List
 
 from enums.certificate_source import CertificateSource
+from enums.certificate_store import CertificateStore
 
 
 class CreateCertificateRequest(BaseModel):
@@ -23,15 +24,27 @@ class CreateCertificateRequest(BaseModel):
     issuer: Optional[str] = Field(None, description="颁发者")
 
 
-class UpdateCertificateRequest(BaseModel):
-    """更新证书请求"""
+class UpdateManualAddCertificateRequest(BaseModel):
+    """更新手动添加证书请求（MANUAL_ADD）"""
     domain: str = Field(..., description="域名")
-    source: CertificateSource = Field(..., description="来源（CertificateSource枚举）")
     certificate: Optional[str] = Field(None, description="证书内容（PEM格式）")
     private_key: Optional[str] = Field(None, description="私钥内容（PEM格式）")
-    store: Optional[str] = Field(None, description="存储位置（websites 或 apis）")
+    store: Optional[str] = Field(None, description="存储位置（websites、apis 或 database）")
     sans: Optional[List[str]] = Field(None, description="SANs 列表")
-    folder_name: Optional[str] = Field(None, description="文件夹名称（仅 MANUAL_APPLY 需要）")
+    folder_name: Optional[str] = Field(None, description="文件夹名称")
+    email: Optional[str] = Field(None, description="邮箱地址")
+    
+    @field_validator('store')
+    @classmethod
+    def validate_store(cls, v: Optional[str]) -> Optional[str]:
+        """验证 store 字段"""
+        return CertificateStore.validate(v)
+
+
+class UpdateManualApplyCertificateRequest(BaseModel):
+    """更新手动申请证书请求（MANUAL_APPLY）"""
+    domain: str = Field(..., description="域名")
+    folder_name: str = Field(..., description="文件夹名称（必需）")
 
 
 class DeleteCertificateRequest(BaseModel):

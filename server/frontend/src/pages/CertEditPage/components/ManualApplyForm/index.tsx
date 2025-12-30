@@ -1,67 +1,31 @@
 import type { FieldErrors } from "react-hook-form";
 import type { CertificateFormValues } from "@/elements/certificate/controllers/certificateSchema";
 
-import { memo, useState } from "react";
+import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
+import { Input } from "@/components";
 import styles from "./styles.module.css";
 
 interface ManualApplyFormProps {
-  onSubmit: (data: CertificateFormValues & { folder_name: string }) => Promise<void>;
+  onSubmit: (data: CertificateFormValues) => Promise<void>;
   onSubmitError?: (errors: FieldErrors<CertificateFormValues>) => void;
   isPending: boolean;
 }
 
 /**
- * MANUAL_APPLY 源证书表单 - 只能编辑 folder_name
+ * MANUAL_APPLY 源证书表单 - 只能编辑 folderName
  */
 const ManualApplyForm = memo(({ onSubmit, isPending }: ManualApplyFormProps) => {
   const { t } = useTranslation("certEdit");
   const methods = useFormContext<CertificateFormValues>();
-  const { watch, getValues } = methods;
+  const { watch, handleSubmit, formState: { errors } } = methods;
   
   const store = watch("store");
   const domain = watch("domain");
   const certificate = watch("certificate");
   const privateKey = watch("privateKey");
-  
-  // 使用独立的 state 管理 folder_name（不在 schema 中）
-  const [folderName, setFolderName] = useState<string>("");
-  const [folderNameError, setFolderNameError] = useState<string>("");
-  
-  // 验证 folder_name
-  const validateFolderName = (value: string): string => {
-    if (!value.trim()) {
-      return "请输入文件夹名称";
-    }
-    if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
-      return "文件夹名称只能包含字母、数字、下划线和连字符";
-    }
-    return "";
-  };
-  
-  const handleFolderNameChange = (value: string) => {
-    setFolderName(value);
-    setFolderNameError(validateFolderName(value));
-  };
-  
-  // 处理表单提交
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const error = validateFolderName(folderName);
-    if (error) {
-      setFolderNameError(error);
-      return;
-    }
-    
-    // 合并 folder_name 到表单数据中
-    const formData = getValues();
-    await onSubmit({
-      ...formData,
-      folder_name: folderName
-    });
-  };
 
   return (
     <div className={styles.container}>
@@ -74,27 +38,32 @@ const ManualApplyForm = memo(({ onSubmit, isPending }: ManualApplyFormProps) => 
         </p>
 
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           className={styles.form}
         >
-          {/* Basic Information - folder_name 可编辑，其他只读 */}
+          {/* Basic Information - folderName 可编辑，其他只读 */}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>{t("form.basicInfo") || "基本信息"}</h3>
             <div className={styles.basicInfoGrid}>
-              {/* folder_name 字段 - 可编辑 */}
+              {/* folderName 字段 - 可编辑 */}
               <div className={styles.formGroup}>
                 <label className={styles.label}>
                   {t("form.folderName") || "文件夹名称"} <span className={styles.required}>*</span>
                 </label>
-                <input
+                <Input
+                  {...methods.register("folderName", {
+                    required: "请输入文件夹名称",
+                    pattern: {
+                      value: /^[a-zA-Z0-9_-]+$/,
+                      message: "文件夹名称只能包含字母、数字、下划线和连字符"
+                    }
+                  })}
                   type="text"
-                  value={folderName}
-                  onChange={(e) => handleFolderNameChange(e.target.value)}
                   placeholder={t("form.folderNamePlaceholder") || "例如: api_lucaslyu_com"}
-                  className={`${styles.input} ${folderNameError ? styles.inputError : ""}`}
+                  error={!!errors.folderName}
                 />
-                {folderNameError && (
-                  <p className={styles.errorText}>{folderNameError}</p>
+                {errors.folderName && (
+                  <p className={styles.errorText}>{errors.folderName.message}</p>
                 )}
                 <p className={styles.helpText}>
                   {t("form.folderNameHelp") || "唯一标识符，只能包含字母、数字、下划线和连字符"}
@@ -103,21 +72,19 @@ const ManualApplyForm = memo(({ onSubmit, isPending }: ManualApplyFormProps) => 
               {/* store 字段 - 只读 */}
               <div className={styles.formGroup}>
                 <label className={styles.label}>{t("form.store") || "证书类型"}</label>
-                <input
+                <Input
                   type="text"
                   value={store || ""}
                   disabled
-                  className={`${styles.input} ${styles.inputDisabled}`}
                 />
               </div>
               {/* domain 字段 - 只读 */}
               <div className={styles.formGroup}>
                 <label className={styles.label}>{t("form.domain") || "域名"}</label>
-                <input
+                <Input
                   type="text"
                   value={domain || ""}
                   disabled
-                  className={`${styles.input} ${styles.inputDisabled}`}
                 />
               </div>
               {/* source 字段 - 只读 */}
@@ -156,7 +123,7 @@ const ManualApplyForm = memo(({ onSubmit, isPending }: ManualApplyFormProps) => 
             <button
               type="submit"
               className={styles.submitBtn}
-              disabled={isPending || !!folderNameError}
+              disabled={isPending}
             >
               {isPending
                 ? (t("form.updating") || "更新中...")

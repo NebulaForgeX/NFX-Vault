@@ -13,7 +13,8 @@ from modules.interfaces.http.handler.certificate import CertificateHTTPHandler
 from enums.certificate_source import CertificateSource
 from modules.interfaces.http.dto.reqdto import (
     CreateCertificateRequest,
-    UpdateCertificateRequest,
+    UpdateManualAddCertificateRequest,
+    UpdateManualApplyCertificateRequest,
     DeleteCertificateRequest,
     ApplyCertificateRequest,
 )
@@ -135,26 +136,39 @@ def create_tls_router(handler: CertificateHTTPHandler) -> APIRouter:
             logger.error(f"❌ 创建证书失败: {e}", exc_info=True)
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.put("/update", response_model=CertificateResponse)
-    async def update_certificate(request: UpdateCertificateRequest):
-        """更新证书"""
-        if request.store and request.store not in ["websites", "apis"]:
-            raise HTTPException(status_code=400, detail="store must be 'websites' or 'apis'")
+    @router.put("/update/manual-add", response_model=CertificateResponse)
+    async def update_manual_add_certificate(request: UpdateManualAddCertificateRequest):
+        """更新手动添加的证书（MANUAL_ADD）"""
         try:
-            result = handler.update_certificate(
+            result = handler.update_manual_add_certificate(
                 domain=request.domain,
-                source=request.source,
                 certificate=request.certificate,
                 private_key=request.private_key,
                 store=request.store,
                 sans=request.sans,
+                folder_name=request.folder_name,
+                email=request.email
+            )
+            return CertificateResponse(**result)
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"❌ 更新手动添加证书失败: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail=str(e))
+    
+    @router.put("/update/manual-apply", response_model=CertificateResponse)
+    async def update_manual_apply_certificate(request: UpdateManualApplyCertificateRequest):
+        """更新手动申请的证书（MANUAL_APPLY），只能更新 folder_name"""
+        try:
+            result = handler.update_manual_apply_certificate(
+                domain=request.domain,
                 folder_name=request.folder_name
             )
             return CertificateResponse(**result)
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"❌ 更新证书失败: {e}", exc_info=True)
+            logger.error(f"❌ 更新手动申请证书失败: {e}", exc_info=True)
             raise HTTPException(status_code=500, detail=str(e))
 
     @router.delete("/delete", response_model=CertificateResponse)

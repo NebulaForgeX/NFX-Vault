@@ -21,7 +21,8 @@ from .handler import (
     get_certificate_detail,
     publish_refresh_event,
     create_certificate,
-    update_certificate,
+    update_manual_add_certificate,
+    update_manual_apply_certificate,
     delete_certificate,
     apply_certificate,
     invalidate_cache,
@@ -111,18 +112,26 @@ class CertificateApplication:
         """创建证书"""
         return create_certificate(self, store, domain, certificate, private_key, sans, folder_name, email, issuer)
     
-    def update_certificate(
+    def update_manual_add_certificate(
         self,
         domain: str,
-        source: CertificateSource,
         certificate: Optional[str] = None,
         private_key: Optional[str] = None,
         store: Optional[str] = None,
         sans: Optional[list] = None,
-        folder_name: Optional[str] = None
+        folder_name: Optional[str] = None,
+        email: Optional[str] = None
     ) -> Dict[str, Any]:
-        """更新证书"""
-        return update_certificate(self, domain, source, certificate, private_key, store, sans, folder_name)
+        """更新手动添加的证书（MANUAL_ADD）"""
+        return update_manual_add_certificate(self, domain, certificate, private_key, store, sans, folder_name, email)
+    
+    def update_manual_apply_certificate(
+        self,
+        domain: str,
+        folder_name: str
+    ) -> Dict[str, Any]:
+        """更新手动申请的证书（MANUAL_APPLY），只能更新 folder_name"""
+        return update_manual_apply_certificate(self, domain, folder_name)
     
     def delete_certificate(
         self,

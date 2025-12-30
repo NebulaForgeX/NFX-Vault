@@ -25,7 +25,7 @@ export const useSubmitApplyCertificate = () => {
         const result = await ApplyCertificate({
           domain: data.values.domain.trim(),
           email: data.values.email.trim(),
-          folder_name: data.values.folder_name.trim(),
+          folderName: data.values.folderName.trim(), // axios-case-converter 会将 folderName 转换为 folder_name
           sans: data.values.sans && data.values.sans.length > 0 ? data.values.sans : undefined,
           webroot: data.values.webroot && data.values.webroot.trim() ? data.values.webroot.trim() : undefined,
         });

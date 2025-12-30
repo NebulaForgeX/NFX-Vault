@@ -13,22 +13,10 @@
   color: var(--color-danger);
 }
 
-.input {
-  padding: 0.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background-color: var(--color-bg);
-  color: var(--color-fg-text);
-  font-size: 1rem;
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-}
-
-.inputError {
-  border-color: var(--color-danger);
+.helpText {
+  color: var(--color-fg-secondary);
+  font-size: 0.875rem;
+  margin: 0;
 }
 
 .errorMessage {

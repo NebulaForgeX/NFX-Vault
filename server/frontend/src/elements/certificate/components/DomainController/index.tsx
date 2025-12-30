@@ -4,6 +4,7 @@ import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
+import { Input } from "@/components";
 import styles from "./styles.module.css";
 
 const DomainController = memo(() => {
@@ -18,11 +19,11 @@ const DomainController = memo(() => {
       <label className={styles.label}>
         {t("form.domain") || "域名"} <span className={styles.required}>*</span>
       </label>
-      <input
+      <Input
         {...register("domain")}
         type="text"
         placeholder={t("form.domainPlaceholder") || "例如：example.com"}
-        className={`${styles.input} ${errors.domain ? styles.inputError : ""}`}
+        error={!!errors.domain}
       />
       {errors.domain && <p className={styles.errorMessage}>{errors.domain.message}</p>}
     </div>

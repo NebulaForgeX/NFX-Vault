@@ -4,7 +4,8 @@ import type {
   CertificateDetailResponse,
   RefreshResponse,
   CreateCertificateRequest,
-  UpdateCertificateRequest,
+  UpdateManualAddCertificateRequest,
+  UpdateManualApplyCertificateRequest,
   DeleteCertificateRequest,
   ApplyCertificateRequest,
   CertificateResponse,
@@ -51,8 +52,13 @@ export const CreateCertificate = async (request: CreateCertificateRequest): Prom
   return data;
 };
 
-export const UpdateCertificate = async (request: UpdateCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.put<CertificateResponse>(`${baseUrl}/update`, request);
+export const UpdateManualAddCertificate = async (request: UpdateManualAddCertificateRequest): Promise<CertificateResponse> => {
+  const { data } = await publicClient.put<CertificateResponse>(`${baseUrl}/update/manual-add`, request);
+  return data;
+};
+
+export const UpdateManualApplyCertificate = async (request: UpdateManualApplyCertificateRequest): Promise<CertificateResponse> => {
+  const { data } = await publicClient.put<CertificateResponse>(`${baseUrl}/update/manual-apply`, request);
   return data;
 };
 

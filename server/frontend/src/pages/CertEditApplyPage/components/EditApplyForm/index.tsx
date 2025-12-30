@@ -41,7 +41,7 @@ const EditApplyForm = memo(({ onSubmit, onSubmitError, isPending, domain }: Edit
             <div className={styles.basicInfoGrid}>
               <div className={styles.leftColumn}>
                 <Controller
-                  name="folder_name"
+                  name="folderName"
                   control={methods.control}
                   render={({ field, fieldState: { error } }) => (
                     <div className={styles.formGroup}>

@@ -38,7 +38,7 @@ const ApplyForm = memo(({ onSubmit, onSubmitError, isPending }: ApplyFormProps) 
                 <DomainController />
                 <EmailController />
                 <Controller
-                  name="folder_name"
+                  name="folderName"
                   control={methods.control}
                   render={({ field, fieldState }) => (
                     <div className={styles.formGroup}>

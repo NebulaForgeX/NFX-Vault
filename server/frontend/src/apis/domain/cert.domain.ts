@@ -70,15 +70,19 @@ export interface CreateCertificateRequest {
   issuer?: string;
 }
 
-export interface UpdateCertificateRequest {
+export interface UpdateManualAddCertificateRequest {
   domain: string;
-  source: CertificateSource;
   certificate?: string;
   privateKey?: string;
   store?: CertType;
   sans?: string[];
   folderName?: string; // axios-case-converter 会将后端的 folder_name 转换为 folderName
   email?: string;
+}
+
+export interface UpdateManualApplyCertificateRequest {
+  domain: string;
+  folderName: string; // axios-case-converter 会将后端的 folder_name 转换为 folderName
 }
 
 export interface DeleteCertificateRequest {

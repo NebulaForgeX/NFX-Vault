@@ -7,7 +7,8 @@ DTO 模块
 """
 from .reqdto.certificate import (
     CreateCertificateRequest,
-    UpdateCertificateRequest,
+    UpdateManualAddCertificateRequest,
+    UpdateManualApplyCertificateRequest,
     DeleteCertificateRequest,
 )
 from .respdto.certificate import (
@@ -16,7 +17,8 @@ from .respdto.certificate import (
 
 __all__ = [
     "CreateCertificateRequest",
-    "UpdateCertificateRequest",
+    "UpdateManualAddCertificateRequest",
+    "UpdateManualApplyCertificateRequest",
     "DeleteCertificateRequest",
     "CertificateResponse",
 ]

@@ -5,14 +5,16 @@
 """
 from .certificate import (
     CreateCertificateRequest,
-    UpdateCertificateRequest,
+    UpdateManualAddCertificateRequest,
+    UpdateManualApplyCertificateRequest,
     DeleteCertificateRequest,
     ApplyCertificateRequest,
 )
 
 __all__ = [
     "CreateCertificateRequest",
-    "UpdateCertificateRequest",
+    "UpdateManualAddCertificateRequest",
+    "UpdateManualApplyCertificateRequest",
     "DeleteCertificateRequest",
     "ApplyCertificateRequest",
 ]

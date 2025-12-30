@@ -1,7 +1,7 @@
 # coding=utf-8
 
 """
-更新证书 Handler
+更新手动添加证书 Handler
 """
 import logging
 from typing import List, Optional, Dict, Any
@@ -13,10 +13,9 @@ from enums.certificate_source import CertificateSource
 logger = logging.getLogger(__name__)
 
 
-def update_certificate(
+def update_manual_add_certificate(
     app: CertificateAppLike,
     domain: str,
-    source: CertificateSource,
     certificate: Optional[str] = None,
     private_key: Optional[str] = None,
     store: Optional[str] = None,
@@ -25,43 +24,21 @@ def update_certificate(
     email: Optional[str] = None
 ) -> Dict[str, Any]:
     """
-    更新证书
+    更新手动添加的证书（MANUAL_ADD）
     
     Args:
         app: CertificateApplication 实例
         domain: 域名
-        source: 来源（CertificateSource枚举）
         certificate: 证书内容（PEM格式），可选
         private_key: 私钥内容（PEM格式），可选
         store: 存储位置，可选
         sans: SANs 列表，可选
+        folder_name: 文件夹名称，可选
+        email: 邮箱地址，可选
     
     Returns:
         更新结果（包含 success, message 等）
     """
-    # auto 源的证书不能手动修改（只能通过读取文件夹更新）
-    if source == CertificateSource.AUTO:
-        return {
-            "success": False,
-            "message": "Auto source certificates cannot be manually updated. Please refresh from folders instead."
-        }
-    
-    # manual_apply 源的证书只能编辑 folder_name
-    if source == CertificateSource.MANUAL_APPLY:
-        if folder_name is None:
-            return {
-                "success": False,
-                "message": "folder_name is required for MANUAL_APPLY certificates"
-            }
-        # 只更新 folder_name，不允许更新其他字段
-        if certificate is not None or private_key is not None or store is not None or sans is not None:
-            return {
-                "success": False,
-                "message": "MANUAL_APPLY certificates can only update folder_name"
-            }
-    
-    # manual_add 源的证书可以编辑所有字段
-    
     try:
         # 如果提供了证书内容，需要重新解析证书信息
         if certificate:
@@ -81,7 +58,7 @@ def update_certificate(
         # 更新证书（转换为字符串）
         cert_obj = app.database_repo.update_certificate(
             domain=domain,
-            source=source.value if isinstance(source, CertificateSource) else source,
+            source=CertificateSource.MANUAL_ADD.value,
             certificate=certificate,
             private_key=private_key,
             store=store,
@@ -100,7 +77,7 @@ def update_certificate(
             stores_to_clear = [store] if store else ["websites", "apis", "database"]
             app.invalidate_cache(stores_to_clear, trigger="update")
             
-            # 发送 Kafka 事件通知前端刷新（手动更新的证书不需要从 acme.json 读取，只需要通知前端刷新列表）
+            # 发送 Kafka 事件通知前端刷新
             if app.pipeline_repo:
                 try:
                     for s in stores_to_clear:
@@ -108,8 +85,8 @@ def update_certificate(
                 except Exception as e:
                     logger.warning(f"⚠️ Failed to send refresh event: {e}")
             
-            # 如果是 manual_add 类型且更新了证书内容，发送解析事件
-            if source == CertificateSource.MANUAL_ADD and certificate and app.pipeline_repo:
+            # 如果更新了证书内容，发送解析事件
+            if certificate and app.pipeline_repo:
                 try:
                     # 安全获取证书 ID（避免 detached instance 错误）
                     certificate_id = None
@@ -121,7 +98,7 @@ def update_certificate(
                         cert_by_domain = app.database_repo.get_certificate_by_domain(
                             store or "database", 
                             domain, 
-                            source=source.value if isinstance(source, CertificateSource) else source
+                            source=CertificateSource.MANUAL_ADD.value
                         )
                         if cert_by_domain:
                             certificate_id = cert_by_domain.get("id")
@@ -135,12 +112,12 @@ def update_certificate(
             
             return {
                 "success": True,
-                "message": f"Certificate updated successfully for domain '{domain}' (source: {source})"
+                "message": f"Certificate updated successfully for domain '{domain}' (source: MANUAL_ADD)"
             }
         else:
             return {
                 "success": False,
-                "message": f"Certificate not found: domain='{domain}', source='{source.value if isinstance(source, CertificateSource) else source}'"
+                "message": f"Certificate not found: domain='{domain}', source='MANUAL_ADD'"
             }
     except Exception as e:
         logger.error(f"❌ 更新证书失败: {e}", exc_info=True)

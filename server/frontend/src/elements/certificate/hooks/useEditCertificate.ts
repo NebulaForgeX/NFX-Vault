@@ -4,49 +4,49 @@ import type { CertificateFormValues } from "../controllers/certificateSchema";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useUpdateCertificate } from "@/hooks";
+import { useUpdateManualAddCertificate, useUpdateManualApplyCertificate } from "@/hooks";
 import { CertificateSource } from "@/apis/domain";
 import type { CertType } from "@/types";
 import { showError, showSuccess } from "@/stores/modalStore";
 import { ROUTES } from "@/types/navigation";
 
-export const useEditCertificate = (domain: string, source: string) => {
+export const useEditCertificate = (domain: string, source: CertificateSource) => {
   const navigate = useNavigate();
-  const { mutateAsync, isPending } = useUpdateCertificate();
+  const { mutateAsync: mutateManualAdd, isPending: isPendingManualAdd } = useUpdateManualAddCertificate();
+  const { mutateAsync: mutateManualApply, isPending: isPendingManualApply } = useUpdateManualApplyCertificate();
+
+  const isPending = isPendingManualAdd || isPendingManualApply;
 
   const onSubmit = useCallback(
-    async (values: CertificateFormValues & { folder_name?: string }) => {
+    async (values: CertificateFormValues) => {
       try {
-        // 根据 source 类型决定传递哪些字段
-        const sourceEnum = source as CertificateSource;
-        const request: {
-          domain: string;
-          source: CertificateSource;
-          certificate?: string;
-          privateKey?: string;
-          store?: CertType;
-          sans?: string[];
-          folder_name?: string;
-          email?: string;
-        } = {
-          domain,
-          source: sourceEnum,
-        };
-
-        if (sourceEnum === CertificateSource.MANUAL_APPLY) {
+        let result;
+        
+        if (source === CertificateSource.MANUAL_APPLY) {
           // MANUAL_APPLY 只能更新 folder_name
-          request.folder_name = values.folder_name;
-        } else if (sourceEnum === CertificateSource.MANUAL_ADD) {
+          if (!values.folderName) {
+            showError("文件夹名称是必需的");
+            return;
+          }
+          result = await mutateManualApply({
+            domain,
+            folderName: values.folderName,
+          });
+        } else if (source === CertificateSource.MANUAL_ADD) {
           // MANUAL_ADD 可以更新所有字段
-          request.certificate = values.certificate?.trim();
-          request.privateKey = values.privateKey?.trim();
-          request.store = values.store as CertType;
-          request.sans = values.sans && values.sans.length > 0 ? values.sans : undefined;
-          request.folder_name = values.folder_name?.trim() || undefined;
-          request.email = values.email?.trim() || undefined;
+          result = await mutateManualAdd({
+            domain,
+            certificate: values.certificate?.trim(),
+            privateKey: values.privateKey?.trim(),
+            store: values.store as CertType,
+            sans: values.sans && values.sans.length > 0 ? values.sans : undefined,
+            folderName: values.folderName?.trim() || undefined,
+            email: values.email?.trim() || undefined,
+          });
+        } else {
+          showError("不支持的证书来源类型");
+          return;
         }
-
-        const result = await mutateAsync(request);
 
         if (result.success) {
           showSuccess(result.message || "证书更新成功！");
@@ -59,7 +59,7 @@ export const useEditCertificate = (domain: string, source: string) => {
         showError(error?.message || "更新证书失败");
       }
     },
-    [mutateAsync, navigate, domain, source],
+    [mutateManualAdd, mutateManualApply, navigate, domain, source],
   );
 
   const onSubmitError = useCallback(

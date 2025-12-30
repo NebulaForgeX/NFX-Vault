@@ -5,6 +5,7 @@ import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
+import { Input } from "@/components";
 import styles from "./styles.module.css";
 
 interface AutoFormProps {
@@ -47,20 +48,18 @@ const AutoForm = memo(({ }: AutoFormProps) => {
             <div className={styles.basicInfoGrid}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>{t("form.store") || "证书类型"}</label>
-                <input
+                <Input
                   type="text"
                   value={store || ""}
                   disabled
-                  className={styles.input}
                 />
               </div>
               <div className={styles.formGroup}>
                 <label className={styles.label}>{t("form.domain") || "域名"}</label>
-                <input
+                <Input
                   type="text"
                   value={domain || ""}
                   disabled
-                  className={styles.input}
                 />
               </div>
               <div className={styles.formGroup}>

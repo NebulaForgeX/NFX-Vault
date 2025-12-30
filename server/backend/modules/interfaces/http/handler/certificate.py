@@ -69,24 +69,35 @@ class CertificateHTTPHandler:
             issuer=issuer
         )
     
-    def update_certificate(
+    def update_manual_add_certificate(
         self,
         domain: str,  # 域名
-        source: CertificateSource,  # 来源（auto, manual_apply, manual_add）
         certificate: Optional[str] = None,  # 证书内容（PEM格式），可选
         private_key: Optional[str] = None,  # 私钥内容（PEM格式），可选
         store: Optional[str] = None,  # 存储位置，可选
         sans: Optional[list] = None,  # SANs 列表，可选
-        folder_name: Optional[str] = None  # 文件夹名称，可选（仅 MANUAL_APPLY 需要）
+        folder_name: Optional[str] = None,  # 文件夹名称，可选
+        email: Optional[str] = None  # 邮箱地址，可选
     ):
-        """更新证书"""
-        return self.certificate_application.update_certificate(
+        """更新手动添加的证书（MANUAL_ADD）"""
+        return self.certificate_application.update_manual_add_certificate(
             domain=domain,
-            source=source,
             certificate=certificate,
             private_key=private_key,
             store=store,
             sans=sans,
+            folder_name=folder_name,
+            email=email
+        )
+    
+    def update_manual_apply_certificate(
+        self,
+        domain: str,  # 域名
+        folder_name: str  # 文件夹名称（必需）
+    ):
+        """更新手动申请的证书（MANUAL_APPLY），只能更新 folder_name"""
+        return self.certificate_application.update_manual_apply_certificate(
+            domain=domain,
             folder_name=folder_name
         )
     

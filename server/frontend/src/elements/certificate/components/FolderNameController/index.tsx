@@ -4,6 +4,7 @@ import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
+import { Input } from "@/components";
 import styles from "../DomainController/styles.module.css";
 
 const FolderNameController = memo(() => {
@@ -18,13 +19,13 @@ const FolderNameController = memo(() => {
       <label className={styles.label}>
         {t("form.folderName") || "文件夹名称"}
       </label>
-      <input
-        {...register("folder_name")}
+      <Input
+        {...register("folderName")}
         type="text"
         placeholder={t("form.folderNamePlaceholder") || "例如: api_lucaslyu_com"}
-        className={`${styles.input} ${errors.folder_name ? styles.inputError : ""}`}
+        error={!!errors.folderName}
       />
-      {errors.folder_name && <p className={styles.errorMessage}>{errors.folder_name.message}</p>}
+      {errors.folderName && <p className={styles.errorMessage}>{errors.folderName.message}</p>}
       <p className={styles.helpText}>
         {t("form.folderNameHelp") || "唯一标识符，只能包含字母、数字、下划线和连字符"}
       </p>

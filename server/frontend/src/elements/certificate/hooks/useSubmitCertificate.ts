@@ -21,7 +21,7 @@ export const useSubmitCertificate = () => {
           certificate: values.certificate.trim(),
           privateKey: values.privateKey.trim(),
           sans: values.sans && values.sans.length > 0 ? values.sans : undefined,
-          folder_name: values.folder_name?.trim() || undefined,
+          folderName: values.folderName?.trim() || undefined, // axios-case-converter 会将 folderName 转换为 folder_name
           email: values.email?.trim() || undefined,
           issuer: values.issuer?.trim() || undefined,
         });

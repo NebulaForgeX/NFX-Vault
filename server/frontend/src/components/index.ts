@@ -14,5 +14,7 @@ export { default as VirtualWindowList } from "./VirtualWindowList";
 export { default as Icon } from "./Icon";
 export { default as Suspense } from "./Suspense";
 export { default as SearchInput } from "./SearchInput";
+export { default as Input } from "./Input";
+export type { InputProps } from "./Input";
 export { default as ShowFilter } from "./ShowFilter";
 export type { ShowFilterValue } from "./ShowFilter";

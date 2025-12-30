@@ -1,4 +1,4 @@
-import type { CertType, CreateCertificateRequest, UpdateCertificateRequest, DeleteCertificateRequest, ApplyCertificateRequest } from "@/apis/domain";
+import type { CertType, CreateCertificateRequest, UpdateManualAddCertificateRequest, UpdateManualApplyCertificateRequest, DeleteCertificateRequest, ApplyCertificateRequest } from "@/apis/domain";
 import { CertificateSource } from "@/apis/domain";
 import type { ListNumberCursorFetchResult } from "@/hooks/core/type";
 import type { FetchNumberListParams } from "@/hooks/core/type";
@@ -128,15 +128,29 @@ export const useCreateCertificate = () => {
 };
 
 /**
- * Hook to update certificate
+ * Hook to update manual add certificate
  */
-export const useUpdateCertificate = () => {
+export const useUpdateManualAddCertificate = () => {
   return useMutation({
-    mutationFn: (request: UpdateCertificateRequest) => certApi.UpdateCertificate(request),
+    mutationFn: (request: UpdateManualAddCertificateRequest) => certApi.UpdateManualAddCertificate(request),
     onSuccess: () => {
       // 发送事件触发缓存刷新（QueryProvider 会监听这个事件）
       cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "websites");
       cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "apis");
+      cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "database");
+    },
+  });
+};
+
+/**
+ * Hook to update manual apply certificate
+ */
+export const useUpdateManualApplyCertificate = () => {
+  return useMutation({
+    mutationFn: (request: UpdateManualApplyCertificateRequest) => certApi.UpdateManualApplyCertificate(request),
+    onSuccess: () => {
+      // 发送事件触发缓存刷新（QueryProvider 会监听这个事件）
+      cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "database");
     },
   });
 };
