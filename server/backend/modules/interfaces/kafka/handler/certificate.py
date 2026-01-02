@@ -11,6 +11,7 @@ from typing import Dict, Any
 from events.operation_refresh_event import OperationRefreshEvent
 from events.cache_invalidate_event import CacheInvalidateEvent
 from events.parse_certificate_event import ParseCertificateEvent
+from events.delete_folder_event import DeleteFolderEvent
 from modules.applications.tls import CertificateApplication
 from modules.applications.file import FileApplication
 
@@ -115,5 +116,33 @@ class CertificateKafkaHandler:
             
         except Exception as e:
             logger.error(f"❌ 处理解析证书事件失败: {e}", exc_info=True)
+            raise
+    
+    def process_delete_folder(self, event_data: Dict[str, Any]):
+        """
+        处理删除文件夹事件（来自 Kafka 事件）
+        
+        此方法会删除指定 store 和 folder_name 的证书文件夹
+        
+        Args:
+            event_data: 事件数据
+        """
+        try:
+            event = DeleteFolderEvent.from_dict(event_data)
+            logger.info(f"🔄 收到删除文件夹请求（事件）: store={event.store}, folder_name={event.folder_name}")
+            
+            # 调用 Application 层处理业务逻辑
+            result = self.file_application.delete_folder(
+                store=event.store,
+                folder_name=event.folder_name
+            )
+            
+            if result.get("success"):
+                logger.info(f"✅ 文件夹删除成功: store={event.store}, folder_name={event.folder_name}")
+            else:
+                logger.warning(f"⚠️  文件夹删除失败: store={event.store}, folder_name={event.folder_name}, message={result.get('message')}")
+            
+        except Exception as e:
+            logger.error(f"❌ 处理删除文件夹事件失败: {e}", exc_info=True)
             raise
 

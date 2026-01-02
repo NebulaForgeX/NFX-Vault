@@ -16,7 +16,7 @@ from .update_certificate_by_id import update_certificate_by_id
 from .update_certificate_by_folder_name import update_certificate_by_folder_name
 from .update_certificate_parse_result import update_certificate_parse_result
 from .update_all_days_remaining import update_all_days_remaining
-from .delete_certificate import delete_certificate
+from .delete_certificate_by_id import delete_certificate_by_id
 from .delete_certificates_by_store import delete_certificates_by_store
 from .search_certificates import search_certificates
 
@@ -32,7 +32,7 @@ __all__ = [
     "update_certificate_by_folder_name",
     "update_certificate_parse_result",
     "update_all_days_remaining",
-    "delete_certificate",
+    "delete_certificate_by_id",
     "delete_certificates_by_store",
     "search_certificates",
 ]

@@ -25,7 +25,6 @@ def delete_certificate(
         删除结果
     """
     return app.delete_certificate(
-        domain=request.domain,
-        source=request.source
+        certificate_id=request.certificate_id
     )
 

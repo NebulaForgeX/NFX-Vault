@@ -50,8 +50,7 @@ class UpdateManualApplyCertificateRequest(BaseModel):
 
 class DeleteCertificateRequest(BaseModel):
     """删除证书请求"""
-    domain: str = Field(..., description="域名")
-    source: CertificateSource = Field(..., description="来源（CertificateSource枚举）")
+    certificate_id: str = Field(..., description="证书 ID")
 
 
 class ApplyCertificateRequest(BaseModel):

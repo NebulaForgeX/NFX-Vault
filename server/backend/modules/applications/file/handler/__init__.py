@@ -11,6 +11,7 @@ from .read_folders_and_store import read_folders_and_store_certificates
 from .list_directory import list_directory
 from .download_file import download_file
 from .get_file_content import get_file_content
+from .delete_folder import delete_folder
 
 __all__ = [
     "export_certificates",
@@ -19,5 +20,6 @@ __all__ = [
     "list_directory",
     "download_file",
     "get_file_content",
+    "delete_folder",
 ]
 

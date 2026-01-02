@@ -22,7 +22,7 @@ from .operation import (
     update_certificate_by_folder_name,
     update_certificate_parse_result,
     update_all_days_remaining,
-    delete_certificate,
+    delete_certificate_by_id,
     delete_certificates_by_store,
     search_certificates,
 )
@@ -237,13 +237,12 @@ class CertificateDatabase:
         """批量更新所有证书的剩余天数和有效性状态"""
         return update_all_days_remaining(self)
     
-    def delete_certificate(
+    def delete_certificate_by_id(
         self,
-        domain: str,
-        source: str
+        certificate_id: str
     ) -> bool:
-        """删除证书（根据 domain + source）"""
-        return delete_certificate(self, domain, source)
+        """根据证书 ID 删除证书"""
+        return delete_certificate_by_id(self, certificate_id)
     
     def delete_certificates_by_store(
         self,

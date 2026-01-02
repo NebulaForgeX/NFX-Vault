@@ -1,29 +1,26 @@
 # coding=utf-8
 
 """
-删除证书操作
+根据 ID 删除证书操作
 """
 import logging
 
-from sqlalchemy import and_
 from models.tls_certificate import TLSCertificate
 from .protocol import CertificateDatabaseLike
 
 logger = logging.getLogger(__name__)
 
 
-def delete_certificate(
+def delete_certificate_by_id(
     repo: CertificateDatabaseLike,
-    domain: str,
-    source: str
+    certificate_id: str
 ) -> bool:
     """
-    删除证书（根据 domain + source）
+    根据证书 ID 删除证书
     
     Args:
         repo: CertificateDatabase 实例
-        domain: 域名
-        source: 来源（auto 或 manual）
+        certificate_id: 证书 ID
     
     Returns:
         是否删除成功
@@ -35,20 +32,17 @@ def delete_certificate(
     try:
         with repo.db_session.get_session() as session:
             deleted_count = session.query(TLSCertificate).filter(
-                and_(
-                    TLSCertificate.domain == domain,
-                    TLSCertificate.source == source
-                )
+                TLSCertificate.id == certificate_id
             ).delete()
             session.commit()
             
             if deleted_count > 0:
-                logger.info(f"✅ 删除证书: domain={domain}, source={source}")
+                logger.info(f"✅ 删除证书: certificate_id={certificate_id}")
                 return True
             else:
-                logger.warning(f"⚠️  证书不存在: domain={domain}, source={source}")
+                logger.warning(f"⚠️  证书不存在: certificate_id={certificate_id}")
                 return False
     except Exception as e:
-        logger.error(f"❌ 删除证书失败: domain={domain}, source={source}, error={e}", exc_info=True)
+        logger.error(f"❌ 删除证书失败: certificate_id={certificate_id}, error={e}", exc_info=True)
         return False
 

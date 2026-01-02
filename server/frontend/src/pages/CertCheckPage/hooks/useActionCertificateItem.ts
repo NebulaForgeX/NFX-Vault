@@ -4,7 +4,6 @@ import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ROUTES } from "@/types/navigation";
-import { CertificateSource } from "@/apis/domain";
 import { useDeleteCertificate } from "@/hooks";
 import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
 import { useTranslation } from "react-i18next";
@@ -43,6 +42,10 @@ export const useActionCertificateItem = () => {
   const handleDelete = useCallback(
     (cert: CertificateInfo) => {
       return () => {
+        if (!cert.id) {
+          console.error("Certificate ID is required", cert);
+          return;
+        }
         showConfirm({
           title: t("delete.confirm.title") || "Delete Certificate",
           message: (t("delete.confirm.message") || `Are you sure you want to delete the certificate for domain "{{domain}}"?`).replace("{{domain}}", cert.domain),
@@ -51,8 +54,7 @@ export const useActionCertificateItem = () => {
           onConfirm: async () => {
             try {
               const result = await deleteMutation.mutateAsync({
-                domain: cert.domain,
-                source: (cert.source as CertificateSource) || CertificateSource.AUTO,
+                certificate_id: cert.id,
               });
 
               if (result.success) {

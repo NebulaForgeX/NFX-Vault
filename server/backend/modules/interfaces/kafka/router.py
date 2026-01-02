@@ -44,6 +44,10 @@ class KafkaEventRouter:
             # 注册 certificate.parse 路由
             self.routes[EventType.PARSE_CERTIFICATE] = self.certificate_kafka_handler.process_parse_certificate
             logger.info(f"✅ 注册路由: {EventType.PARSE_CERTIFICATE} -> CertificateKafkaHandler.process_parse_certificate")
+            
+            # 注册 folder.delete 路由
+            self.routes[EventType.DELETE_FOLDER] = self.certificate_kafka_handler.process_delete_folder
+            logger.info(f"✅ 注册路由: {EventType.DELETE_FOLDER} -> CertificateKafkaHandler.process_delete_folder")
         
         logger.info(f"📋 共注册 {len(self.routes)} 个路由")
     

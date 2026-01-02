@@ -14,6 +14,7 @@ from events.operation_refresh_event import OperationRefreshEvent
 from events.cache_invalidate_event import CacheInvalidateEvent
 from events.parse_certificate_event import ParseCertificateEvent
 from events.event_type import EventType
+from events.delete_folder_event import DeleteFolderEvent
 from resources.kafka.consumer import KafkaEventConsumer
 from typing import List, Optional
 
@@ -198,5 +199,60 @@ class CertificatePipeline:
             
         except Exception as e:
             logger.error(f"❌ 发送解析证书事件失败: {e}", exc_info=True)
+            return False
+    
+    def send_delete_folder_event(
+        self,
+        store: str,
+        folder_name: str
+    ) -> bool:
+        """
+        发送删除文件夹事件到 Kafka
+        
+        Args:
+            store: 存储位置（websites 或 apis）
+            folder_name: 文件夹名称
+        
+        Returns:
+            是否发送成功
+        """
+        if not self.db_config:
+            logger.warning("⚠️  数据库配置未初始化，跳过发送删除文件夹事件")
+            return False
+        
+        if not self.kafka_client or not self.kafka_client.enable_kafka:
+            logger.warning("⚠️  Kafka 客户端未初始化或未启用")
+            return False
+        
+        try:
+            # 创建事件对象
+            event = DeleteFolderEvent(
+                store=store,
+                folder_name=folder_name
+            )
+            
+            # 确保 topic 存在
+            topic = self.db_config.KAFKA_EVENT_TOPIC
+            if not self.kafka_client.ensure_topic_exists(topic):
+                logger.warning(f"⚠️  Topic '{topic}' 不存在且创建失败，但会尝试发送（依赖自动创建）")
+            
+            # 发送事件（event_type 放在 headers 中）
+            success = self.kafka_client.send(
+                topic=topic,
+                data=event.to_dict(),
+                headers={
+                    KafkaEventConsumer.EVENT_TYPE_HEADER_KEY: EventType.DELETE_FOLDER
+                }
+            )
+            
+            if success:
+                logger.info(f"✅ 已发送删除文件夹事件到 Kafka: store={store}, folder_name={folder_name}")
+            else:
+                logger.warning(f"⚠️  发送删除文件夹事件失败: store={store}, folder_name={folder_name}")
+            
+            return success
+            
+        except Exception as e:
+            logger.error(f"❌ 发送删除文件夹事件失败: {e}", exc_info=True)
             return False
 

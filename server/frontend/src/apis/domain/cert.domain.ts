@@ -96,8 +96,7 @@ export interface UpdateManualApplyCertificateRequest {
 }
 
 export interface DeleteCertificateRequest {
-  domain: string;
-  source: CertificateSource;
+  certificate_id: string;
 }
 
 export interface CertificateResponse {

@@ -5,10 +5,14 @@ Events 模块
 """
 from .operation_refresh_event import OperationRefreshEvent
 from .cache_invalidate_event import CacheInvalidateEvent
+from .parse_certificate_event import ParseCertificateEvent
+from .delete_folder_event import DeleteFolderEvent
 from .event_type import EventType
 
 __all__ = [
     "OperationRefreshEvent",
     "CacheInvalidateEvent",
+    "ParseCertificateEvent",
+    "DeleteFolderEvent",
     "EventType",
 ]

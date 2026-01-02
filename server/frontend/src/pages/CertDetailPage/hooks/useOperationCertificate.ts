@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CertificateSource } from "@/apis/domain";
 import { ROUTES } from "@/types/navigation";
 import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
 import { useDeleteCertificate, useApplyCertificate, useCertificateDetailById } from "@/hooks";
@@ -45,7 +44,6 @@ export const useOperationCertificate = (certificateId: string) => {
       return;
     }
     const domain = certificate.domain;
-    const source = (certificate.source as CertificateSource) || CertificateSource.AUTO;
     
     showConfirm({
       title: t("delete.confirm.title") || "Delete Certificate",
@@ -55,8 +53,7 @@ export const useOperationCertificate = (certificateId: string) => {
       onConfirm: async () => {
         try {
           const result = await deleteMutation.mutateAsync({
-            domain,
-            source,
+            certificate_id: certificateId,
           });
 
           if (result.success) {
@@ -70,7 +67,7 @@ export const useOperationCertificate = (certificateId: string) => {
         }
       },
     });
-  }, [deleteMutation, certificate, navigate, t]);
+  }, [deleteMutation, certificate, certificateId, navigate, t]);
 
   return {
     handleEdit,

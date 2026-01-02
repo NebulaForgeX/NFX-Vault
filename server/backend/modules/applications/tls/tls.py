@@ -138,11 +138,10 @@ class CertificateApplication:
     
     def delete_certificate(
         self,
-        domain: str,
-        source: CertificateSource
+        certificate_id: str
     ) -> Dict[str, Any]:
         """删除证书"""
-        return delete_certificate(self, domain, source)
+        return delete_certificate(self, certificate_id)
     
     def apply_certificate(
         self,
