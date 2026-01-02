@@ -1,14 +1,15 @@
 import { memo } from "react";
-import { Folder } from "@/assets/icons/lucide";
+import { Folder, Trash2 } from "@/assets/icons/lucide";
 import type { FileItem } from "@/apis/domain";
 import styles from "./FolderItem.module.css";
 
 interface FolderItemProps {
   item: FileItem;
   onClick: (item: FileItem) => void;
+  onDelete: (item: FileItem, e: React.MouseEvent) => void;
 }
 
-const FolderItem = memo(({ item, onClick }: FolderItemProps) => {
+const FolderItem = memo(({ item, onClick, onDelete }: FolderItemProps) => {
   const formatDate = (timestamp: number): string => {
     return new Date(timestamp * 1000).toLocaleString();
   };
@@ -27,6 +28,13 @@ const FolderItem = memo(({ item, onClick }: FolderItemProps) => {
           <span>Modified: {formatDate(item.modified)}</span>
         </div>
       </div>
+      <button
+        className={styles.deleteBtn}
+        onClick={(e) => onDelete(item, e)}
+        title="Delete"
+      >
+        <Trash2 size={18} />
+      </button>
     </div>
   );
 });

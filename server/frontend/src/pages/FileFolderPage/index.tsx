@@ -2,11 +2,12 @@ import { memo, useState, useEffect } from "react";
 import { ArrowLeft } from "@/assets/icons/lucide";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 
-import { ListDirectory, downloadFile } from "@/apis/file.api";
+import { ListDirectory, downloadFile, DeleteFileOrFolder } from "@/apis/file.api";
 import type { FileItem } from "@/apis/domain";
 import { ModalStore } from "@/stores/modalStore";
 import { FolderItem, FileItem as FileItemComponent } from "./components";
 import styles from "./styles.module.css";
+import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
 
 const FileFolderPage = memo(() => {
   const navigate = useNavigate();
@@ -103,6 +104,62 @@ const FileFolderPage = memo(() => {
     }
   };
 
+  const handleDelete = async (item: FileItem, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!store) return;
+    
+    const itemType = item.type === "directory" ? "folder" : "file";
+    const itemName = itemType === "folder" ? "folder" : "file";
+    
+    showConfirm({
+      title: `Delete ${itemName.charAt(0).toUpperCase() + itemName.slice(1)}`,
+      message: `Are you sure you want to delete the ${itemName} "${item.name}"?`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      onConfirm: async () => {
+        try {
+          const result = await DeleteFileOrFolder({
+            store,
+            path: item.path,
+            item_type: itemType,
+          });
+          
+          if (result.success) {
+            showSuccess(result.message || `Successfully deleted ${itemName}`);
+            // 重新加载目录
+            const loadDirectory = async () => {
+              setLoading(true);
+              setError(null);
+              try {
+                const result = await ListDirectory(store, pathParam || undefined);
+                if (result && result.success) {
+                  setItems(Array.isArray(result.items) ? result.items : []);
+                  if (result.path) {
+                    setCurrentPath(result.path.split("/").filter(Boolean));
+                  } else {
+                    setCurrentPath([]);
+                  }
+                }
+              } catch (err: any) {
+                console.error("Failed to reload directory:", err);
+                const errorMsg = err?.response?.data?.detail || err?.response?.data?.message || err?.message || "Failed to reload directory";
+                setError(errorMsg);
+              } finally {
+                setLoading(false);
+              }
+            };
+            loadDirectory();
+          } else {
+            showError(result.message || `Failed to delete ${itemName}`);
+          }
+        } catch (error: any) {
+          console.error(`Failed to delete ${itemName}:`, error);
+          showError(error?.response?.data?.detail || error?.response?.data?.message || error?.message || `Failed to delete ${itemName}`);
+        }
+      },
+    });
+  };
+
 
   if (!store) return null;
 
@@ -140,6 +197,7 @@ const FileFolderPage = memo(() => {
                     key={item.path}
                     item={item}
                     onClick={handleItemClick}
+                    onDelete={handleDelete}
                   />
                 );
               } else {
@@ -149,6 +207,7 @@ const FileFolderPage = memo(() => {
                     item={item}
                     onClick={handleItemClick}
                     onDownload={handleDownload}
+                    onDelete={handleDelete}
                   />
                 );
               }

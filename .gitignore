@@ -14,6 +14,9 @@
 *.pfx
 acme.json
 
+# Certbot 工作目录（包含配置、日志、证书等）
+.certbot/
+
 # 证书存储文件（敏感信息）
 # 忽略 Websites 和 Apis 目录下的所有内容（包含证书和密钥）
 # 但保留目录本身和 .gitkeep 文件

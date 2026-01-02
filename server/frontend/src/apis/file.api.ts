@@ -70,3 +70,21 @@ export const GetFileContent = async (store: "apis" | "websites", filePath: strin
   });
   return data;
 };
+
+export interface DeleteFileOrFolderRequest {
+  store: "apis" | "websites";
+  path: string;
+  item_type: "file" | "folder";
+}
+
+export interface DeleteFileOrFolderResponse {
+  success: boolean;
+  message: string;
+}
+
+export const DeleteFileOrFolder = async (request: DeleteFileOrFolderRequest): Promise<DeleteFileOrFolderResponse> => {
+  const { data } = await publicClient.delete<DeleteFileOrFolderResponse>(`${baseUrl}/delete`, {
+    data: request,
+  });
+  return data;
+};

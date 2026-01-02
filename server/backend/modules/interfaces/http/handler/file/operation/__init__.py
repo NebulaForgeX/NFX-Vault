@@ -10,6 +10,7 @@ from .export_single_certificate import export_single_certificate
 from .list_directory import list_directory
 from .download_file import download_file
 from .get_file_content import get_file_content
+from .delete_file_or_folder import delete_file_or_folder
 
 __all__ = [
     "export_certificates",
@@ -17,5 +18,6 @@ __all__ = [
     "list_directory",
     "download_file",
     "get_file_content",
+    "delete_file_or_folder",
 ]
 

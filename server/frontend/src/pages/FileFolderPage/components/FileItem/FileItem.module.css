@@ -44,7 +44,14 @@
   color: var(--color-fg-secondary);
 }
 
-.downloadBtn {
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.downloadBtn,
+.deleteBtn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,6 +69,11 @@
 
 .downloadBtn:hover {
   background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.deleteBtn:hover {
+  background-color: var(--color-error, #ef4444);
   color: #ffffff;
 }
 

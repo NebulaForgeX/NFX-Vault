@@ -35,3 +35,10 @@ class ExportSingleCertificateRequest(BaseModel):
     certificate_id: str = Field(..., description="证书 ID")
     store: str = Field(..., description="存储位置（websites 或 apis）")
 
+
+class DeleteFileOrFolderRequest(BaseModel):
+    """删除文件或文件夹请求"""
+    store: str = Field(..., description="存储位置（websites 或 apis）")
+    path: str = Field(..., description="文件或文件夹路径（相对于 store 目录）")
+    item_type: str = Field(..., description="类型（'file' 或 'folder'）")
+

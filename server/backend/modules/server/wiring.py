@@ -100,7 +100,8 @@ def init_connections(db_config: DatabaseConfig, cert_config: CertConfig) -> Conn
         certificate_application=certificate_application
     )
     file_http_handler = FileHTTPHandler(
-        file_application=file_application
+        file_application=file_application,
+        pipeline_repo=certificate_pipeline_repo
     )
     analysis_http_handler = AnalysisHTTPHandler(
         analysis_application=analysis_application

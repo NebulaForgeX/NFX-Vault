@@ -48,6 +48,10 @@ class KafkaEventRouter:
             # 注册 folder.delete 路由
             self.routes[EventType.DELETE_FOLDER] = self.certificate_kafka_handler.process_delete_folder
             logger.info(f"✅ 注册路由: {EventType.DELETE_FOLDER} -> CertificateKafkaHandler.process_delete_folder")
+            
+            # 注册 file_or_folder.delete 路由
+            self.routes[EventType.DELETE_FILE_OR_FOLDER] = self.certificate_kafka_handler.process_delete_file_or_folder
+            logger.info(f"✅ 注册路由: {EventType.DELETE_FILE_OR_FOLDER} -> CertificateKafkaHandler.process_delete_file_or_folder")
         
         logger.info(f"📋 共注册 {len(self.routes)} 个路由")
     

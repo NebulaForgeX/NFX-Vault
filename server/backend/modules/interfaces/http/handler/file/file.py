@@ -16,6 +16,7 @@ from modules.interfaces.http.dto.reqdto.file import (
     ListDirectoryRequest,
     DownloadFileRequest,
     GetFileContentRequest,
+    DeleteFileOrFolderRequest,
 )
 from .operation import (
     export_certificates,
@@ -23,6 +24,7 @@ from .operation import (
     list_directory,
     download_file,
     get_file_content,
+    delete_file_or_folder,
 )
 
 logger = logging.getLogger(__name__)
@@ -37,9 +39,10 @@ class FileStore(str, Enum):
 class FileHTTPHandler:
     """文件服务 HTTP 处理器"""
     
-    def __init__(self, file_application: FileApplication):
+    def __init__(self, file_application: FileApplication, pipeline_repo=None):
         """初始化 HTTP 处理器"""
         self.file_application = file_application
+        self.pipeline_repo = pipeline_repo
         logger.info("✅ FileHTTPHandler initialized")
     
     def create_router(self) -> APIRouter:
@@ -135,6 +138,22 @@ class FileHTTPHandler:
                 raise
             except Exception as e:
                 logger.error(f"❌ 获取文件内容失败: {e}", exc_info=True)
+                raise HTTPException(status_code=500, detail=str(e))
+
+        @router.delete("/delete")
+        async def delete_file_or_folder_endpoint(request: DeleteFileOrFolderRequest):
+            """删除文件或文件夹（通过 Kafka 事件）"""
+            try:
+                result = delete_file_or_folder(
+                    app=self.file_application,
+                    request=request,
+                    pipeline_repo=self.pipeline_repo
+                )
+                return result
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger.error(f"❌ 删除文件/文件夹失败: {e}", exc_info=True)
                 raise HTTPException(status_code=500, detail=str(e))
 
         return router

@@ -12,6 +12,7 @@ from events.operation_refresh_event import OperationRefreshEvent
 from events.cache_invalidate_event import CacheInvalidateEvent
 from events.parse_certificate_event import ParseCertificateEvent
 from events.delete_folder_event import DeleteFolderEvent
+from events.delete_file_or_folder_event import DeleteFileOrFolderEvent
 from modules.applications.tls import CertificateApplication
 from modules.applications.file import FileApplication
 
@@ -144,5 +145,34 @@ class CertificateKafkaHandler:
             
         except Exception as e:
             logger.error(f"❌ 处理删除文件夹事件失败: {e}", exc_info=True)
+            raise
+    
+    def process_delete_file_or_folder(self, event_data: Dict[str, Any]):
+        """
+        处理删除文件或文件夹事件（来自 Kafka 事件）
+        
+        此方法会删除指定 store 和 path 的文件或文件夹
+        
+        Args:
+            event_data: 事件数据
+        """
+        try:
+            event = DeleteFileOrFolderEvent.from_dict(event_data)
+            logger.info(f"🔄 收到删除文件/文件夹请求（事件）: store={event.store}, path={event.path}, item_type={event.item_type}")
+            
+            # 调用 Application 层处理业务逻辑
+            result = self.file_application.delete_file_or_folder(
+                store=event.store,
+                path=event.path,
+                item_type=event.item_type
+            )
+            
+            if result.get("success"):
+                logger.info(f"✅ 文件/文件夹删除成功: store={event.store}, path={event.path}, item_type={event.item_type}")
+            else:
+                logger.warning(f"⚠️  文件/文件夹删除失败: store={event.store}, path={event.path}, item_type={event.item_type}, message={result.get('message')}")
+            
+        except Exception as e:
+            logger.error(f"❌ 处理删除文件/文件夹事件失败: {e}", exc_info=True)
             raise
 

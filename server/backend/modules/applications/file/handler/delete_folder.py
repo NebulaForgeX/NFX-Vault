@@ -2,6 +2,16 @@
 
 """
 删除文件夹 Handler
+
+此 Handler 用于删除证书对应的文件夹（通过 DELETE_FOLDER Kafka 事件触发）。
+
+使用场景：
+- 当证书被删除时，如果证书的 store 是 'apis' 或 'websites'，会发送 DELETE_FOLDER 事件
+- Pipeline 服务接收事件后，调用此 Handler 删除对应的文件夹（Certs/Websites/{folder_name} 或 Certs/Apis/{folder_name}）
+
+与 delete_file_or_folder.py 的区别：
+- delete_folder.py: 只删除文件夹，参数是 store + folder_name，用于证书删除场景
+- delete_file_or_folder.py: 可以删除文件或文件夹，参数是 store + path + item_type，用于文件浏览器直接删除场景
 """
 import logging
 import os

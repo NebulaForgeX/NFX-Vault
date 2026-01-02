@@ -12,7 +12,7 @@ from typing import Optional, Dict, Any
 from modules.repositories.database.certificate import CertificateDatabase
 from modules.configs.database_config import DatabaseConfig
 
-from .handler import export_certificates, export_single_certificate, read_folders_and_store_certificates, list_directory, download_file, get_file_content, delete_folder
+from .handler import export_certificates, export_single_certificate, read_folders_and_store_certificates, list_directory, download_file, get_file_content, delete_folder, delete_file_or_folder
 
 logger = logging.getLogger(__name__)
 
@@ -86,4 +86,13 @@ class FileApplication:
     ) -> Dict[str, Any]:
         """删除证书文件夹"""
         return delete_folder(self, store, folder_name)
+    
+    def delete_file_or_folder(
+        self,
+        store: str,
+        path: str,
+        item_type: str
+    ) -> Dict[str, Any]:
+        """删除文件或文件夹"""
+        return delete_file_or_folder(self, store, path, item_type)
 
