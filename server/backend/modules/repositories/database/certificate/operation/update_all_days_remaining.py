@@ -7,7 +7,7 @@
 """
 import logging
 from datetime import datetime
-from typing import Tuple
+from typing import Tuple, List, Dict, Any
 
 from models.tls_certificate import TLSCertificate
 from .protocol import CertificateDatabaseLike
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def update_all_days_remaining(
     repo: CertificateDatabaseLike
-) -> Tuple[int, int]:
+) -> Tuple[int, int, List[Dict[str, Any]]]:
     """
     批量更新所有证书的剩余天数和有效性状态
     
@@ -27,11 +27,11 @@ def update_all_days_remaining(
         repo: CertificateDatabase 实例
     
     Returns:
-        (updated_count, total_count) - 更新的证书数量和总证书数量
+        (updated_count, total_count, certificates) - 更新的证书数量、总证书数量和证书列表（包含 id, days_remaining, source, store）
     """
     if not repo.db_session or not hasattr(repo.db_session, 'get_session'):
         logger.warning("⚠️  数据库会话未初始化，无法更新证书")
-        return (0, 0)
+        return (0, 0, [])
     
     try:
         with repo.db_session.get_session() as session:
@@ -42,6 +42,7 @@ def update_all_days_remaining(
             
             total_count = len(certificates)
             updated_count = 0
+            cert_list = []  # 返回所有证书的信息列表
             
             now = datetime.now()
             
@@ -60,6 +61,17 @@ def update_all_days_remaining(
                         days_remaining = delta.days
                         is_valid = days_remaining >= 0
                         
+                        # 收集证书信息（无论是否更新）
+                        cert_list.append({
+                            "id": cert.id,
+                            "days_remaining": days_remaining,
+                            "source": cert.source,
+                            "store": cert.store,
+                            "domain": cert.domain,
+                            "email": cert.email,
+                            "folder_name": cert.folder_name
+                        })
+                        
                         # 只更新有变化的证书
                         if cert.days_remaining != days_remaining or cert.is_valid != is_valid:
                             cert.days_remaining = days_remaining
@@ -73,8 +85,8 @@ def update_all_days_remaining(
             session.commit()
             logger.info(f"✅ 批量更新剩余天数完成: 更新 {updated_count}/{total_count} 个证书")
             
-            return (updated_count, total_count)
+            return (updated_count, total_count, cert_list)
     except Exception as e:
         logger.error(f"❌ 批量更新剩余天数失败: {e}", exc_info=True)
-        return (0, 0)
+        return (0, 0, [])
 

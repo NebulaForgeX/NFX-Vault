@@ -78,18 +78,20 @@ def setup_scheduler(
         replace_existing=True
     )
     
-    # 确保 database_repo 存在
+    # 确保 certificate_http_handler 存在
     if not connections.certificate_http_handler:
         logger.warning("⚠️  certificate_http_handler 未初始化，无法启动更新剩余天数任务")
     else:
-        database_repo = connections.certificate_http_handler.certificate_application.database_repo
+        certificate_application = connections.certificate_http_handler.certificate_application
+        database_repo = certificate_application.database_repo
+        pipeline_repo = certificate_application.pipeline_repo
         
         # 添加每天更新剩余天数任务（每天凌晨 1:00 执行）
         # update_days_remaining_job 是同步函数，可以直接使用
         scheduler.add_job(
             update_days_remaining_job,
             CronTrigger(hour=1, minute=0),  # 每天凌晨 1:00
-            args=[database_repo],
+            args=[database_repo, certificate_application, pipeline_repo],
             id="daily_update_days_remaining",
             replace_existing=True
         )

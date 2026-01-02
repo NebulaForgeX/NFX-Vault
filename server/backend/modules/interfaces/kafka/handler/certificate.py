@@ -13,8 +13,11 @@ from events.cache_invalidate_event import CacheInvalidateEvent
 from events.parse_certificate_event import ParseCertificateEvent
 from events.delete_folder_event import DeleteFolderEvent
 from events.delete_file_or_folder_event import DeleteFileOrFolderEvent
+from events.export_certificate_event import ExportCertificateEvent
 from modules.applications.tls import CertificateApplication
 from modules.applications.file import FileApplication
+from enums.certificate_source import CertificateSource
+from enums.certificate_store import CertificateStore
 
 logger = logging.getLogger(__name__)
 
@@ -174,5 +177,51 @@ class CertificateKafkaHandler:
             
         except Exception as e:
             logger.error(f"❌ 处理删除文件/文件夹事件失败: {e}", exc_info=True)
+            raise
+    
+    def process_export_certificate(self, event_data: Dict[str, Any]):
+        """
+        处理导出证书事件（来自 Kafka 事件）
+        
+        此方法会从数据库读取证书，然后根据证书的 store 导出到对应的文件夹（apis 或 websites）
+        auto 类型的证书不能存在 database store，如果存在就跳过并发出警告
+        
+        Args:
+            event_data: 事件数据
+        """
+        try:
+            event = ExportCertificateEvent.from_dict(event_data)
+            logger.info(f"🔄 收到导出证书请求（事件）: certificate_id={event.certificate_id}")
+            
+            # 从数据库获取证书详情
+            cert_detail = self.certificate_application.database_repo.get_certificate_by_id(event.certificate_id)
+            if not cert_detail:
+                logger.error(f"❌ 证书不存在: certificate_id={event.certificate_id}")
+                return
+            
+            store = cert_detail.get("store")
+            source = cert_detail.get("source")
+            
+            # auto 类型的证书不能存在 database store，如果存在就跳过并发出警告
+            if source == CertificateSource.AUTO.value and store == CertificateStore.DATABASE.value:
+                logger.warning(
+                    f"⚠️  AUTO 类型的证书不能存在 database store，跳过导出: "
+                    f"certificate_id={event.certificate_id}, source={source}, store={store}"
+                )
+                return
+            
+            # 根据 store 导出证书（apis 或 websites）
+            result = self.file_application.export_single_certificate(
+                certificate_id=event.certificate_id,
+                store=store
+            )
+            
+            if result.get("success"):
+                logger.info(f"✅ 证书导出成功: certificate_id={event.certificate_id}, store={store}")
+            else:
+                logger.warning(f"⚠️  证书导出失败: certificate_id={event.certificate_id}, store={store}, message={result.get('message')}")
+            
+        except Exception as e:
+            logger.error(f"❌ 处理导出证书事件失败: {e}", exc_info=True)
             raise
 

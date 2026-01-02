@@ -13,3 +13,4 @@ class EventType:
     PARSE_CERTIFICATE = "certificate.parse"  # 解析证书事件（解析证书内容并更新数据库）
     DELETE_FOLDER = "folder.delete"  # 删除文件夹事件（删除证书文件夹）
     DELETE_FILE_OR_FOLDER = "file_or_folder.delete"  # 删除文件或文件夹事件
+    EXPORT_CERTIFICATE = "certificate.export"  # 导出证书事件（导出证书到文件夹）

@@ -233,7 +233,7 @@ class CertificateDatabase:
             not_after, is_valid, days_remaining
         )
     
-    def update_all_days_remaining(self) -> Tuple[int, int]:
+    def update_all_days_remaining(self) -> Tuple[int, int, List[Dict[str, Any]]]:
         """批量更新所有证书的剩余天数和有效性状态"""
         return update_all_days_remaining(self)
     
