@@ -1,10 +1,8 @@
 import { memo } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button, Suspense } from "@/components";
-import { useCertificateDetail } from "@/hooks";
-import { CertificateSource } from "@/apis/domain";
-import type { CertType } from "@/types";
+import { useCertificateDetailById } from "@/hooks";
 import { ROUTES } from "@/types/navigation";
 import { showSuccess } from "@/stores/modalStore";
 import {
@@ -17,23 +15,11 @@ import {
 } from "./components";
 import styles from "./styles.module.css";
 
-// 内部组件：实际渲染证书详情
+// 内部组件：使用 ID 获取详情
 const CertDetailContent = memo(() => {
   const { t } = useTranslation("certDetail");
-  const { certType } = useParams<{ certType: CertType }>();
-  const [searchParams] = useSearchParams();
-
-  // 从查询参数获取 domain 和 source
-  const domain = searchParams.get("domain") || "";
-  const sourceParam = searchParams.get("source") || CertificateSource.AUTO;
-  const source = (sourceParam === CertificateSource.AUTO || 
-                  sourceParam === CertificateSource.MANUAL_APPLY || 
-                  sourceParam === CertificateSource.MANUAL_ADD)
-    ? (sourceParam as CertificateSource)
-    : CertificateSource.AUTO;
-  
-  // Suspense 模式下，certType 和 domain 必须存在（由父组件保证）
-  const { data: certDetail } = useCertificateDetail(certType!, domain, source);
+  const { certificateId } = useParams<{ certificateId: string }>();
+  const { data: certDetail } = useCertificateDetailById(certificateId || ""); 
 
   // Suspense 模式下，certDetail 一定存在，无需检查
   const handleCopyCertificate = () => {
@@ -58,12 +44,9 @@ const CertDetailContent = memo(() => {
           certificate={certDetail.certificate}
           privateKey={certDetail.privateKey}
           domain={certDetail.domain}
+          certificateId={certDetail.id}
         />
-        <CertificateOperations
-          domain={certDetail.domain}
-          source={(certDetail.source as CertificateSource) || source}
-          certType={certType!}
-        />
+        <CertificateOperations certificateId={certDetail.id} />
       </div>
     </div>
   );
@@ -73,14 +56,11 @@ CertDetailContent.displayName = "CertDetailContent";
 
 // 主组件：使用 Suspense 包装
 const CertDetailPage = memo(() => {
-  const { certType } = useParams<{ certType: CertType }>();
-  const [searchParams] = useSearchParams();
+  const { certificateId } = useParams<{ certificateId: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation("certDetail");
 
-  const domain = searchParams.get("domain");
-
-  if (!certType || !domain) {
+  if (!certificateId) {
     return (
       <div className={styles.container}>
         <div className={styles.errorContainer}>
@@ -107,4 +87,3 @@ const CertDetailPage = memo(() => {
 CertDetailPage.displayName = "CertDetailPage";
 
 export default CertDetailPage;
-

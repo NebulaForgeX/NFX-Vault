@@ -2,6 +2,7 @@
   "home": "Accueil",
   "certManagement": "Gestion des certificats",
   "certList": "Liste des certificats",
+  "searchCert": "Rechercher un certificat",
   "addCert": "Ajouter un certificat",
   "applyCert": "Demander un certificat",
   "analysis": "Analyse",

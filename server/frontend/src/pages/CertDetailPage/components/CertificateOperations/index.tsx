@@ -4,33 +4,26 @@ import { Edit, Trash2, RefreshCw } from "@/assets/icons/lucide";
 import { CertificateSource } from "@/apis/domain";
 import { IconButton } from "@/components";
 import { useOperationCertificate } from "../../hooks";
-import type { CertType } from "@/types";
+import { useCertificateDetailById } from "@/hooks";
 import styles from "./styles.module.css";
 
 interface CertificateOperationsProps {
-  domain: string;
-  source: CertificateSource;
-  certType: CertType;
+  certificateId: string;
 }
 
-const CertificateOperations = memo(({
-  domain,
-  source,
-  certType,
-}: CertificateOperationsProps) => {
+const CertificateOperations = memo(({ certificateId }: CertificateOperationsProps) => {
   const { t } = useTranslation("certDetail");
-  const { handleUpdate, handleReapply, handleDelete, isDeleting, isReapplying } = useOperationCertificate({
-    domain,
-    source,
-    certType,
-  });
+  const { data: certificate } = useCertificateDetailById(certificateId);
+  const { handleEdit, handleReapply, handleDelete, isDeleting, isReapplying } = useOperationCertificate(certificateId);
+  
+  const source = (certificate?.source as CertificateSource) || CertificateSource.AUTO;
 
   return (
     <div className={styles.section}>
       <h2 className={styles.sectionTitle}>{t("actions.operations") || "Operations"}</h2>
       <div className={styles.buttonGroup}>
         <IconButton
-          onClick={handleUpdate}
+          onClick={handleEdit}
           variant="secondary"
           icon={<Edit size={16} />}
           disabled={source === CertificateSource.AUTO}
@@ -64,4 +57,3 @@ const CertificateOperations = memo(({
 CertificateOperations.displayName = "CertificateOperations";
 
 export default CertificateOperations;
-

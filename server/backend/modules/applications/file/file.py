@@ -12,7 +12,7 @@ from typing import Optional, Dict, Any
 from modules.repositories.database.certificate import CertificateDatabase
 from modules.configs.database_config import DatabaseConfig
 
-from .handler import export_certificates, read_folders_and_store_certificates, list_directory, download_file, get_file_content
+from .handler import export_certificates, export_single_certificate, read_folders_and_store_certificates, list_directory, download_file, get_file_content
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +43,10 @@ class FileApplication:
     def export_certificates(self, store: str) -> Dict[str, Any]:
         """导出证书到文件"""
         return export_certificates(self, store)
+    
+    def export_single_certificate(self, certificate_id: str, store: str) -> Dict[str, Any]:
+        """导出单个证书到指定文件夹"""
+        return export_single_certificate(self, certificate_id, store)
     
     async def read_folders_and_store_certificates(
         self,

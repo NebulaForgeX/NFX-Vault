@@ -48,12 +48,12 @@ def create_certificate(
         # 默认存到 database
         actual_store = CertificateStore.DATABASE.value
         
-        # 检查 domain + source='manual' 是否已存在
+        # 检查 domain + source='manual_add' + store 是否已存在（唯一约束是 domain + source + store）
         existing = app.database_repo.get_certificate_by_domain(actual_store, domain, source=CertificateSource.MANUAL_ADD.value)
         if existing:
             return {
                 "success": False,
-                "message": f"Certificate with domain '{domain}' and source 'manual_add' already exists"
+                "message": f"Certificate with domain '{domain}', source 'manual_add' and store '{actual_store}' already exists"
             }
         
         # 创建证书（默认存到 database，status='process'）

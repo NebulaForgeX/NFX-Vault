@@ -1,0 +1,38 @@
+{
+  "title": "Search Certificates",
+  "subtitle": "Search certificates by domain or folder name",
+  "loading": "Loading...",
+  "search": {
+    "placeholder": "Enter domain or folder name...",
+    "button": "Search"
+  },
+  "filters": {
+    "store": "Store",
+    "source": "Source",
+    "all": "All",
+    "websites": "Websites",
+    "apis": "Apis",
+    "database": "Database",
+    "auto": "Auto Discover",
+    "manualApply": "Manual Apply",
+    "manualAdd": "Manual Add",
+    "clear": "Clear Filters"
+  },
+  "cert": {
+    "folderName": "Folder Name",
+    "sans": "SANs",
+    "store": "Store",
+    "daysRemaining": "Days Remaining"
+  },
+  "results": {
+    "count": "Found {{count}} certificates",
+    "empty": "No matching certificates found"
+  },
+  "actions": {
+    "loadingMore": "Loading more certificates..."
+  },
+  "certificate": {
+    "allLoaded": "All certificates loaded"
+  }
+}
+

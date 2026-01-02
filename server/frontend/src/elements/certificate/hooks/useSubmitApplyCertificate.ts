@@ -23,13 +23,14 @@ export const useSubmitApplyCertificate = (
   certificate?: CertificateDetailResponse | null
 ) => {
   const navigate = useNavigate();
-  const { t } = useTranslation("certificateElements");
+  const { t: tElements } = useTranslation("certificateElements");
+  const { t: tEditApply } = useTranslation("certEditApply");
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async (data: { values: ApplyCertificateFormValues }) => {
       showLoading({
-        title: t("apply.title"),
-        message: t("apply.applying"),
+        title: tElements("apply.title"),
+        message: tElements("apply.applying"),
       });
       try {
         // 根据 source 调用不同的 API
@@ -85,18 +86,18 @@ export const useSubmitApplyCertificate = (
         cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "database");
         cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "websites");
         cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "apis");
-        showSuccess(result.message || t("messages.certificateApplySuccess"));
+        showSuccess(result.message || tElements("messages.certificateApplySuccess"));
         navigate(ROUTES.CHECK);
       } else {
         const errorMsg = result.error 
-          ? `${result.message}\n${t("messages.errorReason")}: ${result.error}`
-          : result.message || t("messages.certificateApplyFailed");
+          ? `${result.message}\n${tElements("messages.errorReason")}: ${result.error}`
+          : result.message || tElements("messages.certificateApplyFailed");
         showError(errorMsg);
       }
     },
     onError: (error: Error) => {
       console.error("Apply certificate error:", error);
-      showError(error.message || t("messages.certificateApplyFailed"));
+      showError(error.message || tElements("messages.certificateApplyFailed"));
     },
   });
 
@@ -104,15 +105,18 @@ export const useSubmitApplyCertificate = (
     async (values: ApplyCertificateFormValues) => {
       // 显示确认 modal
       const domain = certificate?.domain || values.domain;
+      // 对于 manual apply，使用 "申请证书" 而不是 "重新申请证书"
       const confirmMessage = values.forceRenewal
-        ? t("reapply.confirmMessageForce", { domain })
-        : t("reapply.confirmMessage", { domain });
+        ? tEditApply("reapply.confirmMessageForce", { domain })
+        : tEditApply("reapply.confirmMessage", { domain });
       
       showConfirm({
-        title: t("reapply.confirmTitle"),
+        title: source === CertificateSource.MANUAL_APPLY 
+          ? tEditApply("form.applyTitle") || "申请证书"
+          : tEditApply("reapply.confirmTitle"),
         message: confirmMessage,
-        confirmText: t("reapply.confirm"),
-        cancelText: t("reapply.cancel"),
+        confirmText: tEditApply("reapply.confirm"),
+        cancelText: tEditApply("reapply.cancel"),
         onConfirm: async () => {
           try {
             await mutateAsync({ values });
@@ -122,16 +126,16 @@ export const useSubmitApplyCertificate = (
         },
       });
     },
-    [mutateAsync, certificate, t],
+    [mutateAsync, certificate, source, tEditApply],
   );
 
   const onSubmitError = useCallback(
     (errors: FieldErrors<ApplyCertificateFormValues>) => {
       console.error("Form validation errors:", errors);
       const firstError = Object.values(errors)[0];
-      showError(firstError?.message || t("messages.checkFormErrors"));
+      showError(firstError?.message || tElements("messages.checkFormErrors"));
     },
-    [t],
+    [tElements],
   );
 
   return {

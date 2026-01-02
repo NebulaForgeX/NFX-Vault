@@ -29,6 +29,7 @@
     "webroot": "Webroot 路径",
     "webrootPlaceholder": "/var/www/html",
     "webrootHelp": "用于 HTTP-01 验证的 Web 根目录路径，留空使用默认路径",
+    "applyTitle": "申请证书",
     "reapply": "重新申请证书",
     "reapplying": "重新申请中...",
     "editCertificate": "编辑证书",

@@ -44,7 +44,7 @@ services:
       # 这里不需要重复配置，避免冲突
     networks:
       - nfx-vault
-      - websites_default
+      - nfx-edge
 
   # 后端 Pipeline 服务（Kafka Consumer）
   backend-pipeline:
@@ -105,7 +105,7 @@ networks:
   nfx-vault:
     name: nfx-vault
     driver: bridge
-  websites_default:
+  nfx-edge:
     external: true
-    name: websites_default
+    name: nfx-edge
 

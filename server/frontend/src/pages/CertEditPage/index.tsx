@@ -1,14 +1,13 @@
 import { memo } from "react";
 import { ArrowLeft } from "@/assets/icons/lucide";
 import { FormProvider } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { Suspense } from "@/components";
 import { useInitCertificateForm, useEditCertificate } from "@/elements/certificate";
-import { useCertificateDetail } from "@/hooks";
+import { useCertificateDetailById } from "@/hooks";
 import { CertificateSource } from "@/apis/domain";
-import type { CertType } from "@/types";
 
 import { AutoForm, ManualApplyForm, ManualAddForm } from "./components";
 import styles from "./styles.module.css";
@@ -16,32 +15,29 @@ import styles from "./styles.module.css";
 const CertEditPageContent = memo(() => {
   const { t } = useTranslation("certEdit");
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const { certificateId } = useParams<{ certificateId: string }>();
 
-  const domain = searchParams.get("domain");
-  const sourceParam = searchParams.get("source") || CertificateSource.AUTO;
-  const certType = searchParams.get("certType") as CertType | null;
-
-  const source = (sourceParam === CertificateSource.AUTO || 
-                  sourceParam === CertificateSource.MANUAL_APPLY || 
-                  sourceParam === CertificateSource.MANUAL_ADD)
-    ? (sourceParam as CertificateSource)
-    : CertificateSource.AUTO;
-
-  if (!domain || !certType) {
+  if (!certificateId) {
     navigate(-1);
     return null;
   }
 
-  const { data: certificate } = useCertificateDetail(certType, domain, source);
+  const { data: certificate } = useCertificateDetailById(certificateId);
   const methods = useInitCertificateForm(certificate || null);
-  const { onSubmit, onSubmitError, isPending } = useEditCertificate(domain, source, certificate?.id);
+  const { onSubmit, onSubmitError, isPending } = useEditCertificate(
+    certificate.domain, 
+    certificate.source as CertificateSource, 
+    certificate.id
+  );
 
   const handleBack = () => {
     navigate(-1);
   };
 
-  if (!certificate)  return null;
+  if (!certificate) return null;
+  
+  const source = (certificate.source as CertificateSource) || CertificateSource.AUTO;
+  
   // 根据 source 选择不同的表单组件
   const renderForm = () => {
     switch (source) {

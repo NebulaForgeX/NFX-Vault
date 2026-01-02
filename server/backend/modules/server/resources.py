@@ -103,4 +103,3 @@ def init_resource_connections(db_config: DatabaseConfig) -> ResourceConnections:
         kafka_client=kafka_client,
         kafka_consumer=kafka_consumer
     )
-

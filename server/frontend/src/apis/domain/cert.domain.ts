@@ -19,13 +19,15 @@ export enum CertificateStore {
 }
 
 export interface CertificateInfo {
+  id: string; // 证书 ID
   domain: string;
-  store?: string;
-  source?: CertificateSource;
+  store: string;
+  source: CertificateSource;
   status?: CertificateStatus;
   email?: string;
   folderName?: string;
   issuer?: string;
+  sans?: string[]; // SANs (Subject Alternative Names)
   notBefore?: string;
   notAfter?: string;
   isValid?: boolean;
@@ -35,7 +37,7 @@ export interface CertificateInfo {
 }
 
 export interface CertificateListResponse {
-  certificates: CertificateInfo[];
+  items: CertificateInfo[];
   total: number;
 }
 
@@ -47,10 +49,10 @@ export interface RefreshResponse {
 }
 
 export interface CertificateDetailResponse {
-  id?: string; // 证书 ID
+  id: string; // 证书 ID
   domain: string;
-  store?: string;
-  source?: CertificateSource;
+  store: string;
+  source: CertificateSource;
   status?: CertificateStatus;
   email?: string;
   folderName?: string; 
@@ -143,17 +145,15 @@ export interface SearchCertificateRequest {
   keyword: string;
   store?: CertType;
   source?: CertificateSource;
-  page?: number;
-  pageSize?: number;
+  offset?: number;
+  limit?: number;
 }
 
 export interface SearchCertificateResponse {
   success: boolean;
   message: string;
-  certificates: CertificateInfo[];
+  items: CertificateInfo[];
   total: number;
-  page: number;
-  pageSize: number;
 }
 
 export interface ExportCertificateItem {

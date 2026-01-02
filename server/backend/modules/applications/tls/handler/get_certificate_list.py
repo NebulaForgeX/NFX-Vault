@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 def get_certificate_list(
     app: CertificateAppLike,
     store: str,
-    page: int = 1,
-    page_size: int = 20,
+    offset: int = 0,
+    limit: int = 20,
     use_cache: bool = True
 ) -> Dict[str, Any]:
     """
@@ -24,25 +24,27 @@ def get_certificate_list(
     Args:
         app: CertificateApplication 实例
         store: 存储位置（websites、apis 或 database）
-        page: 页码
-        page_size: 每页数量
+        offset: 偏移量（从0开始）
+        limit: 每页数量
         use_cache: 是否使用缓存
         
     Returns:
-        包含 certificates 和 total 的字典
+        包含 items 和 total 的字典
     """
     # 1. 尝试从缓存获取
     if use_cache:
-        cached = app.cache_repo.get_certificate_list(store, page, page_size)
+        cached = app.cache_repo.get_certificate_list(store, offset, limit)
         if cached:
             return cached
     
     # 2. 从数据库获取（已经是字典格式）
-    cert_dicts, total = app.database_repo.get_certificate_list(store, page, page_size)
+    cert_dicts, total = app.database_repo.get_certificate_list(store, offset, limit)
     
     # 转换为响应格式（保持 snake_case，前端 axios-case-converter 会自动转换为 camelCase）
-    certificates = [
+    # 注意：to_dict() 已经将日期字段转换为 ISO 格式字符串，所以不需要再次调用 isoformat()
+    items = [
         {
+            "id": cert_dict.get("id"),  # 添加 id 字段
             "domain": cert_dict.get("domain", ""),
             "store": cert_dict.get("store"),
             "folder_name": cert_dict.get("folder_name"),
@@ -50,8 +52,8 @@ def get_certificate_list(
             "status": cert_dict.get("status"),
             "email": cert_dict.get("email"),
             "issuer": cert_dict.get("issuer"),
-            "not_before": cert_dict.get("not_before").isoformat() if cert_dict.get("not_before") else None,
-            "not_after": cert_dict.get("not_after").isoformat() if cert_dict.get("not_after") else None,
+            "not_before": cert_dict.get("not_before"),
+            "not_after": cert_dict.get("not_after"),
             "is_valid": cert_dict.get("is_valid"),
             "days_remaining": cert_dict.get("days_remaining"),
             "last_error_message": cert_dict.get("last_error_message"),
@@ -62,13 +64,13 @@ def get_certificate_list(
     ]
     
     result = {
-        "certificates": certificates,
+        "items": items,
         "total": total
     }
     
     # 3. 写入缓存（使用较短的 TTL，默认 5 分钟）
     if use_cache:
-        app.cache_repo.set_certificate_list(store, page, page_size, result, ttl=300)
+        app.cache_repo.set_certificate_list(store, offset, limit, result, ttl=300)
     
     return result
 

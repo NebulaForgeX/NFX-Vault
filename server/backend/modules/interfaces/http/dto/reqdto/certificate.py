@@ -152,15 +152,13 @@ class ReapplyManualAddCertificateRequest(BaseModel):
 class GetCertificateListRequest(BaseModel):
     """获取证书列表请求"""
     store: str = Field(..., description="存储位置（websites、apis 或 database）")
-    page: int = Field(1, ge=1, description="页码")
-    page_size: int = Field(20, ge=1, le=100, description="每页数量")
+    offset: int = Field(0, ge=0, description="偏移量（从0开始）")
+    limit: int = Field(20, ge=1, le=100, description="每页数量")
 
 
-class GetCertificateDetailRequest(BaseModel):
-    """获取证书详情请求"""
-    store: str = Field(..., description="存储位置（websites、apis 或 database）")
-    domain: str = Field(..., description="域名")
-    source: CertificateSource = Field(CertificateSource.AUTO, description="来源（auto 或 manual）")
+class GetCertificateDetailByIdRequest(BaseModel):
+    """通过 ID 获取证书详情请求"""
+    certificate_id: str = Field(..., description="证书 ID")
 
 
 class PublishRefreshEventRequest(BaseModel):
@@ -180,6 +178,5 @@ class SearchCertificateRequest(BaseModel):
     keyword: str = Field(..., description="搜索关键词（域名、文件夹名等）")
     store: Optional[str] = Field(None, description="存储位置过滤（可选）")
     source: Optional[str] = Field(None, description="来源过滤（可选）")
-    page: int = Field(1, description="页码")
-    page_size: int = Field(20, description="每页数量")
-
+    offset: int = Field(0, description="偏移量（从0开始）")
+    limit: int = Field(20, description="每页数量")

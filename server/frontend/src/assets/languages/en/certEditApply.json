@@ -29,6 +29,7 @@
     "webroot": "Webroot Path",
     "webrootPlaceholder": "/var/www/html",
     "webrootHelp": "Web root directory path for HTTP-01 verification, leave empty to use default path",
+    "applyTitle": "Apply Certificate",
     "reapply": "Re-apply Certificate",
     "reapplying": "Re-applying...",
     "editCertificate": "Edit Certificate",

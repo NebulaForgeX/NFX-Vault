@@ -1,6 +1,5 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import type { CertType } from "@/apis/domain";
 import type { CertificateInfo } from "@/apis/domain";
 import { CertificateStatus } from "@/apis/domain";
 import { Edit, Eye, Trash2, Loader2, AlertTriangle } from "@/assets/icons/lucide";
@@ -11,10 +10,9 @@ import styles from "./styles.module.css";
 
 interface CertCardProps {
   cert: CertificateInfo;
-  certType: CertType;
 }
 
-const CertCard = memo(({ cert, certType }: CertCardProps) => {
+const CertCard = memo(({ cert }: CertCardProps) => {
   const { t } = useTranslation("certCheck");
   const statusColor = useCertificateStatus(cert); // 用于边框颜色
   const timeInfo = useCertificateTime(cert); // 用于时间状态显示
@@ -27,7 +25,7 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
     
     
     // 点击卡片本身，跳转到查看页面
-    handleView(cert, certType)();
+    handleView(cert)();
   };
 
   const handleErrorHover = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -59,7 +57,7 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          handleView(cert, certType)();
+          handleView(cert)();
         }
       }}
     >
@@ -77,6 +75,11 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
           <p className={styles.certMeta}>
             {t("certificate.issuer")}: {cert.issuer || t("certificate.unknown")}
           </p>
+          {cert.sans && cert.sans.length > 0 && (
+            <p className={styles.certMeta}>
+              {t("certificate.sans") || "SANs"}: {cert.sans.join(", ")}
+            </p>
+          )}
           {cert.notAfter && (
             <p className={styles.certMeta}>
               {t("certificate.expiryDate")}: {new Date(cert.notAfter).toLocaleString()}
@@ -94,7 +97,7 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
             {cert.status === CertificateStatus.PROCESS && (
               <button
                 className={`${styles.actionButton} ${styles.processButton}`}
-                onClick={handleView(cert, certType)}
+                onClick={handleView(cert)}
                 title={t("actions.view") || "View"}
               >
                 <Loader2 size={18} className={styles.rotating} />
@@ -113,14 +116,14 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
             )}
             <button
               className={styles.actionButton}
-              onClick={handleEdit(cert, certType)}
+              onClick={handleEdit(cert)}
               title={t("actions.update") || "Edit"}
             >
               <Edit size={18} />
             </button>
             <button
               className={styles.actionButton}
-              onClick={handleView(cert, certType)}
+              onClick={handleView(cert)}
               title={t("actions.view") || "View"}
             >
               <Eye size={18} />

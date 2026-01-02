@@ -56,7 +56,17 @@
     "both": "Download Both"
   },
   "export": {
-    "title": "Export Certificate"
+    "title": "Export Certificate",
+    "toApiFolder": "Export to APIs Folder",
+    "toWebsitesFolder": "Export to Websites Folder",
+    "success": {
+      "apiFolder": "Certificate exported to APIs folder",
+      "websitesFolder": "Certificate exported to Websites folder"
+    },
+    "error": {
+      "noCertificateId": "Certificate ID is required",
+      "failed": "Failed to export certificate"
+    }
   }
 }
 

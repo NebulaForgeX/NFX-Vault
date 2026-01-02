@@ -30,16 +30,16 @@ class CertificateCache:
     def get_certificate_list(
         self, 
         store: str, 
-        page: int = 1, 
-        page_size: int = 20
+        offset: int = 0, 
+        limit: int = 20
     ) -> Optional[Dict[str, Any]]:
         """
         从缓存获取证书列表
         
         Args:
             store: 存储位置
-            page: 页码
-            page_size: 每页数量
+            offset: 偏移量（从0开始）
+            limit: 每页数量
             
         Returns:
             缓存数据，如果不存在则返回 None
@@ -48,7 +48,7 @@ class CertificateCache:
             return None
         
         try:
-            cache_key = f"certs:list:{store}:page_{page}:size_{page_size}"
+            cache_key = f"certs:list:{store}:offset_{offset}:limit_{limit}"
             cached = self.redis_client.get(cache_key)
             if cached:
                 return json.loads(cached)
@@ -60,8 +60,8 @@ class CertificateCache:
     def set_certificate_list(
         self, 
         store: str, 
-        page: int, 
-        page_size: int, 
+        offset: int, 
+        limit: int, 
         data: Dict[str, Any],
         ttl: Optional[int] = None
     ) -> bool:
@@ -70,8 +70,8 @@ class CertificateCache:
         
         Args:
             store: 存储位置
-            page: 页码
-            page_size: 每页数量
+            offset: 偏移量（从0开始）
+            limit: 每页数量
             data: 要缓存的数据
             ttl: 过期时间（秒），如果为 None 则使用默认值
             
@@ -82,7 +82,7 @@ class CertificateCache:
             return False
         
         try:
-            cache_key = f"certs:list:{store}:page_{page}:size_{page_size}"
+            cache_key = f"certs:list:{store}:offset_{offset}:limit_{limit}"
             ttl = ttl or self.default_ttl
             self.redis_client.setex(cache_key, ttl, json.dumps(data, default=str))
             return True

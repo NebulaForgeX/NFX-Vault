@@ -1,14 +1,13 @@
 import { memo } from "react";
 import { ArrowLeft } from "@/assets/icons/lucide";
 import { FormProvider } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { Suspense } from "@/components";
 import { useInitApplyCertificateForm, useSubmitApplyCertificate } from "@/elements/certificate";
-import { useCertificateDetail } from "@/hooks";
+import { useCertificateDetailById } from "@/hooks";
 import { CertificateSource } from "@/apis/domain";
-import type { CertType } from "@/types";
 
 import { AutoForm, ManualApplyForm, ManualAddForm } from "./components";
 import styles from "./styles.module.css";
@@ -16,42 +15,26 @@ import styles from "./styles.module.css";
 const CertEditApplyPageContent = memo(() => {
   const { t } = useTranslation("certEditApply");
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const { certificateId } = useParams<{ certificateId: string }>();
 
-  const domain = searchParams.get("domain");
-  const sourceParam = searchParams.get("source") || CertificateSource.AUTO;
-  const certType = searchParams.get("certType") as CertType | null;
-
-  const source = (sourceParam === CertificateSource.AUTO || 
-                  sourceParam === CertificateSource.MANUAL_APPLY || 
-                  sourceParam === CertificateSource.MANUAL_ADD)
-    ? (sourceParam as CertificateSource)
-    : CertificateSource.AUTO;
-
-  if (!domain || !certType) {
+  if (!certificateId) {
     navigate(-1);
     return null;
   }
 
   // 获取证书详情用于回填
-  const { data: certificate } = useCertificateDetail(certType, domain, source);
+  const { data: certificate } = useCertificateDetailById(certificateId);
   
   // Form setup - 传入证书数据用于回填
-  const methods = useInitApplyCertificateForm(certificate || null);
-  const { onSubmit, onSubmitError, isPending } = useSubmitApplyCertificate(source, certificate);
+  const methods = useInitApplyCertificateForm(certificate);
+  const { onSubmit, onSubmitError, isPending } = useSubmitApplyCertificate(certificate.source, certificate);
 
-  const handleBack = () => {
-    navigate(-1);
-  };
-
-  // 等待证书数据加载完成
-  if (!certificate) {
-    return null;
-  }
+  const handleBack = () => navigate(-1);
+  
 
   // 根据 source 选择不同的表单组件
   const renderForm = () => {
-    switch (source) {
+    switch (certificate.source) {
       case CertificateSource.AUTO:
         return (
           <AutoForm
@@ -91,15 +74,13 @@ const CertEditApplyPageContent = memo(() => {
           </button>
           <div>
             <h1 className={styles.title}>
-              {t("title")} - {domain}
+              {t("title")} - {certificate.domain}
             </h1>
             <p className={styles.subtitle}>
-              {t("subtitle", { domain })}
-              {certificate.source && (
-                <span className={styles.sourceBadge}>
-                  ({t(`source.${certificate.source}`)})
-                </span>
-              )}
+              {t("subtitle", { domain: certificate.domain })}
+              <span className={styles.sourceBadge}>
+                ({t(`source.${certificate.source}`)})
+              </span>
             </p>
           </div>
         </div>

@@ -50,6 +50,7 @@ def parse_certificate(
                 status=CertificateStatus.FAIL.value,
                 sans=None,
                 issuer=None,
+                email=None,
                 not_before=None,
                 not_after=None,
                 is_valid=False,
@@ -70,6 +71,7 @@ def parse_certificate(
                 status=CertificateStatus.FAIL.value,
                 sans=None,
                 issuer=None,
+                email=None,
                 not_before=None,
                 not_after=None,
                 is_valid=False,
@@ -85,6 +87,7 @@ def parse_certificate(
         parsed_domain = cert_info.get("common_name")
         parsed_sans = cert_info.get("sans", [])
         parsed_issuer = cert_info.get("issuer")
+        parsed_email = cert_info.get("email")
         parsed_not_before = cert_info.get("not_before")
         parsed_not_after = cert_info.get("not_after")
         parsed_is_valid = cert_info.get("is_valid", False)
@@ -124,6 +127,7 @@ def parse_certificate(
             status=status,
             sans=all_domains if all_domains else [],  # 空列表而不是 None，表示没有 SANs
             issuer=parsed_issuer,
+            email=parsed_email,  # 提取的邮箱地址
             not_before=parsed_not_before,
             not_after=parsed_not_after,
             is_valid=parsed_is_valid,
@@ -151,6 +155,7 @@ def parse_certificate(
                 status=CertificateStatus.FAIL.value,
                 sans=None,
                 issuer=None,
+                email=None,
                 not_before=None,
                 not_after=None,
                 is_valid=False,

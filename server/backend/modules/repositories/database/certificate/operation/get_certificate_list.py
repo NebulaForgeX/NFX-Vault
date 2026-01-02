@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 def get_certificate_list(
     repo: CertificateDatabaseLike,
     store: str,
-    page: int = 1,
-    page_size: int = 20
+    offset: int = 0,
+    limit: int = 20
 ) -> Tuple[List[Dict], int]:
     """
     获取证书列表（支持分页）
@@ -24,8 +24,8 @@ def get_certificate_list(
     Args:
         repo: CertificateDatabase 实例
         store: 存储位置（websites、apis 或 database）
-        page: 页码（从1开始）
-        page_size: 每页数量
+        offset: 偏移量（从0开始）
+        limit: 每页数量
     
     Returns:
         (证书列表, 总数)
@@ -41,14 +41,15 @@ def get_certificate_list(
                 TLSCertificate.store == store
             ).count()
             
-            # 分页查询
+            # 分页查询（使用 offset/limit）
             certs = session.query(TLSCertificate).filter(
                 TLSCertificate.store == store
-            ).offset((page - 1) * page_size).limit(page_size).all()
+            ).offset(offset).limit(limit).all()
             
             # 在 session 内部转换为字典，避免 DetachedInstanceError
             cert_dicts = [
                 {
+                    "id": cert.id,  # 添加 id 字段
                     "domain": cert.domain,
                     "store": cert.store,
                     "folder_name": cert.folder_name,

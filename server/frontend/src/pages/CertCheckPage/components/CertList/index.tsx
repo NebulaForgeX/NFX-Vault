@@ -68,13 +68,12 @@ const CertList = memo(({ certType }: CertListProps) => {
           fetchNextPage={fetchNextPage}
           renderItem={(cert) => (
             <CertCard
-              key={`${cert.domain}-${cert.source || "auto"}`}
+              key={cert.id || `${cert.domain}-${cert.source || "auto"}`}
               cert={cert}
-              certType={certType}
             />
           )}
           estimateSize={200}
-          getItemKey={(cert) => `${cert.domain}-${cert.source || "auto"}`}
+          getItemKey={(cert) => cert.id || `${cert.domain}-${cert.source || "auto"}`}
           emptyState={emptyStateContent}
           loadingIndicator={loadingIndicator}
           endOfListIndicator={endOfListIndicator}

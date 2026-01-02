@@ -1,6 +1,6 @@
 import type { CertificateFormValues } from "../../controllers/certificateSchema";
 
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
@@ -14,21 +14,31 @@ const FolderNameController = memo(() => {
     formState: { errors },
   } = useFormContext<CertificateFormValues>();
 
+  const folderNameRegister = useMemo(
+    () => register("folderName"),
+    [register]
+  );
+
+  const displayError = errors.folderName?.message;
+  const hasError = !!displayError;
+
   return (
     <div className={styles.formControl}>
       <label className={styles.label}>
         {t("form.folderName")}
       </label>
       <Input
-        {...register("folderName")}
+        {...folderNameRegister}
         type="text"
         placeholder={t("form.folderNamePlaceholder")}
-        error={!!errors.folderName}
+        error={hasError}
       />
-      {errors.folderName && <p className={styles.errorMessage}>{errors.folderName.message}</p>}
-      <p className={styles.helpText}>
-        {t("form.folderNameHelp")}
-      </p>
+      {displayError && <p className={styles.errorMessage}>{displayError}</p>}
+      {!displayError && (
+        <p className={styles.helpText}>
+          {t("form.folderNameHelp")}
+        </p>
+      )}
     </div>
   );
 });
@@ -36,4 +46,3 @@ const FolderNameController = memo(() => {
 FolderNameController.displayName = "FolderNameController";
 
 export default FolderNameController;
-

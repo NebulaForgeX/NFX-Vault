@@ -56,7 +56,17 @@
     "both": "下载全部"
   },
   "export": {
-    "title": "导出证书"
+    "title": "导出证书",
+    "toApiFolder": "导出到 APIs 文件夹",
+    "toWebsitesFolder": "导出到 Websites 文件夹",
+    "success": {
+      "apiFolder": "证书已导出到 APIs 文件夹",
+      "websitesFolder": "证书已导出到 Websites 文件夹"
+    },
+    "error": {
+      "noCertificateId": "证书 ID 是必需的",
+      "failed": "导出证书失败"
+    }
   }
 }
 

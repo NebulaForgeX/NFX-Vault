@@ -16,6 +16,25 @@ export const ExportCertificates = async (params: { store: CertType }): Promise<{
   return data;
 };
 
+export interface ExportSingleCertificateParams {
+  certificate_id: string;
+  store: "apis" | "websites";
+}
+
+export interface ExportSingleCertificateResponse {
+  success: boolean;
+  message: string;
+  store?: string;
+  folder_name?: string;
+  domain?: string;
+  certificate_id?: string;
+}
+
+export const ExportSingleCertificate = async (params: ExportSingleCertificateParams): Promise<ExportSingleCertificateResponse> => {
+  const { data } = await publicClient.post<ExportSingleCertificateResponse>(`${baseUrl}/export-single`, params);
+  return data;
+};
+
 export const downloadFile = async (store: "apis" | "websites", filePath: string, folderName: string): Promise<void> => {
   // 获取基础 URL
   const baseURL = publicClient.defaults.baseURL || window.location.origin;

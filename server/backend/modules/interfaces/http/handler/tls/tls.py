@@ -13,7 +13,7 @@ from modules.applications.tls import CertificateApplication
 from enums.certificate_source import CertificateSource
 from modules.interfaces.http.dto.reqdto import (
     GetCertificateListRequest,
-    GetCertificateDetailRequest,
+    GetCertificateDetailByIdRequest,
     CreateCertificateRequest,
     UpdateManualAddCertificateRequest,
     UpdateManualApplyCertificateRequest,
@@ -29,7 +29,7 @@ from modules.interfaces.http.dto.reqdto import (
 from modules.interfaces.http.dto.respdto import CertificateResponse
 from .operation import (
     get_certificate_list,
-    get_certificate_detail,
+    get_certificate_detail_by_id,
     create_certificate,
     update_manual_add_certificate,
     update_manual_apply_certificate,
@@ -65,15 +65,15 @@ class CertificateHTTPHandler:
         @router.get("/check/{store}")
         async def check_certificates(
             store: CertStore,
-            page: int = Query(1, ge=1, description="页码（从1开始）"),
-            page_size: int = Query(20, ge=1, le=100, description="每页数量")
+            offset: int = Query(0, ge=0, description="偏移量（从0开始）"),
+            limit: int = Query(20, ge=1, le=100, description="每页数量")
         ):
             """检查证书状态（从数据库读取，支持分页）"""
             try:
                 request = GetCertificateListRequest(
                     store=store.value,
-                    page=page,
-                    page_size=page_size
+                    offset=offset,
+                    limit=limit
                 )
                 result = get_certificate_list(
                     app=self.certificate_application,
@@ -86,30 +86,20 @@ class CertificateHTTPHandler:
                 logger.error(f"❌ 查询证书列表失败: {e}", exc_info=True)
                 raise HTTPException(status_code=500, detail=str(e))
 
-        @router.get("/detail/{store}")
-        async def get_certificate_detail_endpoint(
-            store: CertStore,
-            domain: str = Query(..., description="域名"),
-            source: CertificateSource = Query(CertificateSource.AUTO, description="来源（auto 或 manual）")
-        ):
-            """获取单个证书的详细信息（包含证书内容和私钥）"""
+        @router.get("/detail-by-id/{certificate_id}")
+        async def get_certificate_detail_by_id_endpoint(certificate_id: str):
+            """通过 ID 获取单个证书的详细信息（包含证书内容和私钥）"""
             try:
-                request = GetCertificateDetailRequest(
-                    store=store.value,
-                    domain=domain,
-                    source=source
-                )
-                result = get_certificate_detail(
+                request = GetCertificateDetailByIdRequest(certificate_id=certificate_id)
+                result = get_certificate_detail_by_id(
                     app=self.certificate_application,
                     request=request
                 )
-                if not result:
-                    raise HTTPException(status_code=404, detail="Certificate not found")
                 return result
             except HTTPException:
                 raise
             except Exception as e:
-                logger.error(f"❌ 查询证书详情失败: {e}", exc_info=True)
+                logger.error(f"❌ 通过 ID 查询证书详情失败: {e}", exc_info=True)
                 raise HTTPException(status_code=500, detail=str(e))
 
         @router.post("/refresh/{store}")
@@ -288,6 +278,7 @@ class CertificateHTTPHandler:
             except Exception as e:
                 logger.error(f"❌ 搜索证书失败: {e}", exc_info=True)
                 raise HTTPException(status_code=500, detail=str(e))
+
 
         return router
 

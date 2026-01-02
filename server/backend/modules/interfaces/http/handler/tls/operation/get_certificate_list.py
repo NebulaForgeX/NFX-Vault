@@ -26,8 +26,8 @@ def get_certificate_list(
     """
     return app.get_certificate_list(
         store=request.store,
-        page=request.page,
-        page_size=request.page_size,
+        offset=request.offset,
+        limit=request.limit,
         use_cache=True
     )
 

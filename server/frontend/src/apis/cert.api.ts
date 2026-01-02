@@ -15,7 +15,6 @@ import type {
   CertificateResponse,
   SearchCertificateResponse,
 } from "@/apis/domain";
-import { CertificateSource } from "@/apis/domain";
 
 import { publicClient } from "@/apis/clients";
 
@@ -23,27 +22,20 @@ const baseUrl = "/tls";
 
 export interface GetCertificateListParams {
   certType: CertType;
-  page?: number;
-  pageSize?: number;
+  offset?: number;
+  limit?: number;
 }
 
 export const GetCertificateList = async (params: GetCertificateListParams): Promise<CertificateListResponse> => {
-  const { certType, page = 1, pageSize = 20 } = params;
+  const { certType, offset = 0, limit = 20 } = params;
   const { data } = await publicClient.get<CertificateListResponse>(`${baseUrl}/check/${certType}`, {
-    params: { page, page_size: pageSize },
+    params: { offset, limit },
   });
   return data;
 };
 
-
-export const GetCertificateDetail = async (
-  certType: CertType,
-  domain: string,
-  source: CertificateSource = CertificateSource.AUTO
-): Promise<CertificateDetailResponse> => {
-  const { data } = await publicClient.get<CertificateDetailResponse>(`${baseUrl}/detail/${certType}`, {
-    params: { domain, source },
-  });
+export const GetCertificateDetailById = async (certificateId: string): Promise<CertificateDetailResponse> => {
+  const { data } = await publicClient.get<CertificateDetailResponse>(`${baseUrl}/detail-by-id/${certificateId}`);
   return data;
 };
 

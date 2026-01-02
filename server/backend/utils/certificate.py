@@ -39,6 +39,7 @@ async def extract_cert_info_from_pem(cert_pem: str) -> Dict:
         not_after = None
         issuer = "Let's Encrypt"  # 默认颁发者
         common_name = None
+        email = None
         subject = {}
         sans = []  # Subject Alternative Names
         
@@ -50,12 +51,17 @@ async def extract_cert_info_from_pem(cert_pem: str) -> Dict:
                 break
         
         if subject_line:
-            # openssl 输出格式通常是：subject=C = US, CN = example.com
+            # openssl 输出格式通常是：subject=C = US, CN = example.com, emailAddress = user@example.com
             # 提取 CN (Common Name) 字段作为域名
             cn_match = re.search(r'CN\s*=\s*([^,]+)', subject_line)
             if cn_match:
                 common_name = cn_match.group(1).strip()
                 subject["CN"] = common_name
+            # 提取 emailAddress 字段
+            email_match = re.search(r'emailAddress\s*=\s*([^,]+)', subject_line)
+            if email_match:
+                email = email_match.group(1).strip()
+                subject["emailAddress"] = email
         
         # 提取 SANs (Subject Alternative Names)
         # openssl 输出格式通常是：
@@ -130,6 +136,7 @@ async def extract_cert_info_from_pem(cert_pem: str) -> Dict:
             "days_remaining": days_remaining,
             "issuer": issuer,
             "common_name": common_name,
+            "email": email,
             "subject": subject,
             "sans": sans,  # Subject Alternative Names
             "all_domains": all_domains,  # 所有域名（包括 CN 和 SANs）
@@ -167,6 +174,7 @@ def extract_cert_info_from_pem_sync(cert_pem: str) -> Dict:
         not_after = None
         issuer = "Unknown"
         common_name = None
+        email = None
         subject = {}
         sans = []  # Subject Alternative Names
         
@@ -178,12 +186,17 @@ def extract_cert_info_from_pem_sync(cert_pem: str) -> Dict:
                 break
         
         if subject_line:
-            # openssl 输出格式通常是：subject=C = US, CN = example.com
+            # openssl 输出格式通常是：subject=C = US, CN = example.com, emailAddress = user@example.com
             # 提取 CN (Common Name) 字段作为域名
             cn_match = re.search(r'CN\s*=\s*([^,]+)', subject_line)
             if cn_match:
                 common_name = cn_match.group(1).strip()
                 subject["CN"] = common_name
+            # 提取 emailAddress 字段
+            email_match = re.search(r'emailAddress\s*=\s*([^,]+)', subject_line)
+            if email_match:
+                email = email_match.group(1).strip()
+                subject["emailAddress"] = email
         
         # 提取 SANs (Subject Alternative Names)
         # openssl 输出格式通常是：
@@ -254,6 +267,7 @@ def extract_cert_info_from_pem_sync(cert_pem: str) -> Dict:
             "days_remaining": days_remaining,
             "issuer": issuer,
             "common_name": common_name,
+            "email": email,
             "subject": subject,
             "sans": sans,  # Subject Alternative Names
             "all_domains": all_domains,  # 所有域名（包括 CN 和 SANs）

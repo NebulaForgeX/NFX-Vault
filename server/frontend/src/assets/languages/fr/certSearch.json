@@ -1,0 +1,38 @@
+{
+  "title": "Rechercher des certificats",
+  "subtitle": "Rechercher des certificats par domaine ou nom de dossier",
+  "loading": "Chargement...",
+  "search": {
+    "placeholder": "Entrez le domaine ou le nom du dossier...",
+    "button": "Rechercher"
+  },
+  "filters": {
+    "store": "Emplacement",
+    "source": "Source",
+    "all": "Tous",
+    "websites": "Websites",
+    "apis": "Apis",
+    "database": "Database",
+    "auto": "Découverte automatique",
+    "manualApply": "Demande manuelle",
+    "manualAdd": "Ajout manuel",
+    "clear": "Effacer les filtres"
+  },
+  "cert": {
+    "folderName": "Nom du dossier",
+    "sans": "SANs",
+    "store": "Emplacement",
+    "daysRemaining": "Jours restants"
+  },
+  "results": {
+    "count": "{{count}} certificat(s) trouvé(s)",
+    "empty": "Aucun certificat correspondant trouvé"
+  },
+  "actions": {
+    "loadingMore": "Chargement de plus de certificats..."
+  },
+  "certificate": {
+    "allLoaded": "Tous les certificats chargés"
+  }
+}
+

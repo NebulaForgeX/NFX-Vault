@@ -1,26 +1,31 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { Download } from "@/assets/icons/lucide";
+import { Download, Folder } from "@/assets/icons/lucide";
 import { IconButton } from "@/components";
-import { useDownloadCertificate } from "../../hooks";
+import { useDownloadCertificate, useExportToFolder } from "../../hooks";
 import styles from "./styles.module.css";
 
 interface ExportCertificateProps {
   certificate: string;
   privateKey: string;
   domain: string;
+  certificateId?: string;
 }
 
 const ExportCertificate = memo(({
   certificate,
   privateKey,
   domain,
+  certificateId,
 }: ExportCertificateProps) => {
   const { t } = useTranslation("certDetail");
   const { downloadCertificate, downloadPrivateKey, downloadBoth } = useDownloadCertificate({
     certificate,
     privateKey,
     domain,
+  });
+  const { exportToApiFolder, exportToWebsitesFolder } = useExportToFolder({
+    certificateId,
   });
 
   return (
@@ -35,6 +40,14 @@ const ExportCertificate = memo(({
         </IconButton>
         <IconButton onClick={downloadBoth} variant="secondary" icon={<Download size={16} />}>
           {t("download.both") || "Download Both"}
+        </IconButton>
+      </div>
+      <div className={styles.buttonGroup}>
+        <IconButton onClick={exportToApiFolder} variant="secondary" icon={<Folder size={16} />}>
+          {t("export.toApiFolder") || "Export to APIs Folder"}
+        </IconButton>
+        <IconButton onClick={exportToWebsitesFolder} variant="secondary" icon={<Folder size={16} />}>
+          {t("export.toWebsitesFolder") || "Export to Websites Folder"}
         </IconButton>
       </div>
     </div>

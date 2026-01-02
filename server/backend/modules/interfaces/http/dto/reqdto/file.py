@@ -29,3 +29,9 @@ class GetFileContentRequest(BaseModel):
     store: str = Field(..., description="存储位置（websites 或 apis）")
     file_path: str = Field(..., description="文件路径")
 
+
+class ExportSingleCertificateRequest(BaseModel):
+    """导出单个证书请求"""
+    certificate_id: str = Field(..., description="证书 ID")
+    store: str = Field(..., description="存储位置（websites 或 apis）")
+

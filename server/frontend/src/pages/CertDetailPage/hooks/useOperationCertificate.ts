@@ -3,46 +3,50 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CertificateSource } from "@/apis/domain";
 import { ROUTES } from "@/types/navigation";
-import { showConfirm, showError } from "@/stores/modalStore";
-import { useDeleteCertificate, useApplyCertificate } from "@/hooks";
-import type { CertType } from "@/types";
+import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
+import { useDeleteCertificate, useApplyCertificate, useCertificateDetailById } from "@/hooks";
 
-interface UseOperationCertificateProps {
-  domain: string;
-  source: CertificateSource;
-  certType: CertType;
-}
-
-export const useOperationCertificate = ({ domain, source, certType }: UseOperationCertificateProps) => {
+export const useOperationCertificate = (certificateId: string) => {
   const navigate = useNavigate();
   const { t } = useTranslation("certDetail");
   const deleteMutation = useDeleteCertificate();
   const applyMutation = useApplyCertificate();
+  const { data: certificate } = useCertificateDetailById(certificateId);
 
-  const handleUpdate = useCallback(() => {
-    // 如果是 AUTO 源的证书，不允许编辑
-    if (source === CertificateSource.AUTO) {
-      showError(t("update.autoNotEditable") || "Auto source certificates cannot be manually updated. Please re-apply instead.");
+  const handleEdit = useCallback(() => {
+    if (!certificateId) {
+      console.error("Certificate ID is required");
       return;
     }
-    // 导航到编辑页面
-    navigate(ROUTES.CERT_EDIT_PATH(certType, domain, source));
-  }, [navigate, certType, domain, source, t]);
+    navigate(ROUTES.CERT_EDIT_PATH(certificateId));
+  }, [navigate, certificateId]);
 
   const handleReapply = useCallback(() => {
+    if (!certificate) {
+      console.error("Certificate not loaded");
+      return;
+    }
+    const domain = certificate.domain;
+    
     showConfirm({
       title: t("reapply.title") || "Re-apply Certificate",
       message: (t("reapply.confirm") || `Are you sure you want to re-apply certificate for "${domain}"?`).replace("{{domain}}", domain),
       confirmText: t("actions.reapply") || "Re-apply",
       cancelText: t("delete.confirm.cancel") || "Cancel",
       onConfirm: async () => {
-        // 导航到重新申请页面
-        navigate(ROUTES.CERT_EDIT_APPLY_PATH(certType, domain, source));
+        navigate(ROUTES.CERT_EDIT_APPLY_PATH(certificateId));
       },
     });
-  }, [navigate, certType, domain, source, t]);
+  }, [navigate, certificate, certificateId, t]);
 
   const handleDelete = useCallback(() => {
+    if (!certificate) {
+      console.error("Certificate not loaded");
+      return;
+    }
+    const domain = certificate.domain;
+    const source = (certificate.source as CertificateSource) || CertificateSource.AUTO;
+    
     showConfirm({
       title: t("delete.confirm.title") || "Delete Certificate",
       message: (t("delete.confirm.message") || `Are you sure you want to delete the certificate for domain "${domain}"?`).replace("{{domain}}", domain),
@@ -56,6 +60,7 @@ export const useOperationCertificate = ({ domain, source, certType }: UseOperati
           });
 
           if (result.success) {
+            showSuccess(result.message || t("delete.success") || "Certificate deleted successfully");
             navigate(ROUTES.CHECK);
           } else {
             showError(result.message || t("delete.error") || "Failed to delete certificate");
@@ -65,17 +70,15 @@ export const useOperationCertificate = ({ domain, source, certType }: UseOperati
         }
       },
     });
-  }, [deleteMutation, domain, source, navigate, t]);
+  }, [deleteMutation, certificate, navigate, t]);
 
   return {
-    handleUpdate,
+    handleEdit,
     handleReapply,
     handleDelete,
-    isUpdating: false, // update 操作不需要 loading 状态（直接导航）
     isDeleting: deleteMutation.isPending,
     isReapplying: applyMutation.isPending,
   };
 };
 
 export default useOperationCertificate;
-

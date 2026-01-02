@@ -29,6 +29,7 @@
     "webroot": "Chemin Webroot",
     "webrootPlaceholder": "/var/www/html",
     "webrootHelp": "Chemin du répertoire racine Web pour la vérification HTTP-01, laissez vide pour utiliser le chemin par défaut",
+    "applyTitle": "Demander le certificat",
     "reapply": "Redemander le certificat",
     "reapplying": "Redemande en cours...",
     "editCertificate": "Modifier le certificat",

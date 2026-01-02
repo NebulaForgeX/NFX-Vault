@@ -33,7 +33,7 @@ def search_certificate(
         keyword=request.keyword.strip(),
         store=request.store,
         source=request.source,
-        page=request.page,
-        page_size=request.page_size
+        offset=request.offset,
+        limit=request.limit
     )
 

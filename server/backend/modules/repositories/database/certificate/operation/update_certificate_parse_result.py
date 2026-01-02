@@ -19,6 +19,7 @@ def update_certificate_parse_result(
     status: Optional[str] = None,
     sans: Optional[List[str]] = None,
     issuer: Optional[str] = None,
+    email: Optional[str] = None,
     not_before: Optional[datetime] = None,
     not_after: Optional[datetime] = None,
     is_valid: Optional[bool] = None,
@@ -33,6 +34,7 @@ def update_certificate_parse_result(
         status: 状态（success, fail, process）
         sans: SANs 列表
         issuer: 颁发者
+        email: 邮箱地址
         not_before: 有效期开始时间
         not_after: 有效期结束时间
         is_valid: 是否有效
@@ -63,6 +65,8 @@ def update_certificate_parse_result(
                 cert.sans = sans
             if issuer is not None:
                 cert.issuer = issuer
+            if email is not None:
+                cert.email = email
             if not_before is not None:
                 cert.not_before = not_before
             if not_after is not None:

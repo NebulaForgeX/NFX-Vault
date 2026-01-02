@@ -5,7 +5,7 @@
 """
 from .certificate import (
     GetCertificateListRequest,
-    GetCertificateDetailRequest,
+    GetCertificateDetailByIdRequest,
     CreateCertificateRequest,
     UpdateManualAddCertificateRequest,
     UpdateManualApplyCertificateRequest,
@@ -21,6 +21,7 @@ from .certificate import (
 from .analysis import AnalyzeTLSRequest
 from .file import (
     ExportCertificatesRequest,
+    ExportSingleCertificateRequest,
     ListDirectoryRequest,
     DownloadFileRequest,
     GetFileContentRequest,
@@ -28,7 +29,7 @@ from .file import (
 
 __all__ = [
     "GetCertificateListRequest",
-    "GetCertificateDetailRequest",
+    "GetCertificateDetailByIdRequest",
     "CreateCertificateRequest",
     "UpdateManualAddCertificateRequest",
     "UpdateManualApplyCertificateRequest",
@@ -42,6 +43,7 @@ __all__ = [
     "InvalidateCacheRequest",
     "AnalyzeTLSRequest",
     "ExportCertificatesRequest",
+    "ExportSingleCertificateRequest",
     "ListDirectoryRequest",
     "DownloadFileRequest",
     "GetFileContentRequest",

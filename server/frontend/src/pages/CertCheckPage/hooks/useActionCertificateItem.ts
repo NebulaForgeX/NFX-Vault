@@ -15,26 +15,26 @@ export const useActionCertificateItem = () => {
   const deleteMutation = useDeleteCertificate();
 
   const handleEdit = useCallback(
-    (cert: CertificateInfo, certType: string) => {
+    (cert: CertificateInfo) => {
       return () => {
-        const source = (cert.source as CertificateSource) || CertificateSource.AUTO;
-        // 允许所有类型的证书点击编辑，编辑页面会根据 source 显示不同的表单（只读或可编辑）
-        navigate(ROUTES.CERT_EDIT_PATH(certType, cert.domain, source));
+        if (!cert.id) {
+          console.error("Certificate ID is required", cert);
+          return;
+        }
+        navigate(ROUTES.CERT_EDIT_PATH(cert.id));
       };
     },
     [navigate],
   );
 
   const handleView = useCallback(
-    (cert: CertificateInfo, certType: string) => {
+    (cert: CertificateInfo) => {
       return () => {
-        navigate(
-          ROUTES.CERT_DETAIL_PATH(
-            certType,
-            cert.domain,
-            (cert.source as CertificateSource) || CertificateSource.AUTO
-          )
-        );
+        if (!cert.id) {
+          console.error("Certificate ID is required", cert);
+          return;
+        }
+        navigate(ROUTES.CERT_DETAIL_PATH(cert.id));
       };
     },
     [navigate],

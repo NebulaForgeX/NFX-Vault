@@ -45,11 +45,11 @@ class CertificateDatabase:
     def get_certificate_list(
         self,
         store: str,
-        page: int = 1,
-        page_size: int = 20
+        offset: int = 0,
+        limit: int = 20
     ) -> Tuple[List[Dict], int]:
         """获取证书列表（支持分页）"""
-        return get_certificate_list(self, store, page, page_size)
+        return get_certificate_list(self, store, offset, limit)
     
     def get_certificate_by_domain(
         self,
@@ -221,6 +221,7 @@ class CertificateDatabase:
         status: Optional[str] = None,
         sans: Optional[List[str]] = None,
         issuer: Optional[str] = None,
+        email: Optional[str] = None,
         not_before: Optional[datetime] = None,
         not_after: Optional[datetime] = None,
         is_valid: Optional[bool] = None,
@@ -228,7 +229,7 @@ class CertificateDatabase:
     ) -> bool:
         """更新证书解析结果"""
         return update_certificate_parse_result(
-            self, certificate_id, status, sans, issuer, not_before,
+            self, certificate_id, status, sans, issuer, email, not_before,
             not_after, is_valid, days_remaining
         )
     
@@ -257,8 +258,8 @@ class CertificateDatabase:
         keyword: str,
         store: Optional[str] = None,
         source: Optional[str] = None,
-        page: int = 1,
-        page_size: int = 20
+        offset: int = 0,
+        limit: int = 20
     ) -> Tuple[List[Dict], int]:
         """搜索证书（根据关键词匹配域名、文件夹名等）"""
-        return search_certificates(self, keyword, store, source, page, page_size)
+        return search_certificates(self, keyword, store, source, offset, limit)

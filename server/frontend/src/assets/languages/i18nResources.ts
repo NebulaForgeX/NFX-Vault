@@ -7,6 +7,7 @@ import en_certEdit from "./en/certEdit.json";
 import en_certAdd from "./en/certAdd.json";
 import en_certApply from "./en/certApply.json";
 import en_certEditApply from "./en/certEditApply.json";
+import en_certSearch from "./en/certSearch.json";
 import en_tlsAnalysis from "./en/tlsAnalysis.json";
 // Elements translations
 import en_certificateElements from "./en/certificateElements.json";
@@ -22,6 +23,7 @@ import fr_certEdit from "./fr/certEdit.json";
 import fr_certAdd from "./fr/certAdd.json";
 import fr_certApply from "./fr/certApply.json";
 import fr_certEditApply from "./fr/certEditApply.json";
+import fr_certSearch from "./fr/certSearch.json";
 import fr_tlsAnalysis from "./fr/tlsAnalysis.json";
 import fr_certificateElements from "./fr/certificateElements.json";
 import fr_modal from "./fr/modal.json";
@@ -34,6 +36,7 @@ import zh_certEdit from "./zh/certEdit.json";
 import zh_certAdd from "./zh/certAdd.json";
 import zh_certApply from "./zh/certApply.json";
 import zh_certEditApply from "./zh/certEditApply.json";
+import zh_certSearch from "./zh/certSearch.json";
 import zh_tlsAnalysis from "./zh/tlsAnalysis.json";
 import zh_certificateElements from "./zh/certificateElements.json";
 import zh_modal from "./zh/modal.json";
@@ -49,6 +52,7 @@ export const RESOURCES = {
     certAdd: en_certAdd,
     certApply: en_certApply,
     certEditApply: en_certEditApply,
+    certSearch: en_certSearch,
     tlsAnalysis: en_tlsAnalysis,
     certificateElements: en_certificateElements,
     modal: en_modal,
@@ -62,6 +66,7 @@ export const RESOURCES = {
     certAdd: zh_certAdd,
     certApply: zh_certApply,
     certEditApply: zh_certEditApply,
+    certSearch: zh_certSearch,
     tlsAnalysis: zh_tlsAnalysis,
     certificateElements: zh_certificateElements,
     modal: zh_modal,
@@ -75,6 +80,7 @@ export const RESOURCES = {
     certAdd: fr_certAdd,
     certApply: fr_certApply,
     certEditApply: fr_certEditApply,
+    certSearch: fr_certSearch,
     tlsAnalysis: fr_tlsAnalysis,
     certificateElements: fr_certificateElements,
     modal: fr_modal,
@@ -91,6 +97,7 @@ export const NAME_SPACES_MAP = {
   certAdd: "certAdd",
   certApply: "certApply",
   certEditApply: "certEditApply",
+  certSearch: "certSearch",
   tlsAnalysis: "tlsAnalysis",
   certificateElements: "certificateElements",
   modal: "modal",

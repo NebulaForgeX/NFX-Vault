@@ -12,12 +12,14 @@ from fastapi import APIRouter, HTTPException, Response
 from modules.applications.file import FileApplication
 from modules.interfaces.http.dto.reqdto.file import (
     ExportCertificatesRequest,
+    ExportSingleCertificateRequest,
     ListDirectoryRequest,
     DownloadFileRequest,
     GetFileContentRequest,
 )
 from .operation import (
     export_certificates,
+    export_single_certificate,
     list_directory,
     download_file,
     get_file_content,
@@ -58,6 +60,21 @@ class FileHTTPHandler:
                 raise
             except Exception as e:
                 logger.error(f"❌ 导出证书失败: {e}", exc_info=True)
+                raise HTTPException(status_code=500, detail=str(e))
+
+        @router.post("/export-single")
+        async def export_single_certificate_endpoint(request: ExportSingleCertificateRequest):
+            """导出单个证书到指定文件夹"""
+            try:
+                result = export_single_certificate(
+                    app=self.file_application,
+                    request=request
+                )
+                return result
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger.error(f"❌ 导出单个证书失败: {e}", exc_info=True)
                 raise HTTPException(status_code=500, detail=str(e))
 
         @router.get("/list/{store}")

@@ -17,7 +17,6 @@ class TLSCertificate(Base):
     """TLS 证书表"""
     __tablename__ = "tls_certificates"
     __table_args__ = (
-        UniqueConstraint('folder_name', name='uq_folder_name'),  # 唯一约束：folder_name
         UniqueConstraint('domain', 'source', 'store', name='uq_domain_source_store'),  # 唯一约束：domain + source + store
         Index('idx_store_domain', 'store', 'domain', 'source'),  # 复合索引：store + domain + source
         Index('idx_domain', 'domain'),  # 单列索引：domain
@@ -29,7 +28,7 @@ class TLSCertificate(Base):
     id = Column(CHAR(36), primary_key=True, default=lambda: str(uuid.uuid4()), comment="主键ID (UUID)")
     store = Column(Enum(CertificateStore), nullable=False, comment="存储位置（websites/apis/database）")
     domain = Column(String(255), nullable=False, comment="主域名")
-    folder_name = Column(String(255), nullable=True, unique=True, comment="文件夹名称（唯一，用于标识不同的域名）")
+    folder_name = Column(String(255), nullable=True, comment="文件夹名称（用于标识不同的域名）")
     source = Column(Enum(CertificateSource), nullable=False, default=CertificateSource.MANUAL_ADD, comment="来源（auto: 自动发现, manual_apply: 手动申请, manual_add: 手动添加）")
     status = Column(Enum(CertificateStatus), nullable=True, default=CertificateStatus.PROCESS, comment="申请状态（success: 成功, fail: 失败, process: 处理中）")
     email = Column(String(255), nullable=True, comment="邮箱地址（用于 Let's Encrypt 通知）")

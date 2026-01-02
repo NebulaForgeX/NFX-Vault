@@ -27,6 +27,12 @@ const CertificateInfo = memo(({ certDetail }: CertificateInfoProps) => {
             <span>{certDetail.store}</span>
           </div>
         )}
+        {certDetail.folderName && (
+          <div className={styles.infoItem}>
+            <label>{t("certificate.folderName") || "Folder Name"}</label>
+            <span>{certDetail.folderName}</span>
+          </div>
+        )}
         {certDetail.source && (
           <div className={styles.infoItem}>
             <label>{t("certificate.source") || "Source"}</label>

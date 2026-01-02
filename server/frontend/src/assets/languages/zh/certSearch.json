@@ -1,0 +1,38 @@
+{
+  "title": "搜索证书",
+  "subtitle": "根据域名或文件夹名称搜索证书",
+  "loading": "加载中...",
+  "search": {
+    "placeholder": "输入域名或文件夹名称...",
+    "button": "搜索"
+  },
+  "filters": {
+    "store": "存储位置",
+    "source": "来源",
+    "all": "全部",
+    "websites": "Websites",
+    "apis": "Apis",
+    "database": "Database",
+    "auto": "自动发现",
+    "manualApply": "手动申请",
+    "manualAdd": "手动添加",
+    "clear": "清除筛选"
+  },
+  "cert": {
+    "folderName": "文件夹名称",
+    "sans": "SANs",
+    "store": "存储位置",
+    "daysRemaining": "剩余天数"
+  },
+  "results": {
+    "count": "找到 {{count}} 个证书",
+    "empty": "未找到匹配的证书"
+  },
+  "actions": {
+    "loadingMore": "加载更多证书..."
+  },
+  "certificate": {
+    "allLoaded": "已加载所有证书"
+  }
+}
+

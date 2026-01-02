@@ -1,6 +1,5 @@
 import type { CertType, CreateCertificateRequest, UpdateManualAddCertificateRequest, UpdateManualApplyCertificateRequest, DeleteCertificateRequest, ApplyCertificateRequest } from "@/apis/domain";
 import { CertificateSource } from "@/apis/domain";
-import type { ListNumberCursorFetchResult } from "@/hooks/core/type";
 import type { FetchNumberListParams } from "@/hooks/core/type";
 
 import { useMemo } from "react";
@@ -15,8 +14,10 @@ import { cacheEventEmitter, cacheEvents } from "@/events";
 export const certKeys = {
   list: (certType: CertType) => 
     ["certs", "list", certType] as const,
-  detail: (certType: CertType, domain: string, source?: CertificateSource) => 
-    ["certs", "detail", certType, domain, source] as const,
+  detailById: (certificateId: string) => 
+    ["certs", "detail-by-id", certificateId] as const,
+  search: (keyword: string, store?: CertType, source?: CertificateSource) =>
+    ["certs", "search", keyword, store, source] as const,
 };
 
 // API wrapper functions for makeUnifiedQuery (deprecated, use fetchCertificateList instead)
@@ -24,48 +25,29 @@ export const certKeys = {
 //   return certApi.GetCertificateList(params);
 // };
 
-// Adapter function for infinite query: converts offset/limit to page/pageSize and transforms response
-const fetchCertificateList = async (
-  params: FetchNumberListParams<{ certType: CertType }>
-): Promise<ListNumberCursorFetchResult<import("@/apis/domain").CertificateInfo>> => {
-  const { offset, limit, certType } = params;
-  // Convert offset/limit to page/pageSize
-  const page = Math.floor(offset / limit) + 1;
-  const pageSize = limit;
-  
-  const result = await certApi.GetCertificateList({ certType, page, pageSize });
-  
-  // Transform response: { certificates, total } -> { items, total }
-  return {
-    items: result.certificates,
-    total: result.total,
-  };
-};
-
-const getCertificateDetail = async (params: { certType: CertType; domain: string; source?: CertificateSource }) => {
-  return certApi.GetCertificateDetail(params.certType, params.domain, params.source || CertificateSource.AUTO);
-};
 
 /**
  * Hook to fetch certificate list (with infinite scroll)
  */
 export const useCertificateList = makeUnifiedInfiniteQuery(
-  fetchCertificateList,
+  async (params: FetchNumberListParams<{ certType: CertType }>) => {
+    const result = await certApi.GetCertificateList(params);
+    return { items: result.items, total: result.total };
+  },
   "suspense",
   20
 );
 
 /**
- * Hook to fetch certificate detail
+ * Hook to fetch certificate detail by ID
  */
-export const useCertificateDetail = (
-  certType: CertType,
-  domain: string,
-  source: CertificateSource = CertificateSource.AUTO
-) => {
-  const filter = useMemo(() => ({ certType, domain, source }), [certType, domain, source]);
-  return makeUnifiedQuery(getCertificateDetail, "suspense")(
-    certKeys.detail(certType, domain, source),
+export const useCertificateDetailById = (certificateId: string) => {
+  const filter = useMemo(() => ({ certificateId }), [certificateId]);
+  return makeUnifiedQuery(
+    (params: { certificateId: string }) => certApi.GetCertificateDetailById(params.certificateId),
+    "suspense"
+  )(
+    certKeys.detailById(certificateId),
     filter,
     {
       staleTime: 1000 * 60 * 5, // 5 minutes
@@ -73,6 +55,18 @@ export const useCertificateDetail = (
     }
   );
 };
+
+/**
+ * Hook to search certificates (with infinite scroll)
+ */
+export const useSearchCertificateList = makeUnifiedInfiniteQuery(
+  async (params: FetchNumberListParams<{ keyword: string; store?: CertType; source?: CertificateSource }>) => {
+    const result = await certApi.SearchCertificate(params);
+    return { items: result.items, total: result.total };
+  },
+  "suspense",
+  20
+);
 
 /**
  * Hook to export certificates

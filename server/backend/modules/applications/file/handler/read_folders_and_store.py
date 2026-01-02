@@ -9,12 +9,15 @@ import logging
 import os
 from typing import Dict, Any, List, Optional
 from pathlib import Path
+from datetime import datetime
+from sqlalchemy import and_
 
 from .protocol import FileAppLike
 from utils.certificate import extract_cert_info_from_pem_sync
 from enums.certificate_source import CertificateSource
 from enums.certificate_status import CertificateStatus
 from enums.certificate_store import CertificateStore
+from models.tls_certificate import TLSCertificate
 
 logger = logging.getLogger(__name__)
 
@@ -107,42 +110,58 @@ async def read_folders_and_store_certificates(
                         if san and san not in all_domains:
                             all_domains.append(san)
                 
-                # 检查数据库中是否已存在（根据 folder_name）
-                existing = app.database_repo.get_certificate_by_folder_name(folder_name)
+                # 检查数据库中是否已存在（根据 domain + store + source='auto'）
+                # 直接使用数据库会话查询
+                if not app.database_repo.db_session or not hasattr(app.database_repo.db_session, 'get_session'):
+                    logger.error("❌ 数据库会话未初始化")
+                    failed_count += 1
+                    continue
                 
-                if existing:
-                    # 更新现有记录（保持原有 source）
-                    app.database_repo.update_certificate_by_folder_name(
-                        folder_name=folder_name,
-                        store=store,
-                        domain=domain,
-                        certificate=cert_pem,
-                        private_key=key_pem,
-                        sans=all_domains if all_domains else [],
-                        issuer=cert_info.get("issuer", "Let's Encrypt"),
-                        not_before=cert_info.get("not_before"),
-                        not_after=cert_info.get("not_after"),
-                        is_valid=cert_info.get("is_valid", True),
-                        days_remaining=cert_info.get("days_remaining"),
-                        status=CertificateStatus.SUCCESS.value
-                    )
-                else:
-                    # 创建新记录（source='auto'）
-                    app.database_repo.create_certificate_with_folder(
-                        store=store,
-                        domain=domain,
-                        folder_name=folder_name,
-                        certificate=cert_pem,
-                        private_key=key_pem,
-                        source=CertificateSource.AUTO.value,
-                        status=CertificateStatus.SUCCESS.value,
-                        sans=all_domains if all_domains else [],
-                        issuer=cert_info.get("issuer", "Let's Encrypt"),
-                        not_before=cert_info.get("not_before"),
-                        not_after=cert_info.get("not_after"),
-                        is_valid=cert_info.get("is_valid", True),
-                        days_remaining=cert_info.get("days_remaining")
-                    )
+                with app.database_repo.db_session.get_session() as session:
+                    # 根据 domain + store + source='auto' 查询
+                    existing = session.query(TLSCertificate).filter(
+                        and_(
+                            TLSCertificate.domain == domain,
+                            TLSCertificate.store == store,
+                            TLSCertificate.source == CertificateSource.AUTO.value
+                        )
+                    ).first()
+                    
+                    if existing:
+                        # 更新现有记录（source 保持为 'auto'）
+                        existing.folder_name = folder_name
+                        existing.certificate = cert_pem
+                        existing.private_key = key_pem
+                        existing.sans = all_domains if all_domains else []
+                        existing.issuer = cert_info.get("issuer", "Let's Encrypt")
+                        existing.not_before = cert_info.get("not_before")
+                        existing.not_after = cert_info.get("not_after")
+                        existing.is_valid = cert_info.get("is_valid", True)
+                        existing.days_remaining = cert_info.get("days_remaining")
+                        existing.status = CertificateStatus.SUCCESS.value
+                        existing.updated_at = datetime.now()
+                        session.commit()
+                        logger.debug(f"✅ 更新证书: domain={domain}, store={store}, source={CertificateSource.AUTO.value}, folder_name={folder_name}")
+                    else:
+                        # 创建新记录（source='auto'）
+                        new_cert = TLSCertificate(
+                            store=store,
+                            domain=domain,
+                            folder_name=folder_name,
+                            certificate=cert_pem,
+                            private_key=key_pem,
+                            source=CertificateSource.AUTO.value,
+                            status=CertificateStatus.SUCCESS.value,
+                            sans=all_domains if all_domains else [],
+                            issuer=cert_info.get("issuer", "Let's Encrypt"),
+                            not_before=cert_info.get("not_before"),
+                            not_after=cert_info.get("not_after"),
+                            is_valid=cert_info.get("is_valid", True),
+                            days_remaining=cert_info.get("days_remaining")
+                        )
+                        session.add(new_cert)
+                        session.commit()
+                        logger.debug(f"✅ 创建新证书: domain={domain}, store={store}, source={CertificateSource.AUTO.value}, folder_name={folder_name}")
                 
                 processed_count += 1
                 

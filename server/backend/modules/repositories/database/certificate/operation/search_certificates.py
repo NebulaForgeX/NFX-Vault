@@ -17,8 +17,8 @@ def search_certificates(
     keyword: str,
     store: Optional[str] = None,
     source: Optional[str] = None,
-    page: int = 1,
-    page_size: int = 20
+    offset: int = 0,
+    limit: int = 20
 ) -> Tuple[List[Dict[str, Any]], int]:
     """
     搜索证书（根据关键词匹配域名、文件夹名等）
@@ -28,8 +28,8 @@ def search_certificates(
         keyword: 搜索关键词
         store: 存储位置过滤（可选）
         source: 来源过滤（可选）
-        page: 页码
-        page_size: 每页数量
+        offset: 偏移量（从0开始）
+        limit: 每页数量
     
     Returns:
         (证书列表, 总数)
@@ -61,9 +61,8 @@ def search_certificates(
             # 获取总数
             total = query.count()
             
-            # 分页
-            offset = (page - 1) * page_size
-            certificates = query.order_by(TLSCertificate.created_at.desc()).offset(offset).limit(page_size).all()
+            # 分页（使用 offset/limit）
+            certificates = query.order_by(TLSCertificate.created_at.desc()).offset(offset).limit(limit).all()
             
             # 转换为字典列表
             result = []

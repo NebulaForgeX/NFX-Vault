@@ -13,7 +13,8 @@ import {
   Send, 
   Scan, 
   Server, 
-  Globe
+  Globe,
+  Search
 } from "@/assets/icons/lucide";
 import { Menu, MenuItem, Sidebar as ProSidebar, SubMenu } from "react-pro-sidebar";
 import { Link, useLocation } from "react-router-dom";
@@ -96,7 +97,8 @@ const Sidebar = memo(
                 active={
                   isActiveRoute(location.pathname, ROUTES.CHECK) ||
                   isActiveRoute(location.pathname, ROUTES.CERT_ADD) ||
-                  isActiveRoute(location.pathname, ROUTES.CERT_APPLY)
+                  isActiveRoute(location.pathname, ROUTES.CERT_APPLY) ||
+                  isActiveRoute(location.pathname, ROUTES.CERT_SEARCH)
                 }
               >
                 <MenuItem
@@ -105,6 +107,13 @@ const Sidebar = memo(
                   active={isActiveRoute(location.pathname, ROUTES.CHECK)}
                 >
                   {t("certList")}
+                </MenuItem>
+                <MenuItem
+                  icon={<Search size={18} />}
+                  component={<Link to={ROUTES.CERT_SEARCH} />}
+                  active={isActiveRoute(location.pathname, ROUTES.CERT_SEARCH)}
+                >
+                  {t("searchCert")}
                 </MenuItem>
                 <MenuItem
                   icon={<FilePlus size={18} />}

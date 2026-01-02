@@ -61,19 +61,14 @@ def create_or_update_certificate(
     try:
         # 第一步：在会话内完成创建/更新操作，获取 ID
         with repo.db_session.get_session() as session:
-            # 如果提供了 folder_name，根据 folder_name 查询
-            if folder_name:
-                existing = session.query(TLSCertificate).filter(
-                    TLSCertificate.folder_name == folder_name
-                ).first()
-            else:
-                # 否则根据 domain + source 查询（向后兼容）
-                existing = session.query(TLSCertificate).filter(
-                    and_(
-                        TLSCertificate.domain == domain,
-                        TLSCertificate.source == source
-                    )
-                ).first()
+            # 根据唯一约束 domain + source + store 查询
+            existing = session.query(TLSCertificate).filter(
+                and_(
+                    TLSCertificate.domain == domain,
+                    TLSCertificate.source == source,
+                    TLSCertificate.store == store
+                )
+            ).first()
             
             if existing:
                 # 更新现有记录（保持原有 source）

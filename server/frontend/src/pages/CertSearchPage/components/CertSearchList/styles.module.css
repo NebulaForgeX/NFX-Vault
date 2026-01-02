@@ -1,0 +1,132 @@
+.section {
+  margin-top: 2rem;
+}
+
+.resultsHeader {
+  margin-bottom: 1rem;
+}
+
+.resultsCount {
+  font-size: 1rem;
+  color: var(--color-fg-text);
+  margin: 0;
+}
+
+.listContainer {
+  width: 100%;
+}
+
+.certCard {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-4);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.certCard:hover {
+  border-color: var(--color-border-3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.certHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.certDomain {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-fg-text);
+  margin: 0;
+}
+
+.sourceBadge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.certInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.certInfoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.certInfoLabel {
+  font-size: 0.875rem;
+  color: var(--color-fg-text-secondary);
+  font-weight: 500;
+}
+
+.certInfoValue {
+  font-size: 0.875rem;
+  color: var(--color-fg-text);
+}
+
+.emptyState {
+  padding: 3rem;
+  text-align: center;
+}
+
+.emptyText {
+  font-size: 1rem;
+  color: var(--color-fg-text-secondary);
+  margin: 0;
+}
+
+.loadingMore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  color: var(--color-fg-text-secondary);
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-border-4);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.endState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  color: var(--color-fg-text-secondary);
+}
+
+.endLine {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border-4);
+}
+
+.endText {
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+

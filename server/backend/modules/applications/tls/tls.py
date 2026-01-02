@@ -18,7 +18,7 @@ from enums.certificate_source import CertificateSource
 
 from .handler import (
     get_certificate_list,
-    get_certificate_detail,
+    get_certificate_detail_by_id,
     publish_refresh_event,
     create_certificate,
     update_manual_add_certificate,
@@ -77,22 +77,20 @@ class CertificateApplication:
     def get_certificate_list(
         self,
         store: str,
-        page: int = 1,
-        page_size: int = 20,
+        offset: int = 0,
+        limit: int = 20,
         use_cache: bool = True
     ) -> Dict[str, Any]:
         """获取证书列表"""
-        return get_certificate_list(self, store, page, page_size, use_cache)
+        return get_certificate_list(self, store, offset, limit, use_cache)
     
-    def get_certificate_detail(
+    def get_certificate_detail_by_id(
         self,
-        store: str,
-        domain: str,
-        source: CertificateSource = CertificateSource.AUTO,
+        certificate_id: str,
         use_cache: bool = True
     ) -> Optional[Dict[str, Any]]:
-        """获取证书详情"""
-        return get_certificate_detail(self, store, domain, source, use_cache)
+        """通过 ID 获取证书详情"""
+        return get_certificate_detail_by_id(self, certificate_id, use_cache)
     
     def publish_refresh_event(
         self,
@@ -197,11 +195,11 @@ class CertificateApplication:
         keyword: str,
         store: Optional[str] = None,
         source: Optional[str] = None,
-        page: int = 1,
-        page_size: int = 20
+        offset: int = 0,
+        limit: int = 20
     ) -> Dict[str, Any]:
         """搜索证书"""
-        return search_certificate(self, keyword, store, source, page, page_size)
+        return search_certificate(self, keyword, store, source, offset, limit)
     
     def invalidate_cache(
         self,

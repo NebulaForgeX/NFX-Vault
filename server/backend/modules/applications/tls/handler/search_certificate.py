@@ -16,8 +16,8 @@ def search_certificate(
     keyword: str,
     store: Optional[str] = None,
     source: Optional[str] = None,
-    page: int = 1,
-    page_size: int = 20
+    offset: int = 0,
+    limit: int = 20
 ) -> Dict[str, Any]:
     """
     搜索证书
@@ -27,29 +27,27 @@ def search_certificate(
         keyword: 搜索关键词（域名、文件夹名等）
         store: 存储位置过滤（可选）
         source: 来源过滤（可选）
-        page: 页码
-        page_size: 每页数量
+        offset: 偏移量（从0开始）
+        limit: 每页数量
     
     Returns:
-        返回搜索结果（包含 certificates 列表和 total 总数）
+        返回搜索结果（包含 items 列表和 total 总数）
     """
     try:
-        # 调用数据库仓库搜索
-        certificates, total = app.database_repo.search_certificates(
+        # 调用数据库仓库搜索（使用 offset/limit）
+        items, total = app.database_repo.search_certificates(
             keyword=keyword,
             store=store,
             source=source,
-            page=page,
-            page_size=page_size
+            offset=offset,
+            limit=limit
         )
         
         return {
             "success": True,
             "message": f"Found {total} certificates",
-            "certificates": certificates,
-            "total": total,
-            "page": page,
-            "page_size": page_size
+            "items": items,
+            "total": total
         }
     
     except Exception as e:
@@ -57,9 +55,7 @@ def search_certificate(
         return {
             "success": False,
             "message": f"Error searching certificates: {str(e)}",
-            "certificates": [],
-            "total": 0,
-            "page": page,
-            "page_size": page_size
+            "items": [],
+            "total": 0
         }
 
