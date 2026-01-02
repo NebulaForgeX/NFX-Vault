@@ -61,14 +61,18 @@
 }
 
 .errorButton {
-  color: var(--color-warning);
+  color: var(--color-error);
+  background-color: rgba(255, 107, 107, 0.1);
+  border-color: var(--color-error);
 }
 
 .errorButton:hover {
-  background-color: var(--color-warning-light);
-  border-color: var(--color-warning);
-  color: var(--color-warning);
+  background-color: var(--color-error-light);
+  border-color: var(--color-error);
+  color: var(--color-error);
+  box-shadow: 0 0 8px rgba(255, 107, 107, 0.3);
 }
+
 
 .processButton {
   cursor: pointer;

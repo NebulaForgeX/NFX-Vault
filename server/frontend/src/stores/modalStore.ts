@@ -1,7 +1,7 @@
 import { createStore, useStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-type ModalType = "success" | "error" | "info" | "confirm" | "search" | "loading" | "file";
+type ModalType = "success" | "error" | "info" | "confirm" | "search" | "loading" | "file" | "tooltip";
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -41,6 +41,13 @@ interface FileModalProps {
   fileName?: string; // 文件名
 }
 
+interface TooltipModalProps {
+  isOpen: boolean;
+  message?: string;
+  errorTime?: string;
+  position?: { x: number; y: number };
+}
+
 interface ModalState {
   modalType: ModalType;
   baseModal: BaseModalProps;
@@ -48,6 +55,7 @@ interface ModalState {
   searchModal: SearchModalProps;
   loadingModal: LoadingModalProps;
   fileModal: FileModalProps;
+  tooltipModal: TooltipModalProps;
 }
 
 interface ModalActions {
@@ -56,12 +64,13 @@ interface ModalActions {
     props:
       | BaseModalProps
       | ConfirmModalProps
-      | SearchModalProps
       | LoadingModalProps
       | FileModalProps
+      | TooltipModalProps
   ) => void;
   hideModal: (modalType?: ModalType) => void; // undefined 表示关闭所有模态框
   showFileModal: (props: FileModalProps) => void;
+  showTooltipModal: (props: TooltipModalProps) => void;
 }
 
 const defaultBaseModalProps: BaseModalProps = {
@@ -99,6 +108,13 @@ const defaultFileModalProps: FileModalProps = {
   fileName: undefined,
 };
 
+const defaultTooltipModalProps: TooltipModalProps = {
+  isOpen: false,
+  message: undefined,
+  errorTime: undefined,
+  position: undefined,
+};
+
 export const ModalStore = createStore<ModalState & ModalActions>()(
   subscribeWithSelector((set) => ({
     modalType: "info",
@@ -107,6 +123,7 @@ export const ModalStore = createStore<ModalState & ModalActions>()(
     searchModal: defaultSearchModalProps,
     loadingModal: defaultLoadingModalProps,
     fileModal: defaultFileModalProps,
+    tooltipModal: defaultTooltipModalProps,
 
     showModal: (modalType, props) => {
       // 根据 modalType 设置对应的模态框状态
@@ -155,6 +172,15 @@ export const ModalStore = createStore<ModalState & ModalActions>()(
             ...restProps,
           },
         });
+      } else if (modalType === "tooltip") {
+        const { isOpen, ...restProps } = props as TooltipModalProps;
+        set({
+          modalType,
+          tooltipModal: {
+            isOpen: true,
+            ...restProps,
+          },
+        });
       }
     },
 
@@ -163,6 +189,17 @@ export const ModalStore = createStore<ModalState & ModalActions>()(
       set({
         modalType: "file",
         fileModal: {
+          isOpen: true,
+          ...restProps,
+        },
+      });
+    },
+
+    showTooltipModal: (props) => {
+      const { isOpen, ...restProps } = props;
+      set({
+        modalType: "tooltip",
+        tooltipModal: {
           isOpen: true,
           ...restProps,
         },
@@ -179,6 +216,7 @@ export const ModalStore = createStore<ModalState & ModalActions>()(
           searchModal: defaultSearchModalProps,
           loadingModal: defaultLoadingModalProps,
           fileModal: defaultFileModalProps,
+          tooltipModal: defaultTooltipModalProps,
         });
         return;
       }
@@ -207,6 +245,11 @@ export const ModalStore = createStore<ModalState & ModalActions>()(
         set({
           modalType: undefined,
           fileModal: defaultFileModalProps,
+        });
+      } else if (modalType === "tooltip") {
+        set({
+          modalType: undefined,
+          tooltipModal: defaultTooltipModalProps,
         });
       }
     },
@@ -298,4 +341,23 @@ export const showLoading = (props?: ShowLoadingProps) => {
 
 export const hideLoading = () => {
   ModalStore.getState().hideModal("loading");
+};
+
+export interface ShowTooltipModalProps {
+  message: string;
+  errorTime?: string;
+  position: { x: number; y: number };
+}
+
+export const showTooltipModal = (props: ShowTooltipModalProps) => {
+  ModalStore.getState().showTooltipModal({
+    isOpen: true,
+    message: props.message,
+    errorTime: props.errorTime,
+    position: props.position,
+  });
+};
+
+export const hideTooltipModal = () => {
+  ModalStore.getState().hideModal("tooltip");
 };

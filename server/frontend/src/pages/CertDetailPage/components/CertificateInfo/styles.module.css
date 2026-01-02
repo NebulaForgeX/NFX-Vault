@@ -69,9 +69,10 @@
   grid-column: 1 / -1;
   margin-top: 1rem;
   padding: 1rem;
-  background-color: var(--color-warning-light, rgba(251, 191, 36, 0.1));
-  border: 1px solid var(--color-warning, #fbbf24);
+  background-color: var(--color-bg-2);
+  border: 2px solid var(--color-error);
   border-radius: 0.5rem;
+  box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.1);
 }
 
 .errorHeader {
@@ -79,19 +80,22 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .errorHeader label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--color-warning, #fbbf24);
+  color: var(--color-error);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .errorIcon {
-  color: var(--color-warning, #fbbf24);
+  color: var(--color-error);
   flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(255, 107, 107, 0.3));
 }
 
 .errorContent {

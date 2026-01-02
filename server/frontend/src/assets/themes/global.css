@@ -18,6 +18,10 @@
   --color-warning-light: #ffbb33;
   --color-warning-fg: #ffffff;
   --color-warning-hover: #e69900;
+  --color-error: #ff6b6b;
+  --color-error-light: #ff8787;
+  --color-error-fg: #ffffff;
+  --color-error-hover: #ff5252;
   --color-danger: #ff3d71;
   --color-danger-light: #ff6491;
   --color-danger-fg: #ffffff;

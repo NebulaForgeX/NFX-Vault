@@ -55,6 +55,10 @@
     "websites": "网站证书",
     "apis": "API 证书",
     "database": "数据库证书"
+  },
+  "error": {
+    "lastError": "最新错误",
+    "errorTime": "错误时间"
   }
 }
 

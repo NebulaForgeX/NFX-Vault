@@ -14,6 +14,8 @@ export const defaultTheme: Theme = {
     infoLight: "rgb(255, 200, 180)",
     warning: "rgb(248, 104, 7)", // 明亮橙色
     warningLight: "rgb(255, 140, 60)",
+    error: "rgb(255, 107, 107)", // 橙红色
+    errorLight: "rgb(255, 135, 135)",
     danger: "rgb(211, 17, 11)", // 深红色
     dangerLight: "rgb(243, 70, 64)",
 

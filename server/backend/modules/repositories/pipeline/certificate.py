@@ -53,8 +53,8 @@ class CertificatePipeline:
         Returns:
             是否发送成功
         """
-        if not self.db_config or not self.db_config.KAFKA_ENABLED:
-            logger.debug("⚠️  Kafka 未启用，跳过发送刷新事件")
+        if not self.db_config:
+            logger.warning("⚠️  数据库配置未初始化，跳过发送刷新事件")
             return False
         
         if not self.kafka_client or not self.kafka_client.enable_kafka:
@@ -69,7 +69,7 @@ class CertificatePipeline:
             )
             
             # 确保 topic 存在
-            topic = self.db_config.KAFKA_EVENT_TOPIC or "nfxvault.events"
+            topic = self.db_config.KAFKA_EVENT_TOPIC
             if not self.kafka_client.ensure_topic_exists(topic):
                 logger.warning(f"⚠️  Topic '{topic}' 不存在且创建失败，但会尝试发送（依赖自动创建）")
             
@@ -108,8 +108,8 @@ class CertificatePipeline:
         Returns:
             是否发送成功
         """
-        if not self.db_config or not self.db_config.KAFKA_ENABLED:
-            logger.debug("⚠️  Kafka 未启用，跳过发送缓存失效事件")
+        if not self.db_config:
+            logger.warning("⚠️  数据库配置未初始化，跳过发送缓存失效事件")
             return False
         
         if not self.kafka_client or not self.kafka_client.enable_kafka:
@@ -124,7 +124,7 @@ class CertificatePipeline:
             )
             
             # 确保 topic 存在
-            topic = self.db_config.KAFKA_EVENT_TOPIC or "nfxvault.events"
+            topic = self.db_config.KAFKA_EVENT_TOPIC
             if not self.kafka_client.ensure_topic_exists(topic):
                 logger.warning(f"⚠️  Topic '{topic}' 不存在且创建失败，但会尝试发送（依赖自动创建）")
             
@@ -161,8 +161,8 @@ class CertificatePipeline:
         Returns:
             是否发送成功
         """
-        if not self.db_config or not self.db_config.KAFKA_ENABLED:
-            logger.debug("⚠️  Kafka 未启用，跳过发送解析证书事件")
+        if not self.db_config:
+            logger.warning("⚠️  数据库配置未初始化，跳过发送解析证书事件")
             return False
         
         if not self.kafka_client or not self.kafka_client.enable_kafka:
@@ -176,7 +176,7 @@ class CertificatePipeline:
             )
             
             # 确保 topic 存在
-            topic = self.db_config.KAFKA_EVENT_TOPIC or "nfxvault.events"
+            topic = self.db_config.KAFKA_EVENT_TOPIC
             if not self.kafka_client.ensure_topic_exists(topic):
                 logger.warning(f"⚠️  Topic '{topic}' 不存在且创建失败，但会尝试发送（依赖自动创建）")
             

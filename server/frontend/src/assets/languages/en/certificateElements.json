@@ -55,6 +55,10 @@
     "websites": "Website Certificates",
     "apis": "API Certificates",
     "database": "Database Certificates"
+  },
+  "error": {
+    "lastError": "Last Error",
+    "errorTime": "Error Time"
   }
 }
 

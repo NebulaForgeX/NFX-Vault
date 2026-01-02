@@ -40,19 +40,22 @@ def get_certificate_list(
     # 2. 从数据库获取（已经是字典格式）
     cert_dicts, total = app.database_repo.get_certificate_list(store, page, page_size)
     
-    # 转换为响应格式（数据库返回的是 snake_case，需要转换为 camelCase）
+    # 转换为响应格式（保持 snake_case，前端 axios-case-converter 会自动转换为 camelCase）
     certificates = [
         {
             "domain": cert_dict.get("domain", ""),
-            "source": cert_dict.get("source", "auto"),
+            "store": cert_dict.get("store"),
             "folder_name": cert_dict.get("folder_name"),
+            "source": cert_dict.get("source", "auto"),
             "status": cert_dict.get("status"),
             "email": cert_dict.get("email"),
             "issuer": cert_dict.get("issuer"),
-            "notBefore": cert_dict.get("not_before").isoformat() if cert_dict.get("not_before") else None,
-            "notAfter": cert_dict.get("not_after").isoformat() if cert_dict.get("not_after") else None,
-            "isValid": cert_dict.get("is_valid"),
-            "daysRemaining": cert_dict.get("days_remaining")
+            "not_before": cert_dict.get("not_before").isoformat() if cert_dict.get("not_before") else None,
+            "not_after": cert_dict.get("not_after").isoformat() if cert_dict.get("not_after") else None,
+            "is_valid": cert_dict.get("is_valid"),
+            "days_remaining": cert_dict.get("days_remaining"),
+            "last_error_message": cert_dict.get("last_error_message"),
+            "last_error_time": cert_dict.get("last_error_time")
         }
         for cert_dict in cert_dicts
         if cert_dict and cert_dict.get("domain")  # 过滤掉 None 或没有 domain 的项

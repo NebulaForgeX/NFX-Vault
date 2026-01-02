@@ -14,10 +14,7 @@ from modules.configs.types import CertConfig
 from .resources import init_resource_connections
 from resources.mysql.session import MySQLSession
 from resources.redis.client import RedisClient
-from resources.kafka import (
-    KafkaEventConsumer,
-    KafkaConsumerThread,
-)
+from resources.kafka import KafkaEventConsumer
 from resources.kafka.client import KafkaClient
 from modules.interfaces.http.handler.tls.tls import CertificateHTTPHandler
 from modules.interfaces.http.handler.file.file import FileHTTPHandler
@@ -43,7 +40,6 @@ class Connections(NamedTuple):
     redis_client: Optional[RedisClient]
     kafka_client: Optional[KafkaClient]
     kafka_consumer: Optional[KafkaEventConsumer]
-    kafka_consumer_thread: Optional[KafkaConsumerThread]
     certificate_http_handler: Optional[CertificateHTTPHandler]
     file_http_handler: Optional[FileHTTPHandler]
     certificate_kafka_handler: Optional[CertificateKafkaHandler]
@@ -137,7 +133,6 @@ def init_connections(db_config: DatabaseConfig, cert_config: CertConfig) -> Conn
         redis_client=resources.redis_client,
         kafka_client=resources.kafka_client,
         kafka_consumer=resources.kafka_consumer,
-        kafka_consumer_thread=resources.kafka_consumer_thread,
         certificate_http_handler=certificate_http_handler,
         file_http_handler=file_http_handler,
         certificate_kafka_handler=certificate_kafka_handler,

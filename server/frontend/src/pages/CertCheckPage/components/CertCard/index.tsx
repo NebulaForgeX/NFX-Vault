@@ -3,10 +3,10 @@ import { useTranslation } from "react-i18next";
 import type { CertType } from "@/apis/domain";
 import type { CertificateInfo } from "@/apis/domain";
 import { CertificateStatus } from "@/apis/domain";
-import { Edit, Eye, Trash2, Loader2, AlertCircle } from "@/assets/icons/lucide";
+import { Edit, Eye, Trash2, Loader2, AlertTriangle } from "@/assets/icons/lucide";
 import { useCertificateStatus, useCertificateTime, useCertificateSource } from "@/hooks";
 import { useActionCertificateItem } from "../../hooks";
-import { showInfo } from "@/stores/modalStore";
+import { showTooltipModal, hideTooltipModal } from "@/stores/modalStore";
 import styles from "./styles.module.css";
 
 interface CertCardProps {
@@ -30,15 +30,23 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
     handleView(cert, certType)();
   };
 
-  const handleShowError = (e: React.MouseEvent) => {
+  const handleErrorHover = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    if (cert.lastErrorMessage && cert.lastErrorTime) {
-      const errorTime = new Date(cert.lastErrorTime).toLocaleString();
-      showInfo(
-        `${cert.lastErrorMessage}\n\n${t("certificate.errorTime") || "Error Time"}: ${errorTime}`,
-        t("certificate.lastError") || "Last Error"
-      );
+    if (cert.lastErrorMessage) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      showTooltipModal({
+        message: cert.lastErrorMessage,
+        errorTime: cert.lastErrorTime,
+        position: {
+          x: rect.left,
+          y: rect.bottom,
+        },
+      });
     }
+  };
+
+  const handleErrorLeave = () => {
+    hideTooltipModal();
   };
 
   return (
@@ -95,10 +103,12 @@ const CertCard = memo(({ cert, certType }: CertCardProps) => {
             {cert.lastErrorMessage && (
               <button
                 className={`${styles.actionButton} ${styles.errorButton}`}
-                onClick={handleShowError}
+                onClick={(e) => e.stopPropagation()}
+                onMouseEnter={handleErrorHover}
+                onMouseLeave={handleErrorLeave}
                 title={t("certificate.lastError") || "Last Error"}
               >
-                <AlertCircle size={18} />
+                <AlertTriangle size={18} />
               </button>
             )}
             <button

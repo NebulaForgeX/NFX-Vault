@@ -50,6 +50,8 @@ def get_certificate_list(
             cert_dicts = [
                 {
                     "domain": cert.domain,
+                    "store": cert.store,
+                    "folder_name": cert.folder_name,
                     "source": cert.source,
                     "status": cert.status,
                     "email": cert.email,

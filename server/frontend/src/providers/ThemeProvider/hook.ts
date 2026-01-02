@@ -18,6 +18,8 @@ export function useThemeVariables(themeName: string, currentTheme: Theme) {
     root.style.setProperty("--color-info-light", vars.infoLight);
     root.style.setProperty("--color-warning", vars.warning);
     root.style.setProperty("--color-warning-light", vars.warningLight);
+    root.style.setProperty("--color-error", vars.error);
+    root.style.setProperty("--color-error-light", vars.errorLight);
     root.style.setProperty("--color-danger", vars.danger);
     root.style.setProperty("--color-danger-light", vars.dangerLight);
 

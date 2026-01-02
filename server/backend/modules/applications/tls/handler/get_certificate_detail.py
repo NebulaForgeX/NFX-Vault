@@ -55,7 +55,7 @@ def get_certificate_detail(
     if not cert_dict:
         return None
     
-    # 转换为响应格式（数据库返回的是 snake_case，需要转换为 camelCase）
+    # 转换为响应格式（保持 snake_case，前端 axios-case-converter 会自动转换为 camelCase）
     result = {
         "id": cert_dict.get("id"),  # 添加 id 字段
         "domain": cert_dict["domain"],
@@ -65,13 +65,15 @@ def get_certificate_detail(
         "status": cert_dict.get("status"),
         "email": cert_dict.get("email"),
         "certificate": cert_dict["certificate"],
-        "privateKey": cert_dict["private_key"],
+        "private_key": cert_dict["private_key"],
         "sans": cert_dict.get("sans") or [],  # 确保 sans 不会是 None
         "issuer": cert_dict.get("issuer"),
-        "notBefore": cert_dict["not_before"].isoformat() if cert_dict.get("not_before") else None,
-        "notAfter": cert_dict["not_after"].isoformat() if cert_dict.get("not_after") else None,
-        "isValid": cert_dict.get("is_valid"),
-        "daysRemaining": cert_dict.get("days_remaining")
+        "not_before": cert_dict["not_before"].isoformat() if cert_dict.get("not_before") else None,
+        "not_after": cert_dict["not_after"].isoformat() if cert_dict.get("not_after") else None,
+        "is_valid": cert_dict.get("is_valid"),
+        "days_remaining": cert_dict.get("days_remaining"),
+        "last_error_message": cert_dict.get("last_error_message"),
+        "last_error_time": cert_dict.get("last_error_time")
     }
     
     # 3. 写入缓存（使用较短的 TTL，默认 5 分钟）

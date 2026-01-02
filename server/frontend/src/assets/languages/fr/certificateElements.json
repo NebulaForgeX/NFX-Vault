@@ -55,6 +55,10 @@
     "websites": "Certificats de site web",
     "apis": "Certificats API",
     "database": "Certificats de base de données"
+  },
+  "error": {
+    "lastError": "Dernière erreur",
+    "errorTime": "Heure de l'erreur"
   }
 }
 

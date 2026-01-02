@@ -9,6 +9,8 @@ export interface BaseThemeVariables {
   infoLight: string;
   warning: string;
   warningLight: string;
+  error: string;
+  errorLight: string;
   danger: string;
   dangerLight: string;
 

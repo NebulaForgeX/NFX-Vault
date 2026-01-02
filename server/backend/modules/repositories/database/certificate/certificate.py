@@ -204,12 +204,15 @@ class CertificateDatabase:
         days_remaining: Optional[int] = None,
         folder_name: Optional[str] = None,
         email: Optional[str] = None,
-        status: Optional[str] = None
+        status: Optional[str] = None,
+        last_error_message: Optional[str] = None,
+        last_error_time: Optional[datetime] = None
     ) -> Optional[TLSCertificate]:
         """根据证书 ID 更新证书"""
         return update_certificate_by_id(
             self, certificate_id, certificate, private_key, store, domain, sans,
-            issuer, not_before, not_after, is_valid, days_remaining, folder_name, email, status
+            issuer, not_before, not_after, is_valid, days_remaining, folder_name, email, status,
+            last_error_message, last_error_time
         )
     
     def update_certificate_parse_result(

@@ -13,6 +13,8 @@ export const corporateTheme: Theme = {
     infoLight: "#33a7ff",
     warning: "#ffaa00",
     warningLight: "#ffbb33",
+    error: "#ff6b6b",
+    errorLight: "#ff8787",
     danger: "#ff3d71",
     dangerLight: "#ff6491",
 
