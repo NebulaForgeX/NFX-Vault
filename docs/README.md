@@ -1,11 +1,11 @@
 # NFX-Vault - SSL 证书管理系统
 
 <div align="center">
-  <img src="image.png" alt="NFX-Vault Logo" width="200">
+  <img src="../image.png" alt="NFX-Vault Logo" width="200">
   
   **基于 Web 的 SSL 证书管理和监控系统**
   
-  [English Documentation](docs/en/README.md) | [项目结构](docs/STRUCTURE.md) | [API 文档](docs/API.md)
+  [English Documentation](en/README.md) | [项目结构](STRUCTURE.md) | [API 文档](API.md)
 </div>
 
 ---
@@ -177,14 +177,16 @@ Certs/
 ├── Apis/                     # API 证书存储目录
 │   ├── acme.json            # Traefik 证书存储文件
 │   └── exported/            # 导出的证书文件
-├── docs/                     # 项目文档（英文）
+├── docs/                     # 项目文档
+│   ├── en/                  # 英文文档
+│   └── *.md                 # 中文文档
 ├── cmd.sh                    # 命令行工具
 ├── docker-compose.yml        # Docker Compose 配置
 ├── .example.env              # 环境变量模板
 └── README.md                 # 本文档
 ```
 
-详细的项目结构说明请参考 [STRUCTURE.md](docs/STRUCTURE.md)。
+详细的项目结构说明请参考 [STRUCTURE.md](STRUCTURE.md) [English](en/STRUCTURE.md)。
 
 ---
 
@@ -220,7 +222,7 @@ cd /volume1/Certs
 
 ### API 使用
 
-详细的 API 文档请参考 [API.md](docs/API.md)。
+详细的 API 文档请参考 [API.md](API.md) [English](en/API.md)。
 
 **快速示例：**
 
@@ -250,7 +252,7 @@ curl -X POST http://192.168.1.64:10200/vault/tls/refresh/websites
 5. **证书管理配置** - 证书存储路径和 ACME 挑战目录
 6. **调度配置** - 定时任务的执行时间
 
-详细的配置说明请参考 [CONFIGURATION.md](docs/CONFIGURATION.md)。
+详细的配置说明请参考 [CONFIGURATION.md](CONFIGURATION.md) [English](en/CONFIGURATION.md)。
 
 ### Docker 网络
 
@@ -304,12 +306,12 @@ curl -X POST http://192.168.1.64:10200/vault/tls/refresh/websites
 
 ## 📚 更多文档
 
-- [English Documentation](docs/en/README.md) - 英文版完整文档
-- [项目结构说明](docs/STRUCTURE.md) [English](docs/en/STRUCTURE.md) - 详细的代码结构说明
-- [API 文档](docs/API.md) [English](docs/en/API.md) - 完整的 API 接口文档
-- [部署指南](docs/DEPLOYMENT.md) [English](docs/en/DEPLOYMENT.md) - 详细的部署说明
-- [开发指南](docs/DEVELOPMENT.md) [English](docs/en/DEVELOPMENT.md) - 开发环境搭建和开发流程
-- [配置说明](docs/CONFIGURATION.md) [English](docs/en/CONFIGURATION.md) - 所有配置项的详细说明
+- [English Documentation](en/README.md) - 英文版完整文档
+- [项目结构说明](STRUCTURE.md) [English](en/STRUCTURE.md) - 详细的代码结构说明
+- [API 文档](API.md) [English](en/API.md) - 完整的 API 接口文档
+- [部署指南](DEPLOYMENT.md) [English](en/DEPLOYMENT.md) - 详细的部署说明
+- [开发指南](DEVELOPMENT.md) [English](en/DEVELOPMENT.md) - 开发环境搭建和开发流程
+- [配置说明](CONFIGURATION.md) [English](en/CONFIGURATION.md) - 所有配置项的详细说明
 
 ---
 
@@ -332,7 +334,7 @@ curl -X POST http://192.168.1.64:10200/vault/tls/refresh/websites
 
 - 提交 Issue
 - 发送邮件：lyulucas2003@gmail.com
-- 查看文档：[docs/](docs/)
+- 查看文档：[docs/](.)
 
 ---
 
@@ -346,3 +348,4 @@ curl -X POST http://192.168.1.64:10200/vault/tls/refresh/websites
 <div align="center">
   <strong>NFX-Vault</strong> - 让证书管理变得简单
 </div>
+
