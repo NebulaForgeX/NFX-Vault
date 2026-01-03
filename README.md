@@ -1,5 +1,7 @@
 # NFX-Vault - SSL 证书管理系统
 
+> ⚠️ **重要提示**：使用本仓库前，请先阅读 [NFX-Policy](https://github.com/NebulaForgeX/NFX-Policy)，了解部署和配置的重要注意事项。
+
 <div align="center">
   <img src="image.png" alt="NFX-Vault Logo" width="200">
   
