@@ -11,26 +11,129 @@
   margin-bottom: 0.5rem;
 }
 
-.textarea {
+.container {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+}
+
+.inputWrapper {
+  flex: 0 0 200px;
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .inputWrapper {
+    flex: 1;
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+.input {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--color-border);
   border-radius: 4px;
   font-family: monospace;
   font-size: 0.875rem;
-  resize: vertical;
   background-color: var(--color-bg);
   color: var(--color-fg-text);
 }
 
-.textarea:focus {
+.input:focus {
   outline: none;
   border-color: var(--color-primary);
 }
 
-.textarea:disabled {
+.input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.itemsWrapper {
+  flex: 1;
+  min-height: 100px;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background-color: var(--color-bg);
+  padding: 0.5rem;
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-bg-secondary, rgba(0, 0, 0, 0.05));
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  transition: background-color 0.2s;
+}
+
+.item:hover {
+  background-color: var(--color-bg-hover, rgba(0, 0, 0, 0.08));
+}
+
+.itemText {
+  flex: 1;
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: var(--color-fg-text);
+  word-break: break-all;
+}
+
+.removeButton {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  margin-left: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--color-fg-text);
+  opacity: 0.6;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.removeButton:hover {
+  opacity: 1;
+  background-color: var(--color-error, rgba(220, 38, 38, 0.1));
+  color: var(--color-error, #dc2626);
+}
+
+.removeButton:active {
+  transform: scale(0.95);
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  color: var(--color-fg-text);
+  opacity: 0.5;
+  font-size: 0.875rem;
+  text-align: center;
 }
 
 .helpText {

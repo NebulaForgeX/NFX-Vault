@@ -5,7 +5,7 @@ import { memo } from "react";
 import { useFormContext, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { DomainController, EmailController } from "@/elements/certificate/components";
+import { DomainController, EmailController, SANsController } from "@/elements/certificate/components";
 
 import styles from "./styles.module.css";
 
@@ -63,29 +63,7 @@ const ApplyForm = memo(({ onSubmit, onSubmitError, isPending }: ApplyFormProps) 
           </div>
 
           {/* SANs */}
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>{t("apply.sans") || "SANs (可选)"}</h3>
-            <Controller
-              name="sans"
-              control={methods.control}
-              render={({ field }) => (
-                <div className={styles.sansContainer}>
-                  <textarea
-                    {...field}
-                    value={field.value?.join("\n") || ""}
-                    onChange={(e) => {
-                      const lines = e.target.value.split("\n").filter((line) => line.trim());
-                      field.onChange(lines);
-                    }}
-                    placeholder={t("apply.sansPlaceholder") || "每行一个域名，例如：\nwww.example.com\napi.example.com"}
-                    className={styles.textarea}
-                    rows={5}
-                  />
-                  <p className={styles.helpText}>{t("apply.sansHelp") || "每行输入一个域名，留空则只申请主域名"}</p>
-                </div>
-              )}
-            />
-          </div>
+          <SANsController />
 
           {/* Verification Options */}
           <div className={styles.section}>
