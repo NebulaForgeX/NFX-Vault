@@ -72,47 +72,47 @@ desktop.ini
 # ============================================
 
 # 前端
-server/frontend/node_modules/
-server/frontend/dist/
-server/frontend/dist-ssr
-server/frontend/*.local
-server/frontend/.env.local
-server/frontend/.env.*.local
-server/frontend/logs
-server/frontend/*.log
-server/frontend/npm-debug.log*
-server/frontend/yarn-debug.log*
-server/frontend/yarn-error.log*
-server/frontend/pnpm-debug.log*
-server/frontend/lerna-debug.log*
+servers/frontend/node_modules/
+servers/frontend/dist/
+servers/frontend/dist-ssr
+servers/frontend/*.local
+servers/frontend/.env.local
+servers/frontend/.env.*.local
+servers/frontend/logs
+servers/frontend/*.log
+servers/frontend/npm-debug.log*
+servers/frontend/yarn-debug.log*
+servers/frontend/yarn-error.log*
+servers/frontend/pnpm-debug.log*
+servers/frontend/lerna-debug.log*
 
 # 后端
-server/backend/__pycache__/
-server/backend/*.py[cod]
-server/backend/*$py.class
-server/backend/*.pyo
-server/backend/*.pyd
-server/backend/*.so
-server/backend/.Python
-server/backend/env/
-server/backend/venv/
-server/backend/ENV/
-server/backend/.venv/
-server/backend/.env
-server/backend/.env.local
-server/backend/.pytest_cache/
-server/backend/.coverage
-server/backend/htmlcov/
-server/backend/dist/
-server/backend/build/
-server/backend/*.egg-info/
+servers/backend/__pycache__/
+servers/backend/*.py[cod]
+servers/backend/*$py.class
+servers/backend/*.pyo
+servers/backend/*.pyd
+servers/backend/*.so
+servers/backend/.Python
+servers/backend/env/
+servers/backend/venv/
+servers/backend/ENV/
+servers/backend/.venv/
+servers/backend/.env
+servers/backend/.env.local
+servers/backend/.pytest_cache/
+servers/backend/.coverage
+servers/backend/htmlcov/
+servers/backend/dist/
+servers/backend/build/
+servers/backend/*.egg-info/
 
 # IDE
-server/.vscode/
-server/.idea/
-server/*.suo
-server/*.ntvs*
-server/*.njsproj
-server/*.sln
-server/*.sw?
+servers/.vscode/
+servers/.idea/
+servers/*.suo
+servers/*.ntvs*
+servers/*.njsproj
+servers/*.sln
+servers/*.sw?
 
