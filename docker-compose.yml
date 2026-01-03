@@ -9,7 +9,7 @@ services:
     container_name: NFX-Vault-Backend-API
     restart: always
     ports:
-      - "${BACKEND_PORT}:8000"
+      - "${BACKEND_HOST}:${BACKEND_PORT}:8000"
     volumes:
       - /volume1/Certs:/volume1/Certs:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -94,7 +94,7 @@ services:
     container_name: NFX-Vault-Frontend
     restart: always
     ports:
-      - "${FRONTEND_PORT}:80"
+      - "${FRONTEND_HOST}:${FRONTEND_PORT}:80"
     networks:
       - nfx-vault
     depends_on:
