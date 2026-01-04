@@ -35,7 +35,8 @@ const LeftContainer = memo(({ onToggleSidebar, onNavigateHome }: LeftContainerPr
           onNavigateHome?.();
         }}
       >
-        {t("appName")}
+        <img src="/logo.png" alt="Logo" className={styles.logoImage} />
+        <span>{t("appName")}</span>
       </button>
 
       {/* 主题/布局 切换器 */}

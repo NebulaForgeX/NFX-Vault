@@ -33,7 +33,10 @@ export default function DashboardPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>{t("title")}</h1>
+        <div className={styles.titleContainer}>
+          <img src="/logo.png" alt="Logo" className={styles.logo} />
+          <h1 className={styles.title}>{t("title")}</h1>
+        </div>
         <p className={styles.subtitle}>{t("subtitle")}</p>
       </div>
 
