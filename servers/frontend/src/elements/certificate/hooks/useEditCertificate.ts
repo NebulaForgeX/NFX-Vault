@@ -3,7 +3,7 @@ import type { CertificateFormValues } from "../controllers/certificateSchema";
 
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 
 import { useUpdateManualAddCertificate, useUpdateManualApplyCertificate } from "@/hooks";
 import { CertificateSource } from "@/apis/domain";

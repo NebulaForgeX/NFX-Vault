@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import { AlertCircle } from "@/assets/icons/lucide";
 import type { CertificateDetailResponse } from "@/apis/domain";
 import { useCertificateSource } from "@/hooks";

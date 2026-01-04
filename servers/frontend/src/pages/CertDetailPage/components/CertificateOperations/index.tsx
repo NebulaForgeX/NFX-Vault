@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import { Edit, Trash2, RefreshCw } from "@/assets/icons/lucide";
 import { CertificateSource } from "@/apis/domain";
 import { IconButton } from "@/components";

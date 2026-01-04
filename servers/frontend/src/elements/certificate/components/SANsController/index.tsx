@@ -2,7 +2,7 @@ import type { ApplyCertificateFormValues } from "../../controllers/applyCertific
 
 import { memo, useState, useEffect, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import { X } from "@/assets/icons/lucide";
 
 import styles from "./styles.module.css";

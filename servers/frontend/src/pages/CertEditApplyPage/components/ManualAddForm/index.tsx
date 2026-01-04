@@ -5,7 +5,7 @@ import type { CertificateDetailResponse } from "@/apis/domain";
 import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 
 import { Input, Button } from "@/components";
 import { ROUTES } from "@/types/navigation";

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import { ROUTES } from "@/types/navigation";
 import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
 import { useDeleteCertificate, useApplyCertificate, useCertificateDetailById } from "@/hooks";

@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 import { ArrowLeft, FileSearch, Upload } from "@/assets/icons/lucide";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 
 import type { AnalyzeTLSResponse } from "@/types";
 import { AnalyzeTLS } from "@/apis/analysis.api";

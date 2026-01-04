@@ -2,7 +2,7 @@ import type { Language } from "./i18nResources";
 
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector/cjs";
-import { initReactI18next } from "node_modules/react-i18next";
+import { initReactI18next } from "react-i18next";
 
 import { LANGUAGE, NAME_SPACES, RESOURCES } from "./i18nResources";
 

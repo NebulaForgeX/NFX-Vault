@@ -2,7 +2,7 @@ import { memo } from "react";
 import { ArrowLeft } from "@/assets/icons/lucide";
 import { FormProvider } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 
 import { useInitApplyCertificateForm, useSubmitApplyCertificate } from "@/elements/certificate";
 

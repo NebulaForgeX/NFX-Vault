@@ -1,5 +1,5 @@
 import { memo, useMemo } from "react";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import { VirtualWindowList } from "@/components";
 import { useCertificateList } from "@/hooks";
 import { certKeys } from "@/hooks/useCert";

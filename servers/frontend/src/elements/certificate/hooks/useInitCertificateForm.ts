@@ -4,7 +4,7 @@ import type { CertificateDetailResponse } from "@/apis/domain";
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 
 import { createCertificateFormSchema } from "../controllers/certificateSchema";
 

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { SidebarProps as ProSidebarProps } from "react-pro-sidebar";
 
 import { memo } from "react";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import { 
   Home, 
   Shield, 

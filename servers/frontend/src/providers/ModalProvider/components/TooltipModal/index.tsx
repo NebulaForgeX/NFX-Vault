@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useCallback } from "react";
 import { AlertTriangle } from "@/assets/icons/lucide";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import ModalStore, { useModalStore } from "@/stores/modalStore";
 import styles from "./Modal.module.css";
 

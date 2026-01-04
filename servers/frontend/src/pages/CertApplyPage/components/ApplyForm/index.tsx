@@ -3,7 +3,7 @@ import type { ApplyCertificateFormValues } from "@/elements/certificate/controll
 
 import { memo } from "react";
 import { useFormContext, Controller } from "react-hook-form";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 
 import { DomainController, EmailController, SANsController } from "@/elements/certificate/components";
 

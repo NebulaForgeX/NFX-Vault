@@ -1,7 +1,7 @@
 import type { ThemeName } from "@/assets/themes/types";
 
 import { memo, useEffect, useRef, useState } from "react";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 
 import { useTheme } from "@/providers/ThemeProvider";
 

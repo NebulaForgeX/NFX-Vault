@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock } from "@/assets/icons/lucide";
 import { ROUTES } from "@/types/navigation";

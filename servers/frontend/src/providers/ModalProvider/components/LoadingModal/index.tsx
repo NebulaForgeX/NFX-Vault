@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import { TruckLoading } from "@/components";
 import { useModalStore } from "@/stores/modalStore";
 import styles from "./styles.module.css";

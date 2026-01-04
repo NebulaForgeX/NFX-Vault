@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/types/navigation";
 import { useDeleteCertificate } from "@/hooks";
 import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 
 export const useActionCertificateItem = () => {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import { Copy } from "@/assets/icons/lucide";
 import { IconButton } from "@/components";
 import styles from "./styles.module.css";

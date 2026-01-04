@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import type { CertificateInfo } from "@/apis/domain";
 import { CertificateStatus } from "@/apis/domain";
 import { Edit, Eye, Trash2, Loader2, AlertTriangle } from "@/assets/icons/lucide";

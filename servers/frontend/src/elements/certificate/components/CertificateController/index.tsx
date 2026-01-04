@@ -2,7 +2,7 @@ import type { CertificateFormValues } from "../../controllers/certificateSchema"
 
 import { memo } from "react";
 import { useFormContext } from "react-hook-form";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import { Upload } from "@/assets/icons/lucide";
 
 import styles from "./styles.module.css";

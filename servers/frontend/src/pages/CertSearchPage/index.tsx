@@ -1,5 +1,5 @@
 import { memo, useState, useCallback } from "react";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import { Search, X } from "@/assets/icons/lucide";
 
 import { Button, Input, Suspense } from "@/components";

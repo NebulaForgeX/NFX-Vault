@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import type { CertificateInfo } from "@/apis/domain";
 import { CertificateStatus, CertificateSource } from "@/apis/domain";
 
