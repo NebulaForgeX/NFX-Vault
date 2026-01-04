@@ -7,7 +7,10 @@ WORKDIR /app
 COPY package*.json ./
 
 # 安装依赖
-RUN npm ci
+RUN npm ci --prefer-offline --no-audit
+
+# 验证 react-hook-form 已安装
+RUN npm list react-hook-form
 
 # 复制源代码
 COPY . .
