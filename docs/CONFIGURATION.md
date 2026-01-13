@@ -118,7 +118,7 @@ KAFKA_CONSUMER_GROUP_ID=nfxvault-cert-server        # 消费者组
 
 ```bash
 # 证书存储根目录
-CERTS_DIR=/volume1/Certs            # 证书的绝对路径
+CERTS_DIR=/home/kali/repo            # 证书的绝对路径
 
 # ACME 挑战目录
 ACME_CHALLENGE_DIR=/tmp/acme-challenges  # ACME 挑战目录
@@ -204,7 +204,7 @@ services:
     ports:
       - "${BACKEND_HOST}:${BACKEND_PORT}:8000"
     volumes:
-      - /volume1/Certs:/volume1/Certs:rw
+      - /home/kali/repo:/home/kali/repo:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /tmp/acme-challenges:/tmp/acme-challenges:rw
     environment:
@@ -217,7 +217,7 @@ services:
 
 ### 卷挂载
 
-- `/volume1/Certs:/volume1/Certs:rw` - 证书存储（读写）
+- `/home/kali/repo:/home/kali/repo:rw` - 证书存储（读写）
 - `/var/run/docker.sock:/var/run/docker.sock:ro` - Docker 套接字（只读）
 - `/tmp/acme-challenges:/tmp/acme-challenges:rw` - ACME 挑战（读写）
 
@@ -441,7 +441,7 @@ docker compose exec backend-api python -c "import redis; r = redis.Redis(host='$
 2. **权限问题：**
    ```bash
    # 检查文件权限
-   ls -la /volume1/Certs/Websites
+   ls -la /home/kali/repo/Websites
    ```
 
 3. **网络问题：**

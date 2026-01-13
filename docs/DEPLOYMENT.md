@@ -65,8 +65,8 @@ sudo apt-get install -y jq
 
 ```bash
 # 创建主目录
-sudo mkdir -p /volume1/Certs
-cd /volume1/Certs
+sudo mkdir -p /home/kali/repo
+cd /home/kali/repo
 
 # 创建证书存储目录
 sudo mkdir -p Websites/exported
@@ -86,10 +86,10 @@ sudo mkdir -p docs
 
 ```bash
 # 选项 1：Git 克隆
-git clone <repository-url> /volume1/Certs
+git clone <repository-url> /home/kali/repo
 
 # 选项 2：手动复制文件
-# 将所有项目文件复制到 /volume1/Certs
+# 将所有项目文件复制到 /home/kali/repo
 ```
 
 ### 步骤 3：配置环境变量
@@ -148,7 +148,7 @@ FLUSH PRIVILEGES;
 ### 步骤 6：启动服务
 
 ```bash
-cd /volume1/Certs
+cd /home/kali/repo
 
 # 构建并启动所有服务
 docker compose up -d
@@ -181,8 +181,8 @@ curl http://your-server-ip:10200/docs
 
 ```bash
 # 克隆项目
-git clone <repository-url> /volume1/Certs
-cd /volume1/Certs
+git clone <repository-url> /home/kali/repo
+cd /home/kali/repo
 
 # 复制环境文件
 cp .example.env .env
@@ -237,7 +237,7 @@ REDIS_PASSWORD=
 
 ```yaml
 volumes:
-  - /volume1/Certs:/volume1/Certs:rw          # 证书存储
+  - /home/kali/repo:/home/kali/repo:rw          # 证书存储
   - /var/run/docker.sock:/var/run/docker.sock:ro  # Docker 套接字
   - /tmp/acme-challenges:/tmp/acme-challenges:rw  # ACME 挑战
 ```
@@ -461,10 +461,10 @@ ping $MYSQL_HOST
 
 ```bash
 # 检查权限
-ls -la /volume1/Certs/Websites
+ls -la /home/kali/repo/Websites
 
 # 检查 Docker 卷挂载
-docker compose exec backend-api ls -la /volume1/Certs
+docker compose exec backend-api ls -la /home/kali/repo
 
 # 检查 SELinux（如果适用）
 getenforce

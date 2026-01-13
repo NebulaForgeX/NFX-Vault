@@ -118,7 +118,7 @@ KAFKA_CONSUMER_GROUP_ID=nfxvault-cert-server        # Consumer group
 
 ```bash
 # Certificate storage root directory
-CERTS_DIR=/volume1/Certs            # Absolute path to certificates
+CERTS_DIR=/home/kali/repo            # Absolute path to certificates
 
 # ACME challenge directory
 ACME_CHALLENGE_DIR=/tmp/acme-challenges  # Directory for ACME challenges
@@ -204,7 +204,7 @@ services:
     ports:
       - "${BACKEND_HOST}:${BACKEND_PORT}:8000"
     volumes:
-      - /volume1/Certs:/volume1/Certs:rw
+      - /home/kali/repo:/home/kali/repo:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /tmp/acme-challenges:/tmp/acme-challenges:rw
     environment:
@@ -217,7 +217,7 @@ services:
 
 ### Volume Mounts
 
-- `/volume1/Certs:/volume1/Certs:rw` - Certificate storage (read-write)
+- `/home/kali/repo:/home/kali/repo:rw` - Certificate storage (read-write)
 - `/var/run/docker.sock:/var/run/docker.sock:ro` - Docker socket (read-only)
 - `/tmp/acme-challenges:/tmp/acme-challenges:rw` - ACME challenges (read-write)
 
@@ -441,7 +441,7 @@ docker compose exec backend-api python -c "import redis; r = redis.Redis(host='$
 2. **Permission Issues:**
    ```bash
    # Check file permissions
-   ls -la /volume1/Certs/Websites
+   ls -la /home/kali/repo/Websites
    ```
 
 3. **Network Issues:**

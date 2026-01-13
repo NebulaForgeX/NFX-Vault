@@ -60,13 +60,13 @@ Before starting, please ensure your system has the following software installed:
 ```bash
 cd /volume1
 git clone <repository-url> Certs
-# Or download and extract to /volume1/Certs
+# Or download and extract to /home/kali/repo
 ```
 
 #### 2. Create Certificate Storage Directories
 
 ```bash
-cd /volume1/Certs
+cd /home/kali/repo
 
 # Create Websites certificate directory
 mkdir -p Websites/exported
@@ -120,7 +120,7 @@ KAFKA_EVENT_POISON_TOPIC=nfxvault.cert_server.poison
 KAFKA_CONSUMER_GROUP_ID=nfxvault-cert-server
 
 # Certificate storage directory
-CERTS_DIR=/volume1/Certs
+CERTS_DIR=/home/kali/repo
 ACME_CHALLENGE_DIR=/tmp/acme-challenges
 
 # Scheduling configuration
@@ -134,7 +134,7 @@ SCHEDULE_WEEKLY_MINUTE=0      # 0 minutes
 #### 4. Start Services
 
 ```bash
-cd /volume1/Certs
+cd /home/kali/repo
 docker compose up -d
 ```
 
@@ -202,7 +202,7 @@ For detailed project structure, please refer to [STRUCTURE.md](STRUCTURE.md). [ä
 If you don't want to use the web interface, you can use the command-line tool:
 
 ```bash
-cd /volume1/Certs
+cd /home/kali/repo
 ./cmd.sh
 ```
 
@@ -286,7 +286,7 @@ The project uses independent Docker networks:
 **Problem**: System cannot read certificate files
 
 **Solution**:
-- Check certificate directory permissions: `ls -la /volume1/Certs/Websites`
+- Check certificate directory permissions: `ls -la /home/kali/repo/Websites`
 - Ensure Docker container has permission to access the directory
 - Check if `CERTS_DIR` environment variable is configured correctly
 

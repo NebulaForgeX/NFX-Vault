@@ -60,13 +60,13 @@ NFX-Vault 是一个现代化的 SSL 证书管理和监控系统，提供统一�
 ```bash
 cd /volume1
 git clone <repository-url> Certs
-# 或直接下载并解压到 /volume1/Certs
+# 或直接下载并解压到 /home/kali/repo
 ```
 
 #### 2. 创建证书存储目录
 
 ```bash
-cd /volume1/Certs
+cd /home/kali/repo
 
 # 创建 Websites 证书目录
 mkdir -p Websites/exported
@@ -120,7 +120,7 @@ KAFKA_EVENT_POISON_TOPIC=nfxvault.cert_server.poison
 KAFKA_CONSUMER_GROUP_ID=nfxvault-cert-server
 
 # 证书存储目录
-CERTS_DIR=/volume1/Certs
+CERTS_DIR=/home/kali/repo
 ACME_CHALLENGE_DIR=/tmp/acme-challenges
 
 # 调度配置
@@ -134,7 +134,7 @@ SCHEDULE_WEEKLY_MINUTE=0      # 0 分
 #### 4. 启动服务
 
 ```bash
-cd /volume1/Certs
+cd /home/kali/repo
 docker compose up -d
 ```
 
@@ -204,7 +204,7 @@ Certs/
 如果不想使用 Web 界面，可以使用命令行工具：
 
 ```bash
-cd /volume1/Certs
+cd /home/kali/repo
 ./cmd.sh
 ```
 
@@ -288,7 +288,7 @@ curl -X POST http://192.168.1.64:10200/vault/tls/refresh/websites
 **问题**：系统无法读取证书文件
 
 **解决方案**：
-- 检查证书目录权限：`ls -la /volume1/Certs/Websites`
+- 检查证书目录权限：`ls -la /home/kali/repo/Websites`
 - 确保 Docker 容器有权限访问目录
 - 检查 `CERTS_DIR` 环境变量配置是否正确
 

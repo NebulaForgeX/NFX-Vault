@@ -380,7 +380,7 @@ APScheduler（Pipeline 服务）→ 更新剩余天数任务 → 数据库更新
 
 ## 📝 注意事项
 
-- 所有路径使用绝对路径（`/volume1/Certs`）
+- 所有路径使用绝对路径（`/home/kali/repo`）
 - Docker 卷挂载证书目录
 - 服务通过 Docker 网络通信
 - 前端代理 API 请求到后端

@@ -45,8 +45,8 @@ This document provides instructions for setting up a development environment and
 
 ```bash
 # Clone repository
-git clone <repository-url> /volume1/Certs
-cd /volume1/Certs
+git clone <repository-url> /home/kali/repo
+cd /home/kali/repo
 
 # Copy environment file
 cp .example.env .env

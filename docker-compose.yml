@@ -11,9 +11,9 @@ services:
     ports:
       - "${BACKEND_HOST}:${BACKEND_PORT}:8000"
     volumes:
-      - /volume1/Certs:/volume1/Certs:rw
+      - ${CERTS_DIR}:${CERTS_DIR}:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /tmp/acme-challenges:/tmp/acme-challenges:rw
+      - ${ACME_CHALLENGE_DIR}:${ACME_CHALLENGE_DIR}:rw
     environment:
       - PYTHONUNBUFFERED=1
       - MYSQL_HOST=${MYSQL_HOST}
@@ -54,9 +54,9 @@ services:
     container_name: NFX-Vault-Backend-Pipeline
     restart: always
     volumes:
-      - /volume1/Certs:/volume1/Certs:rw
+      - ${CERTS_DIR}:${CERTS_DIR}:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /tmp/acme-challenges:/tmp/acme-challenges:rw
+      - ${ACME_CHALLENGE_DIR}:${ACME_CHALLENGE_DIR}:rw
     environment:
       - PYTHONUNBUFFERED=1
       - MYSQL_HOST=${MYSQL_HOST}

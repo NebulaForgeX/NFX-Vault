@@ -45,8 +45,8 @@
 
 ```bash
 # 克隆仓库
-git clone <repository-url> /volume1/Certs
-cd /volume1/Certs
+git clone <repository-url> /home/kali/repo
+cd /home/kali/repo
 
 # 复制环境文件
 cp .example.env .env

@@ -65,8 +65,8 @@ sudo apt-get install -y jq
 
 ```bash
 # Create main directory
-sudo mkdir -p /volume1/Certs
-cd /volume1/Certs
+sudo mkdir -p /home/kali/repo
+cd /home/kali/repo
 
 # Create certificate storage directories
 sudo mkdir -p Websites/exported
@@ -86,10 +86,10 @@ sudo mkdir -p docs
 
 ```bash
 # Option 1: Git clone
-git clone <repository-url> /volume1/Certs
+git clone <repository-url> /home/kali/repo
 
 # Option 2: Copy files manually
-# Copy all project files to /volume1/Certs
+# Copy all project files to /home/kali/repo
 ```
 
 ### Step 3: Configure Environment Variables
@@ -148,7 +148,7 @@ FLUSH PRIVILEGES;
 ### Step 6: Start Services
 
 ```bash
-cd /volume1/Certs
+cd /home/kali/repo
 
 # Build and start all services
 docker compose up -d
@@ -181,8 +181,8 @@ curl http://your-server-ip:10200/docs
 
 ```bash
 # Clone project
-git clone <repository-url> /volume1/Certs
-cd /volume1/Certs
+git clone <repository-url> /home/kali/repo
+cd /home/kali/repo
 
 # Copy environment file
 cp .example.env .env
@@ -237,7 +237,7 @@ The `docker-compose.yml` defines three main services:
 
 ```yaml
 volumes:
-  - /volume1/Certs:/volume1/Certs:rw          # Certificate storage
+  - /home/kali/repo:/home/kali/repo:rw          # Certificate storage
   - /var/run/docker.sock:/var/run/docker.sock:ro  # Docker socket
   - /tmp/acme-challenges:/tmp/acme-challenges:rw  # ACME challenges
 ```
@@ -461,10 +461,10 @@ ping $MYSQL_HOST
 
 ```bash
 # Check permissions
-ls -la /volume1/Certs/Websites
+ls -la /home/kali/repo/Websites
 
 # Check Docker volume mount
-docker compose exec backend-api ls -la /volume1/Certs
+docker compose exec backend-api ls -la /home/kali/repo
 
 # Check SELinux (if applicable)
 getenforce

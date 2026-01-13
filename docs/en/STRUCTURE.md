@@ -379,7 +379,7 @@ APScheduler (Pipeline Service) → Update Days Remaining Task → Database Updat
 
 ## 📝 Notes
 
-- All paths use absolute paths (`/volume1/Certs`)
+- All paths use absolute paths (`/home/kali/repo`)
 - Docker volumes mount the certificate directories
 - Services communicate through Docker networks
 - Frontend proxies API requests to backend
