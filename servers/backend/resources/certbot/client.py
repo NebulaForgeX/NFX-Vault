@@ -9,7 +9,9 @@ import logging
 import subprocess
 import os
 import time
-from typing import Dict, Any, Optional, List
+import re
+from typing import Dict, Any, Optional, List, Tuple
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +57,87 @@ class CertbotClient:
         logger.info(f"📁 Certs directory: {self.certs_dir}")
         logger.info(f"⏱️ Max wait time: {self.max_wait_time}s")
     
+    def _check_certificate_exists(
+        self,
+        folder_name: str
+    ) -> Optional[Dict[str, Any]]:
+        """
+        检查证书是否已存在且有效
+        
+        Args:
+            folder_name: 证书存储文件夹名称
+        
+        Returns:
+            如果证书存在且有效，返回包含 certificate 和 private_key 的字典；否则返回 None
+        """
+        try:
+            custom_config_dir = os.path.join(self.certs_dir, ".certbot", "config")
+            certbot_cert_dir = os.path.join(custom_config_dir, "live", folder_name)
+            certbot_cert_file = os.path.join(certbot_cert_dir, "fullchain.pem")
+            certbot_key_file = os.path.join(certbot_cert_dir, "privkey.pem")
+            
+            # 检查证书文件是否存在
+            if not os.path.exists(certbot_cert_file) or not os.path.exists(certbot_key_file):
+                return None
+            
+            # 读取证书内容
+            with open(certbot_cert_file, 'r') as f:
+                certificate = f.read()
+            
+            with open(certbot_key_file, 'r') as f:
+                private_key = f.read()
+            
+            # 验证证书是否有效（使用 openssl 检查证书过期时间）
+            try:
+                result = subprocess.run(
+                    ["openssl", "x509", "-in", certbot_cert_file, "-noout", "-checkend", "86400"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                # 如果命令成功（返回码为 0），说明证书至少还有 1 天有效期
+                is_valid = result.returncode == 0
+            except Exception:
+                # 如果 openssl 不可用或出错，假设证书有效
+                is_valid = True
+            
+            if certificate and private_key:
+                logger.info(f"✅ Certificate already exists and is valid for folder '{folder_name}'")
+                return {
+                    "certificate": certificate,
+                    "private_key": private_key,
+                    "is_valid": is_valid
+                }
+            
+            return None
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to check existing certificate: {e}")
+            return None
+    
+    def _is_rate_limit_error(self, error_msg: str) -> Tuple[bool, Optional[str]]:
+        """
+        检查错误信息是否包含速率限制错误
+        
+        Args:
+            error_msg: 错误消息
+        
+        Returns:
+            (是否是速率限制错误, 重试时间提示)
+        """
+        if not error_msg:
+            return False, None
+        
+        # 匹配速率限制错误模式
+        # "too many certificates (5) already issued for this exact set of identifiers in the last 168h0m0s, retry after 2026-01-18 16:49:07 UTC"
+        rate_limit_pattern = r"too many certificates.*?retry after (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})"
+        match = re.search(rate_limit_pattern, error_msg, re.IGNORECASE)
+        
+        if match:
+            retry_time = match.group(1)
+            return True, retry_time
+        
+        return False, None
+    
     def issue_certificate(
         self,
         domain: str,
@@ -82,6 +165,24 @@ class CertbotClient:
         
         # 注意：申请证书时只保存到数据库，不创建 Websites/Apis 文件夹
         # 后续可以通过其他功能将 database 中的证书复制到 Websites/Apis 文件夹
+        
+        # 如果 force_renewal=False，先检查证书是否已存在且有效
+        if not force_renewal:
+            existing_cert = self._check_certificate_exists(folder_name)
+            if existing_cert and existing_cert.get("is_valid", True):
+                logger.info(f"✅ Using existing certificate for domain '{domain}' (force_renewal=False)")
+                return {
+                    "success": True,
+                    "message": f"Certificate already exists and is valid for domain '{domain}'. Using existing certificate.",
+                    "certificate": existing_cert["certificate"],
+                    "private_key": existing_cert["private_key"],
+                    "status": "success",
+                    "error": None
+                }
+            elif existing_cert:
+                logger.info(f"⚠️ Existing certificate for domain '{domain}' is expired or will expire soon. Will request new certificate.")
+            else:
+                logger.info(f"ℹ️ No existing certificate found for domain '{domain}'. Will request new certificate.")
         
         try:
             # 构建 certbot 命令
@@ -162,10 +263,46 @@ class CertbotClient:
             
             if result.returncode != 0:
                 # 输出更详细的错误信息
-                error_msg = result.stderr or result.stdout or "Unknown error"
+                error_output = result.stderr or result.stdout or ""
                 logger.error(f"❌ Certbot failed (returncode={result.returncode})")
                 logger.error(f"❌ Certbot stderr: {result.stderr}")
                 logger.error(f"❌ Certbot stdout: {result.stdout}")
+                
+                # 检查是否是速率限制错误
+                is_rate_limit, retry_time = self._is_rate_limit_error(error_output)
+                
+                if is_rate_limit:
+                    # 如果是速率限制错误，且 force_renewal=False，尝试使用现有证书
+                    if not force_renewal:
+                        existing_cert = self._check_certificate_exists(folder_name)
+                        if existing_cert:
+                            logger.warning(f"⚠️ Rate limit reached, but using existing certificate for domain '{domain}'")
+                            return {
+                                "success": True,
+                                "message": f"Rate limit reached for domain '{domain}', but using existing certificate. New certificate can be requested after {retry_time} UTC.",
+                                "certificate": existing_cert["certificate"],
+                                "private_key": existing_cert["private_key"],
+                                "status": "success",
+                                "error": None,
+                                "warning": f"Rate limit reached. New certificate can be requested after {retry_time} UTC."
+                            }
+                    
+                    # 如果是速率限制错误且 force_renewal=True，或者没有现有证书，返回明确的错误信息
+                    error_msg = f"Let's Encrypt rate limit reached: too many certificates (5) already issued for this exact set of identifiers in the last 168 hours. Retry after {retry_time} UTC. See https://letsencrypt.org/docs/rate-limits/ for details."
+                    logger.error(f"❌ {error_msg}")
+                    return {
+                        "success": False,
+                        "message": error_msg,
+                        "certificate": None,
+                        "private_key": None,
+                        "status": "fail",
+                        "error": error_msg,
+                        "rate_limit": True,
+                        "retry_after": retry_time
+                    }
+                
+                # 其他错误
+                error_msg = error_output
                 return {
                     "success": False,
                     "message": f"Certbot certificate application failed: {error_msg}",
