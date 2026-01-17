@@ -176,6 +176,19 @@ def reapply_manual_apply_certificate(
         original_store = original_cert.get("store")  # 保持原有 store
         original_status = original_cert.get("status")  # 保存原始状态，失败时恢复
         
+        # 检查证书状态，如果正在申请中，拒绝重复申请
+        if original_status == CertificateStatus.PROCESS.value:
+            logger.warning(
+                f"⚠️  Certificate is already being processed, skipping duplicate request: "
+                f"certificate_id={certificate_id}, domain={domain}"
+            )
+            return {
+                "success": False,
+                "message": f"Certificate for domain '{domain}' is already being processed. Please wait for the current request to complete.",
+                "status": CertificateStatus.PROCESS.value,
+                "error": "Certificate is already being processed"
+            }
+        
         logger.info(f"🚀 Starting MANUAL_APPLY certificate reapplication for domain '{domain}' (async)")
         
         # 先更新状态为申请中

@@ -174,6 +174,25 @@ def apply_certificate(
     try:
         logger.info(f"🚀 Starting certificate application for domain '{domain}' (async)")
         
+        # 检查是否已存在相同域名的证书且正在申请中
+        existing_cert = app.database_repo.get_certificate_by_domain(
+            store=CertificateStore.DATABASE.value,
+            domain=domain,
+            source=CertificateSource.MANUAL_APPLY.value
+        )
+        
+        if existing_cert and existing_cert.get("status") == CertificateStatus.PROCESS.value:
+            logger.warning(
+                f"⚠️  Certificate application is already in progress for domain '{domain}', "
+                f"skipping duplicate request: certificate_id={existing_cert.get('id')}"
+            )
+            return {
+                "success": False,
+                "message": f"Certificate application for domain '{domain}' is already in progress. Please wait for the current request to complete.",
+                "status": CertificateStatus.PROCESS.value,
+                "error": "Certificate application is already in progress"
+            }
+        
         # 先记录申请中的状态（用户主动申请的，source 为 MANUAL_APPLY）
         app.database_repo.create_or_update_certificate(
             store=CertificateStore.DATABASE.value,
