@@ -3,6 +3,14 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# 声明构建参数（用于构建时传递环境变量）
+ARG BACKEND_HOST=localhost
+ARG BACKEND_PORT=10151
+
+# 设置环境变量供构建过程使用
+ENV BACKEND_HOST=${BACKEND_HOST}
+ENV BACKEND_PORT=${BACKEND_PORT}
+
 # 复制 package 文件
 COPY package*.json ./
 

@@ -98,9 +98,9 @@ nano .env
 ```bash
 # Docker 服务端口（根据实际情况修改）
 BACKEND_HOST=192.168.1.64
-BACKEND_PORT=10200
+BACKEND_PORT=10151
 FRONTEND_HOST=192.168.1.64
-FRONTEND_PORT=10199
+FRONTEND_PORT=10152
 
 # MySQL 数据库配置
 MYSQL_HOST=192.168.1.64
@@ -159,10 +159,10 @@ docker compose logs -f frontend
 
 #### 6. 访问服务
 
-- **前端 Web 界面**：http://192.168.1.64:10199
-- **后端 API**：http://192.168.1.64:10200
-- **API 文档（Swagger）**：http://192.168.1.64:10200/docs
-- **API 文档（ReDoc）**：http://192.168.1.64:10200/redoc
+- **前端 Web 界面**：http://192.168.1.64:10152
+- **后端 API**：http://192.168.1.64:10151
+- **API 文档（Swagger）**：http://192.168.1.64:10151/docs
+- **API 文档（ReDoc）**：http://192.168.1.64:10151/redoc
 
 ---
 
@@ -194,7 +194,7 @@ Certs/
 
 ### Web 界面使用
 
-1. 打开浏览器访问前端地址：`http://your-ip:10199`
+1. 打开浏览器访问前端地址：`http://your-ip:10152`
 2. 在界面中查看所有证书的状态
 3. 点击证书可以查看详细信息
 4. 使用导出功能将证书导出到指定目录
@@ -228,13 +228,13 @@ cd /home/kali/repo
 
 ```bash
 # 检查 Websites 证书（带分页）
-curl "http://192.168.1.64:10200/vault/tls/check/websites?offset=0&limit=20"
+curl "http://192.168.1.64:10151/vault/tls/check/websites?offset=0&limit=20"
 
 # 导出 Websites 证书
-curl -X POST http://192.168.1.64:10200/vault/file/export/websites
+curl -X POST http://192.168.1.64:10151/vault/file/export/websites
 
 # 刷新证书（触发重新读取）
-curl -X POST http://192.168.1.64:10200/vault/tls/refresh/websites
+curl -X POST http://192.168.1.64:10151/vault/tls/refresh/websites
 ```
 
 ---
@@ -270,7 +270,7 @@ curl -X POST http://192.168.1.64:10200/vault/tls/refresh/websites
 
 **解决方案**：
 - 检查 `.env` 文件配置是否正确
-- 检查端口是否被占用：`netstat -tuln | grep 10199`
+- 检查端口是否被占用：`netstat -tuln | grep 10152`
 - 查看容器日志：`docker compose logs backend-api`
 - 确保 MySQL、Redis、Kafka 服务正常运行
 
