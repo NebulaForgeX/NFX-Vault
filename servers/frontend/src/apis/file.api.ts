@@ -1,18 +1,17 @@
-import type { FileListResponse } from "@/apis/domain";
+import type { FileListResponse } from "@/types";
 import type { CertType } from "@/types";
 import { publicClient } from "@/apis/clients";
-
-const baseUrl = "/file";
+import { URL_PATHS } from "./ip";
 
 export const ListDirectory = async (store: "apis" | "websites", path?: string): Promise<FileListResponse> => {
-  const { data } = await publicClient.get<FileListResponse>(`${baseUrl}/list/${store}`, {
+  const { data } = await publicClient.get<FileListResponse>(URL_PATHS.FILE.list(store), {
     params: path ? { path } : undefined,
   });
   return data;
 };
 
 export const ExportCertificates = async (params: { store: CertType }): Promise<{ success: boolean; message: string }> => {
-  const { data } = await publicClient.post<{ success: boolean; message: string }>(`${baseUrl}/export/${params.store}`);
+  const { data } = await publicClient.post<{ success: boolean; message: string }>(URL_PATHS.FILE.export(params.store));
   return data;
 };
 
@@ -31,16 +30,13 @@ export interface ExportSingleCertificateResponse {
 }
 
 export const ExportSingleCertificate = async (params: ExportSingleCertificateParams): Promise<ExportSingleCertificateResponse> => {
-  const { data } = await publicClient.post<ExportSingleCertificateResponse>(`${baseUrl}/export-single`, params);
+  const { data } = await publicClient.post<ExportSingleCertificateResponse>(URL_PATHS.FILE.exportSingle, params);
   return data;
 };
 
 export const downloadFile = async (store: "apis" | "websites", filePath: string, folderName: string): Promise<void> => {
-  // 获取基础 URL
   const baseURL = publicClient.defaults.baseURL || window.location.origin;
-  
-  // 构建下载 URL
-  const downloadUrl = `${baseURL}${baseUrl}/download/${store}?path=${encodeURIComponent(filePath)}`;
+  const downloadUrl = `${baseURL}${URL_PATHS.FILE.download(store)}?path=${encodeURIComponent(filePath)}`;
   
   // 从路径中提取原始文件名
   const originalFileName = filePath.split("/").pop() || "file";
@@ -65,7 +61,7 @@ export interface FileContentResponse {
 }
 
 export const GetFileContent = async (store: "apis" | "websites", filePath: string): Promise<FileContentResponse> => {
-  const { data } = await publicClient.get<FileContentResponse>(`${baseUrl}/content/${store}`, {
+  const { data } = await publicClient.get<FileContentResponse>(URL_PATHS.FILE.content(store), {
     params: { path: filePath },
   });
   return data;
@@ -83,7 +79,7 @@ export interface DeleteFileOrFolderResponse {
 }
 
 export const DeleteFileOrFolder = async (request: DeleteFileOrFolderRequest): Promise<DeleteFileOrFolderResponse> => {
-  const { data } = await publicClient.delete<DeleteFileOrFolderResponse>(`${baseUrl}/delete`, {
+  const { data } = await publicClient.delete<DeleteFileOrFolderResponse>(URL_PATHS.FILE.delete, {
     data: request,
   });
   return data;

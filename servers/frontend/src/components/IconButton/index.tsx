@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Button } from "@/components";
 
-interface IconButtonProps extends React.ComponentProps<typeof Button> {
+export interface IconButtonProps extends React.ComponentProps<typeof Button> {
   icon: React.ReactNode;
   children: React.ReactNode;
 }

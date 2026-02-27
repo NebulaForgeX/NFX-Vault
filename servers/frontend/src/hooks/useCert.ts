@@ -1,5 +1,5 @@
-import type { CertType, CreateCertificateRequest, UpdateManualAddCertificateRequest, UpdateManualApplyCertificateRequest, DeleteCertificateRequest, ApplyCertificateRequest } from "@/apis/domain";
-import { CertificateSource } from "@/apis/domain";
+import type { CertType, CreateCertificateRequest, UpdateManualAddCertificateRequest, UpdateManualApplyCertificateRequest, DeleteCertificateRequest, ApplyCertificateRequest } from "@/types";
+import { CertificateSource } from "@/types";
 import type { FetchNumberListParams } from "@/hooks/core/type";
 
 import { useMemo } from "react";

@@ -4,7 +4,8 @@ import type { AxiosRequestTransformer, InternalAxiosRequestConfig } from "axios"
 import axios, { AxiosError } from "axios";
 import applyCaseMiddleware from "axios-case-converter";
 
-import { API_ENDPOINTS } from "@/apis/types";
+import type { ApiErrorBody } from "@/types/apiError";
+import { API_ENDPOINTS } from "@/apis/ip";
 
 // 让 config._retry 有类型
 declare module "axios" {
@@ -75,56 +76,39 @@ publicClient.defaults.transformRequest = [
   },
 ];
 
-// 4) 响应拦截器：这里的 res.data 已经是 camelCase
+/** 响应错误时打日志（Rex 字段：message, errCode, status）。UI 展示统一用 getApiErrorMessage，不改写 error.message。 */
+function logRexApiError(error: AxiosError<ApiErrorBody>): void {
+  const errorData = error.response?.data;
+  const msg = errorData?.message;
+  if (msg) {
+    console.error("❌ API Error:", {
+      message: msg,
+      errCode: errorData?.errCode,
+      status: error.response?.status ?? errorData?.status,
+      url: error.config?.url,
+      method: error.config?.method,
+    });
+  } else if (import.meta.env.DEV && error.response?.status) {
+    console.error("❌ HTTP Error:", {
+      status: error.response.status,
+      url: error.config?.url,
+      method: error.config?.method,
+    });
+  }
+}
+
 protectedClient.interceptors.response.use(
   (response) => response,
-  async (error: unknown) => {
-    if (!(error instanceof AxiosError)) return Promise.reject(error);
-    const errorData = error.response?.data as { message?: string } | undefined;
-    const errorMessage = errorData?.message;
-
-    if (errorMessage) {
-      console.error("❌ API Error:", {
-        message: errorMessage,
-        status: error.response?.status,
-        url: error.config?.url,
-        method: error.config?.method,
-      });
-    } else if (import.meta.env.DEV && error.response?.status) {
-      console.error("❌ HTTP Error:", {
-        status: error.response.status,
-        url: error.config?.url,
-        method: error.config?.method,
-      });
-    }
-
+  (error: unknown) => {
+    if (error instanceof AxiosError) logRexApiError(error);
     return Promise.reject(error);
   },
 );
 
 publicClient.interceptors.response.use(
   (response) => response,
-  async (error: unknown) => {
-    if (!(error instanceof AxiosError))  return Promise.reject(error);
-
-    const errorData = error.response?.data as { message?: string } | undefined;
-    const errorMessage = errorData?.message;
-
-    if (errorMessage) {
-      console.error("❌ API Error:", {
-        message: errorMessage,
-        status: error.response?.status,
-        url: error.config?.url,
-        method: error.config?.method,
-      });
-    } else if (import.meta.env.DEV && error.response?.status) {
-      console.error("❌ HTTP Error:", {
-        status: error.response.status,
-        url: error.config?.url,
-        method: error.config?.method,
-      });
-    }
-
+  (error: unknown) => {
+    if (error instanceof AxiosError) logRexApiError(error);
     return Promise.reject(error);
   },
 );

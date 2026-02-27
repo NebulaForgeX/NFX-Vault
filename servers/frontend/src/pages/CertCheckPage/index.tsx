@@ -2,7 +2,7 @@ import { memo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Suspense } from "@/components";
-import type { CertType } from "@/apis/domain";
+import type { CertType } from "@/types";
 import { ROUTES } from "@/types/navigation";
 import { Plus, RefreshCw } from "@/assets/icons/lucide";
 import { useInvalidateCache } from "@/hooks";

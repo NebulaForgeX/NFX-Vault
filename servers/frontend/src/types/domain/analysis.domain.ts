@@ -1,11 +1,8 @@
-export interface AnalyzeTLSRequest {
-  certificate: string;
-  privateKey?: string;
-}
+// Analysis Domain Types - 与 NFX-Identity/console types/domain 结构对齐
 
 export interface AnalyzeTLSCertificateInfo {
   domain: string | null;
-  subject: Record<string, any>;
+  subject: Record<string, unknown>;
   issuer: string | null;
   sans?: string[];
   allDomains?: string[];
@@ -37,4 +34,3 @@ export interface AnalyzeTLSResponse {
     summary: AnalyzeTLSSummary;
   };
 }
-

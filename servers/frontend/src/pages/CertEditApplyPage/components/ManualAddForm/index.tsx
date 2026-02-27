@@ -1,6 +1,6 @@
 import type { FieldErrors } from "react-hook-form";
 import type { ApplyCertificateFormValues } from "@/elements/certificate/controllers/applyCertificateSchema";
-import type { CertificateDetailResponse } from "@/apis/domain";
+import type { CertificateDetailResponse } from "@/types";
 
 import { memo } from "react";
 import { useFormContext } from "react-hook-form";

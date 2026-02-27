@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from "@/apis/types";
+import { API_ENDPOINTS } from "@/apis/ip";
 
 /**
  * 构建图片的完整 URL

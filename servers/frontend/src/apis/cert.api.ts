@@ -14,11 +14,10 @@ import type {
   SearchCertificateRequest,
   CertificateResponse,
   SearchCertificateResponse,
-} from "@/apis/domain";
+} from "@/types";
 
 import { publicClient } from "@/apis/clients";
-
-const baseUrl = "/tls";
+import { URL_PATHS } from "./ip";
 
 export interface GetCertificateListParams {
   certType: CertType;
@@ -28,48 +27,47 @@ export interface GetCertificateListParams {
 
 export const GetCertificateList = async (params: GetCertificateListParams): Promise<CertificateListResponse> => {
   const { certType, offset = 0, limit = 20 } = params;
-  const { data } = await publicClient.get<CertificateListResponse>(`${baseUrl}/check/${certType}`, {
+  const { data } = await publicClient.get<CertificateListResponse>(URL_PATHS.TLS.check(certType), {
     params: { offset, limit },
   });
   return data;
 };
 
 export const GetCertificateDetailById = async (certificateId: string): Promise<CertificateDetailResponse> => {
-  const { data } = await publicClient.get<CertificateDetailResponse>(`${baseUrl}/detail-by-id/${certificateId}`);
+  const { data } = await publicClient.get<CertificateDetailResponse>(URL_PATHS.TLS.detailById(certificateId));
   return data;
 };
 
 export const RefreshCertificates = async (certType: CertType): Promise<RefreshResponse> => {
-  const { data } = await publicClient.post<RefreshResponse>(`${baseUrl}/refresh/${certType}`);
+  const { data } = await publicClient.post<RefreshResponse>(URL_PATHS.TLS.refresh(certType));
   return data;
 };
 
 export const CreateCertificate = async (request: CreateCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.post<CertificateResponse>(`${baseUrl}/create`, request);
+  const { data } = await publicClient.post<CertificateResponse>(URL_PATHS.TLS.create, request);
   return data;
 };
 
 export const UpdateManualAddCertificate = async (request: UpdateManualAddCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.put<CertificateResponse>(`${baseUrl}/update/manual-add`, request);
+  const { data } = await publicClient.put<CertificateResponse>(URL_PATHS.TLS.updateManualAdd, request);
   return data;
 };
 
 export const UpdateManualApplyCertificate = async (request: UpdateManualApplyCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.put<CertificateResponse>(`${baseUrl}/update/manual-apply`, request);
+  const { data } = await publicClient.put<CertificateResponse>(URL_PATHS.TLS.updateManualApply, request);
   return data;
 };
 
 export const DeleteCertificate = async (request: DeleteCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.delete<CertificateResponse>(`${baseUrl}/delete`, {
+  const { data } = await publicClient.delete<CertificateResponse>(URL_PATHS.TLS.delete, {
     data: request,
   });
   return data;
 };
 
 export const ApplyCertificate = async (request: ApplyCertificateRequest): Promise<CertificateResponse> => {
-  // 证书申请需要较长时间（通常需要 10-60 秒），设置超时为 6 分钟（360 秒）
-  const { data } = await publicClient.post<CertificateResponse>(`${baseUrl}/apply`, request, {
-    timeout: 360000, // 360 秒 = 6 分钟
+  const { data } = await publicClient.post<CertificateResponse>(URL_PATHS.TLS.apply, request, {
+    timeout: 360000,
   });
   return data;
 };
@@ -80,33 +78,33 @@ export interface InvalidateCacheResponse {
 }
 
 export const InvalidateCache = async (certType: CertType): Promise<InvalidateCacheResponse> => {
-  const { data } = await publicClient.post<InvalidateCacheResponse>(`${baseUrl}/invalidate-cache/${certType}`);
+  const { data } = await publicClient.post<InvalidateCacheResponse>(URL_PATHS.TLS.invalidateCache(certType));
   return data;
 };
 
 export const ReapplyAutoCertificate = async (request: ReapplyAutoCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.post<CertificateResponse>(`${baseUrl}/reapply/auto`, request, {
-    timeout: 360000, // 360 秒 = 6 分钟
+  const { data } = await publicClient.post<CertificateResponse>(URL_PATHS.TLS.reapplyAuto, request, {
+    timeout: 360000,
   });
   return data;
 };
 
 export const ReapplyManualApplyCertificate = async (request: ReapplyManualApplyCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.post<CertificateResponse>(`${baseUrl}/reapply/manual-apply`, request, {
-    timeout: 360000, // 360 秒 = 6 分钟
+  const { data } = await publicClient.post<CertificateResponse>(URL_PATHS.TLS.reapplyManualApply, request, {
+    timeout: 360000,
   });
   return data;
 };
 
 export const ReapplyManualAddCertificate = async (request: ReapplyManualAddCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.post<CertificateResponse>(`${baseUrl}/reapply/manual-add`, request, {
-    timeout: 360000, // 360 秒 = 6 分钟
+  const { data } = await publicClient.post<CertificateResponse>(URL_PATHS.TLS.reapplyManualAdd, request, {
+    timeout: 360000,
   });
   return data;
 };
 
 export const SearchCertificate = async (request: SearchCertificateRequest): Promise<SearchCertificateResponse> => {
-  const { data } = await publicClient.post<SearchCertificateResponse>(`${baseUrl}/search`, request);
+  const { data } = await publicClient.post<SearchCertificateResponse>(URL_PATHS.TLS.search, request);
   return data;
 };
 

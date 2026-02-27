@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import type { CertificateInfo } from "@/apis/domain";
-import { CertificateStatus, CertificateSource } from "@/apis/domain";
+import type { CertificateInfo } from "@/types";
+import { CertificateStatus, CertificateSource } from "@/types";
 
 export interface CertificateStatusInfo {
   label: string;

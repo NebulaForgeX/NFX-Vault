@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock } from "@/assets/icons/lucide";
 import { ROUTES } from "@/types/navigation";
 import { useCertificateTime, useCertificateCountdown } from "@/hooks";
-import type { CertificateDetailResponse } from "@/apis/domain";
+import type { CertificateDetailResponse } from "@/types";
 import styles from "./styles.module.css";
 
 interface CertDetailHeaderProps {

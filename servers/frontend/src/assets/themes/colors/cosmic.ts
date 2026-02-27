@@ -1,12 +1,12 @@
-import type { Theme } from "../types";
+import type { ColorTheme } from "../types";
 
-export const cosmicTheme: Theme = {
+export const cosmicColorTheme: ColorTheme = {
   name: "cosmic",
   displayName: "Cosmic",
   variables: {
-    // 基础颜色
     primary: "#a16eff",
     primaryLight: "#b489ff",
+    primaryFg: "#ffffff",
     success: "#00d68f",
     successLight: "#33dfaa",
     info: "#0095ff",
@@ -18,29 +18,23 @@ export const cosmicTheme: Theme = {
     danger: "#ff3d71",
     dangerLight: "#ff6491",
 
-    // 背景色
     bg: "#323259",
     bg2: "#2a2a48",
     bg3: "#272741",
     bg4: "#1f1f3a",
 
-    // 边框色
     border: "#323259",
     border2: "#2a2a48",
     border3: "#272741",
     border4: "#1f1f3a",
     border5: "#1f1f3a",
 
-    // 文字色
     fg: "#b4b4db",
     fgText: "#ffffff",
     fgHeading: "#ffffff",
     fgHighlight: "#a16eff",
-
-    // 分隔符
     separator: "#2a2a48",
 
-    // 扩展配置 - Temperature
     temperature: {
       arcFill: ["#2ec7fe", "#31ffad", "#7bff24", "#fff024", "#f7bd59"],
       arcEmpty: "#2a2a48",
@@ -48,7 +42,6 @@ export const cosmicTheme: Theme = {
       thumbBorder: "#ffffff",
     },
 
-    // Solar
     solar: {
       gradientLeft: "#a16eff",
       gradientRight: "#a16eff",
@@ -57,7 +50,6 @@ export const cosmicTheme: Theme = {
       radius: ["70%", "90%"],
     },
 
-    // Traffic
     traffic: {
       tooltipBg: "#323259",
       tooltipBorderColor: "#2a2a48",
@@ -76,7 +68,6 @@ export const cosmicTheme: Theme = {
       gradTo: "#2a2a48",
     },
 
-    // Electricity
     electricity: {
       tooltipBg: "#323259",
       tooltipLineColor: "#ffffff",
@@ -99,7 +90,6 @@ export const cosmicTheme: Theme = {
       shadowLineDarkBg: "#272741",
     },
 
-    // ECharts
     echarts: {
       bg: "#323259",
       textColor: "#ffffff",
@@ -110,7 +100,6 @@ export const cosmicTheme: Theme = {
       areaOpacity: "1",
     },
 
-    // ChartJS
     chartjs: {
       axisLineColor: "#2a2a48",
       textColor: "#ffffff",

@@ -1,7 +1,5 @@
 /**
- * Cache Events
- * 
- * 事件系统用于触发 React Query 缓存刷新
+ * Cache Events - 事件系统用于触发 React Query 缓存刷新
  */
 
 export const cacheEvents = {

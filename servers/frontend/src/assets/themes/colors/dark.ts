@@ -1,12 +1,12 @@
-import type { Theme } from "../types";
+import type { ColorTheme } from "../types";
 
-export const darkTheme: Theme = {
+export const darkColorTheme: ColorTheme = {
   name: "dark",
   displayName: "Dark",
   variables: {
-    // 基础颜色 - 中性色系
     primary: "#333333",
     primaryLight: "#555555",
+    primaryFg: "#ffffff",
     success: "#00d68f",
     successLight: "#33dfaa",
     info: "#0095ff",
@@ -18,29 +18,23 @@ export const darkTheme: Theme = {
     danger: "#ff3d71",
     dangerLight: "#ff6491",
 
-    // 背景色 - 中性深色
     bg: "#1a1a1a",
     bg2: "#2a2a2a",
     bg3: "#3a3a3a",
     bg4: "#4a4a4a",
 
-    // 边框色 - 中性深色
     border: "#1a1a1a",
     border2: "#2a2a2a",
     border3: "#3a3a3a",
     border4: "#4a4a4a",
     border5: "#5a5a5a",
 
-    // 文字色
     fg: "#b4b4db",
     fgText: "#ffffff",
     fgHeading: "#ffffff",
     fgHighlight: "#ffffff",
-
-    // 分隔符
     separator: "#2a2a2a",
 
-    // 扩展配置 - Temperature
     temperature: {
       arcFill: ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff"],
       arcEmpty: "#2a2a2a",
@@ -48,7 +42,6 @@ export const darkTheme: Theme = {
       thumbBorder: "#ffffff",
     },
 
-    // Solar
     solar: {
       gradientLeft: "#ffffff",
       gradientRight: "#ffffff",
@@ -57,7 +50,6 @@ export const darkTheme: Theme = {
       radius: ["80%", "90%"],
     },
 
-    // Traffic
     traffic: {
       tooltipBg: "#1a1a1a",
       tooltipBorderColor: "#2a2a2a",
@@ -76,7 +68,6 @@ export const darkTheme: Theme = {
       gradTo: "#2a2a2a",
     },
 
-    // Electricity
     electricity: {
       tooltipBg: "#1a1a1a",
       tooltipLineColor: "#ffffff",
@@ -99,7 +90,6 @@ export const darkTheme: Theme = {
       shadowLineDarkBg: "rgba(0, 0, 0, 0)",
     },
 
-    // ECharts
     echarts: {
       bg: "#1a1a1a",
       textColor: "#ffffff",
@@ -110,7 +100,6 @@ export const darkTheme: Theme = {
       areaOpacity: "0.7",
     },
 
-    // ChartJS
     chartjs: {
       axisLineColor: "#2a2a2a",
       textColor: "#ffffff",

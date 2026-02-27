@@ -30,24 +30,24 @@
     line-height: inherit;
 }
 
-/* Primary 状态按钮 */
+/* Primary 状态按钮（与 NFX-Identity/console 一致，使用主题变量） */
 .selectButton.primary {
     background-color: var(--color-primary);
     border-color: var(--color-primary);
-    color: #ffffff;
+    color: var(--color-primary-fg);
 }
 
 .selectButton.primary:hover:not(:disabled) {
-    background-color: var(--color-primary-hover);
-    border-color: var(--color-primary-hover);
-    color: #ffffff;
+    background-color: var(--color-primary-light);
+    border-color: var(--color-primary-light);
+    color: var(--color-primary-fg);
 }
 
 .selectButton.primary:focus,
 .selectButton.primary.open {
-    background-color: var(--color-primary-hover);
-    border-color: var(--color-primary-hover);
-    color: #ffffff;
+    background-color: var(--color-primary-light);
+    border-color: var(--color-primary-light);
+    color: var(--color-primary-fg);
     box-shadow: 0 0 0 0.125rem rgba(143, 155, 179, 0.25);
 }
 
@@ -94,7 +94,7 @@
 }
 
 .selectButton.primary .selectIcon {
-    color: #ffffff;
+    color: var(--color-primary-fg);
 }
 
 .selectButton.default .selectIcon {

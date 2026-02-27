@@ -63,6 +63,11 @@
   /* ChartJS */
   --chartjs-axis-line-color: #edf1f7;
   --chartjs-text-color: #222b45;
+
+  /* 圆角（与 NFX-Identity/console bases 一致，由 ThemeProvider 动态覆盖） */
+  --radius-button: 8px;
+  --radius-card: 8px;
+  --radius-input: 6px;
 }
 
 /* 应用主题到 body */
@@ -116,11 +121,11 @@ select:focus {
   outline: none;
 }
 
-/* 卡片样式 */
+/* 卡片样式（使用主题圆角变量） */
 .card {
   background-color: var(--color-bg);
   border: 1px solid var(--color-border-4);
-  border-radius: 8px;
+  border-radius: var(--radius-card);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }

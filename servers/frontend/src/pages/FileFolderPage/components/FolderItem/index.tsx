@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Folder, Trash2 } from "@/assets/icons/lucide";
-import type { FileItem } from "@/apis/domain";
+import type { FileItem } from "@/types";
 import styles from "./FolderItem.module.css";
 
 interface FolderItemProps {

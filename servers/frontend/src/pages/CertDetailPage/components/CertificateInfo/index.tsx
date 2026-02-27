@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertCircle } from "@/assets/icons/lucide";
-import type { CertificateDetailResponse } from "@/apis/domain";
+import type { CertificateDetailResponse } from "@/types";
 import { useCertificateSource } from "@/hooks";
 import styles from "./styles.module.css";
 

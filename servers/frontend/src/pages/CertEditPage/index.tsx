@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Suspense } from "@/components";
 import { useInitCertificateForm, useEditCertificate } from "@/elements/certificate";
 import { useCertificateDetailById } from "@/hooks";
-import { CertificateSource } from "@/apis/domain";
+import { CertificateSource } from "@/types";
 
 import { AutoForm, ManualApplyForm, ManualAddForm } from "./components";
 import styles from "./styles.module.css";

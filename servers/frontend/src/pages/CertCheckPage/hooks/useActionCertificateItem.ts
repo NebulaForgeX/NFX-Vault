@@ -1,4 +1,4 @@
-import type { CertificateInfo } from "@/apis/domain";
+import type { CertificateInfo } from "@/types";
 
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";

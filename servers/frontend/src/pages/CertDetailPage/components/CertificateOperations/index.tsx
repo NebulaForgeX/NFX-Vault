@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Edit, Trash2, RefreshCw } from "@/assets/icons/lucide";
-import { CertificateSource } from "@/apis/domain";
+import { CertificateSource } from "@/types";
 import { IconButton } from "@/components";
 import { useOperationCertificate } from "../../hooks";
 import { useCertificateDetailById } from "@/hooks";

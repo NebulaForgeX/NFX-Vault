@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { VirtualWindowList } from "@/components";
 import { useCertificateList } from "@/hooks";
 import { certKeys } from "@/hooks/useCert";
-import type { CertType } from "@/apis/domain";
+import type { CertType } from "@/types";
 import  CertCard  from "../CertCard";
 import styles from "./styles.module.css";
 

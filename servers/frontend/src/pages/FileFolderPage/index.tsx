@@ -3,7 +3,7 @@ import { ArrowLeft } from "@/assets/icons/lucide";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 
 import { ListDirectory, downloadFile, DeleteFileOrFolder } from "@/apis/file.api";
-import type { FileItem } from "@/apis/domain";
+import type { FileItem } from "@/types";
 import { ModalStore } from "@/stores/modalStore";
 import { FolderItem, FileItem as FileItemComponent } from "./components";
 import styles from "./styles.module.css";

@@ -4,7 +4,7 @@ import React, { memo } from "react";
 
 import styles from "./styles.module.css";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   onClick?: () => void;
   variant?: "primary" | "secondary";

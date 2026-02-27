@@ -1,5 +1,5 @@
 import type { ApplyCertificateFormValues } from "../controllers/applyCertificateSchema";
-import type { CertificateDetailResponse } from "@/apis/domain";
+import type { CertificateDetailResponse } from "@/types";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

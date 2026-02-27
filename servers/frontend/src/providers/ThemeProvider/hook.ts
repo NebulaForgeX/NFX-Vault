@@ -1,17 +1,19 @@
 import { useEffect } from "react";
-import type { Theme } from "@/assets/themes/types";
+import type { Theme, ThemeName, BaseName } from "@/assets/themes/types";
+
 /**
- * Hook to apply theme variables to CSS
+ * 将主题变量注入到 CSS Variables（与 NFX-Identity/console 一致）
  */
-export function useThemeVariables(themeName: string, currentTheme: Theme) {
+export function useThemeVariables(currentTheme: Theme, themeName: ThemeName, baseName: BaseName) {
   useEffect(() => {
-    // 将主题变量注入到 CSS Variables
     const root = document.documentElement;
-    const vars = currentTheme.variables;
+    const vars = currentTheme.colors.variables;
+    const base = currentTheme.base.variables;
 
     // 基础颜色
     root.style.setProperty("--color-primary", vars.primary);
     root.style.setProperty("--color-primary-light", vars.primaryLight);
+    root.style.setProperty("--color-primary-fg", vars.primaryFg);
     root.style.setProperty("--color-success", vars.success);
     root.style.setProperty("--color-success-light", vars.successLight);
     root.style.setProperty("--color-info", vars.info);
@@ -58,8 +60,12 @@ export function useThemeVariables(themeName: string, currentTheme: Theme) {
     root.style.setProperty("--chartjs-axis-line-color", vars.chartjs.axisLineColor);
     root.style.setProperty("--chartjs-text-color", vars.chartjs.textColor);
 
-    // 保存到 localStorage
-    localStorage.setItem("theme", themeName);
-  }, [themeName, currentTheme]);
-}
+    // 基础变量（圆角，与 console bases 一致）
+    root.style.setProperty("--radius-button", `${base.buttonRadius}px`);
+    root.style.setProperty("--radius-card", `${base.cardRadius}px`);
+    root.style.setProperty("--radius-input", `${base.inputRadius}px`);
 
+    localStorage.setItem("theme", themeName);
+    localStorage.setItem("base", baseName);
+  }, [themeName, baseName, currentTheme]);
+}

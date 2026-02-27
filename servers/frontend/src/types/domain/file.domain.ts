@@ -1,3 +1,5 @@
+// File Domain Types - 与 NFX-Identity/console types/domain 结构对齐
+
 export interface FileItem {
   name: string;
   type: "file" | "directory";
@@ -13,4 +15,3 @@ export interface FileListResponse {
   path: string;
   items: FileItem[];
 }
-

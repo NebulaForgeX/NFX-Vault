@@ -1,7 +1,7 @@
 import type { FieldErrors } from "react-hook-form";
 import type { ApplyCertificateFormValues } from "../controllers/applyCertificateSchema";
-import type { CertificateDetailResponse } from "@/apis/domain";
-import { CertificateSource } from "@/apis/domain";
+import type { CertificateDetailResponse } from "@/types";
+import { CertificateSource } from "@/types";
 
 import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { useUpdateManualAddCertificate, useUpdateManualApplyCertificate } from "@/hooks";
-import { CertificateSource } from "@/apis/domain";
+import { CertificateSource } from "@/types";
 import type { CertType } from "@/types";
 import { showError, showSuccess } from "@/stores/modalStore";
 import { ROUTES } from "@/types/navigation";
