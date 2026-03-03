@@ -32,8 +32,8 @@ const CertDetailHeader = memo(({ certDetail }: CertDetailHeaderProps) => {
             <div
               className={`${styles.countdownBadge} ${isExpired ? styles.expired : ""}`}
               style={{
-                backgroundColor: isExpired ? "#ef4444" : "#3b82f6",
-                color: "#ffffff",
+                backgroundColor: isExpired ? "var(--color-danger)" : "var(--color-info)",
+                color: "var(--color-primary-fg)",
               }}
             >
               <Clock size={14} className={styles.countdownIcon} />

@@ -3,8 +3,8 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
+  border: 1px solid var(--color-border-3);
+  border-radius: var(--radius-card, 0.5rem);
   background-color: var(--color-bg-2);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -41,7 +41,7 @@
   display: flex;
   gap: 1rem;
   font-size: 0.875rem;
-  color: var(--color-fg-secondary);
+  color: var(--color-fg);
 }
 
 .actions {
@@ -69,12 +69,12 @@
 
 .downloadBtn:hover {
   background-color: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-primary-fg, #ffffff);
 }
 
 .deleteBtn:hover {
-  background-color: var(--color-error, #ef4444);
-  color: #ffffff;
+  background-color: var(--color-danger);
+  color: var(--color-primary-fg, #ffffff);
 }
 
 @media (max-width: 768px) {

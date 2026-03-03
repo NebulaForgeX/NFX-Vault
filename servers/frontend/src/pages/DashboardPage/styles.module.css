@@ -39,7 +39,7 @@
 
 .subtitle {
   font-size: 1.25rem;
-  color: var(--color-fg-secondary);
+  color: var(--color-fg);
   margin: 0;
 }
 
@@ -57,8 +57,8 @@
 
 .card {
   background: var(--color-bg-2);
-  border: 1px solid var(--color-border);
-  border-radius: 1rem;
+  border: 1px solid var(--color-border-3);
+  border-radius: var(--radius-card, 1rem);
   padding: 2rem;
   transition: all 0.3s ease;
   display: flex;
@@ -79,7 +79,7 @@
 }
 
 .cardDescription {
-  color: var(--color-fg-secondary);
+  color: var(--color-fg);
   margin: 0 0 1.5rem 0;
   line-height: 1.6;
   flex: 1;
@@ -97,15 +97,16 @@
 
 .cardLink:hover {
   gap: 0.75rem;
-  color: var(--color-primary-dark);
+  color: var(--color-primary);
+  filter: brightness(0.9);
 }
 
 .refreshSection {
   margin: 2rem 0;
   padding: 1.5rem;
   background-color: var(--color-bg-2);
-  border-radius: 1rem;
-  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card, 1rem);
+  border: 1px solid var(--color-border-3);
 }
 
 .refreshControls {
@@ -125,10 +126,10 @@
 
 .refreshControls .select {
   padding: 0.5rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border-4);
+  border-radius: var(--radius-input, 0.5rem);
   background-color: var(--color-bg);
-  color: var(--color-text);
+  color: var(--color-fg-text);
   font-size: 0.9rem;
   cursor: pointer;
 }
@@ -146,7 +147,7 @@
 .refreshDescription {
   margin: 0;
   font-size: 0.875rem;
-  color: var(--color-fg-secondary);
+  color: var(--color-fg);
   line-height: 1.5;
 }
 

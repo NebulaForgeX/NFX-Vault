@@ -1,7 +1,7 @@
 .section {
-  background: var(--color-bg);
-  border: 1px solid var(--color-border-4);
-  border-radius: 0.5rem;
+  background: var(--color-bg-2);
+  border: 1px solid var(--color-border-3);
+  border-radius: var(--radius-card, 0.5rem);
   padding: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -48,9 +48,9 @@
 .sanTag {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  background-color: var(--color-bg-2);
-  border: 1px solid var(--color-border);
-  border-radius: 0.375rem;
+  background-color: var(--color-bg-3);
+  border: 1px solid var(--color-border-3);
+  border-radius: var(--radius-input, 0.375rem);
   font-size: 0.875rem;
   color: var(--color-fg-text);
   font-family: monospace;
@@ -59,7 +59,7 @@
 .sourceBadge {
   display: inline-block;
   padding: 0.375rem 0.75rem;
-  border-radius: 0.375rem;
+  border-radius: var(--radius-input, 0.375rem);
   font-size: 0.875rem;
   font-weight: 600;
   white-space: nowrap;
@@ -69,10 +69,10 @@
   grid-column: 1 / -1;
   margin-top: 1rem;
   padding: 1rem;
-  background-color: var(--color-bg-2);
-  border: 2px solid var(--color-error);
-  border-radius: 0.5rem;
-  box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.1);
+  background-color: var(--color-danger-light);
+  border: 2px solid var(--color-danger);
+  border-radius: var(--radius-card, 0.5rem);
+  box-shadow: 0 0 0 1px var(--color-danger-light);
 }
 
 .errorHeader {
@@ -81,21 +81,20 @@
   gap: 0.5rem;
   margin-bottom: 0.75rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-3);
 }
 
 .errorHeader label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--color-error);
+  color: var(--color-danger);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .errorIcon {
-  color: var(--color-error);
+  color: var(--color-danger);
   flex-shrink: 0;
-  filter: drop-shadow(0 1px 2px rgba(255, 107, 107, 0.3));
 }
 
 .errorContent {
@@ -114,7 +113,7 @@
 
 .errorTime {
   font-size: 0.875rem;
-  color: var(--color-fg-secondary);
+  color: var(--color-fg);
   margin: 0;
 }
 

@@ -130,18 +130,18 @@
 }
 
 .required {
-  color: var(--color-error);
+  color: var(--color-danger);
 }
 
 .errorText {
   font-size: 0.75rem;
-  color: var(--color-error);
+  color: var(--color-danger);
   margin-top: 0.25rem;
 }
 
 .description {
   text-align: center;
-  color: var(--color-fg-secondary);
+  color: var(--color-fg);
   margin-bottom: 2rem;
 }
 

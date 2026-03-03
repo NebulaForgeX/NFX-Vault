@@ -22,7 +22,7 @@
 
 .description {
   text-align: center;
-  color: var(--color-fg-secondary);
+  color: var(--color-fg);
   margin-bottom: 2rem;
 }
 
@@ -109,7 +109,7 @@
 }
 
 .helpText {
-  color: var(--color-fg-secondary);
+  color: var(--color-fg);
   font-size: 0.875rem;
   margin: 0;
 }

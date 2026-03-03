@@ -10,8 +10,8 @@
   gap: 0.75rem;
   padding: 1rem;
   background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border: 1px solid var(--color-border-4);
+  border-radius: var(--radius-input, 4px);
 }
 
 .warningButton {
@@ -22,17 +22,17 @@
   height: 32px;
   padding: 0;
   background-color: transparent;
-  border: 1px solid var(--color-warning, #fbbf24);
-  border-radius: 4px;
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-input, 4px);
   cursor: pointer;
   transition: all 0.2s;
-  color: var(--color-warning, #fbbf24);
+  color: var(--color-warning);
   flex-shrink: 0;
 }
 
 .warningButton:hover {
-  background-color: var(--color-warning-light, rgba(251, 191, 36, 0.1));
-  border-color: var(--color-warning, #fbbf24);
+  background-color: var(--color-warning-light);
+  border-color: var(--color-warning);
 }
 
 .switchLabel {
@@ -48,7 +48,7 @@
   height: 24px;
   appearance: none;
   background-color: var(--color-bg-3);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-4);
   border-radius: 12px;
   position: relative;
   cursor: pointer;
@@ -67,7 +67,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background-color: white;
+  background-color: var(--color-primary-fg, #ffffff);
   top: 2px;
   left: 2px;
   transition: transform 0.2s;

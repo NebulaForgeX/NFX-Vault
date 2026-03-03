@@ -23,26 +23,21 @@ export interface CertificateSourceInfo {
 
 /**
  * Hook to get certificate application status color (for border)
- * @param cert - Certificate info object
- * @returns Status color: green (success), red (fail), gray (other)
+ * Uses theme CSS variables for consistency.
  */
 export const useCertificateStatus = (cert: CertificateInfo | undefined): string => {
   const statusColor = useMemo(() => {
     if (!cert || !cert.status) {
-      return "#6b7280"; // Gray - 其他
+      return "var(--color-fg)";
     }
-
     if (cert.status === CertificateStatus.SUCCESS) {
-      return "#10b981"; // Green - success
+      return "var(--color-success)";
     }
-
     if (cert.status === CertificateStatus.FAIL) {
-      return "#ef4444"; // Red - fail
+      return "var(--color-danger)";
     }
-
-    return "#6b7280"; // Gray - 其他
+    return "var(--color-fg)";
   }, [cert]);
-
   return statusColor;
 };
 
@@ -58,50 +53,45 @@ export const useCertificateTime = (cert: CertificateInfo | undefined): Certifica
     if (!cert) {
       return {
         label: t("status.valid"),
-        bgColor: "#6b7280", // Cool Gray
-        textColor: "#ffffff",
+        bgColor: "var(--color-bg-4)",
+        textColor: "var(--color-fg-text)",
       };
     }
 
-    // 判断证书状态
     const isExpired = !cert.isValid || (cert.daysRemaining !== undefined && cert.daysRemaining <= 0);
 
     if (isExpired) {
       return {
         label: t("status.expired"),
-        bgColor: "#ef4444", // Rose Red
-        textColor: "#ffffff",
+        bgColor: "var(--color-danger)",
+        textColor: "var(--color-primary-fg)",
       };
     }
 
-    // 检查是否有剩余天数信息
     if (cert.daysRemaining !== undefined) {
       const days = cert.daysRemaining;
 
-      // 即将过期：0-6天
       if (days >= 0 && days < 7) {
         return {
           label: `${t("status.expiringSoon")} (${t("status.remainingDays", { days })})`,
-          bgColor: "#f59e0b", // Amber Orange
-          textColor: "#ffffff",
+          bgColor: "var(--color-warning)",
+          textColor: "var(--color-primary-fg)",
         };
       }
 
-      // 有效且剩余天数 >= 7
       if (days >= 7) {
         return {
           label: `${t("status.valid")} (${t("status.remainingDays", { days })})`,
-          bgColor: "#10b981", // Emerald Green
-          textColor: "#ffffff",
+          bgColor: "var(--color-success)",
+          textColor: "var(--color-primary-fg)",
         };
       }
     }
 
-    // 默认：有效但没有天数信息
     return {
       label: t("status.valid"),
-      bgColor: "#10b981", // Emerald Green
-      textColor: "#ffffff",
+      bgColor: "var(--color-success)",
+      textColor: "var(--color-primary-fg)",
     };
   }, [cert, t]);
 
@@ -120,8 +110,8 @@ export const useCertificateSource = (source?: CertificateSource | string): Certi
     if (!source) {
       return {
         label: t("source.auto") || "Auto",
-        bgColor: "#6b7280", // Gray
-        textColor: "#ffffff",
+        bgColor: "var(--color-bg-4)",
+        textColor: "var(--color-fg-text)",
       };
     }
 
@@ -131,26 +121,26 @@ export const useCertificateSource = (source?: CertificateSource | string): Certi
       case CertificateSource.AUTO:
         return {
           label: t("source.auto") || "Auto",
-          bgColor: "#3b82f6", // Blue
-          textColor: "#ffffff",
+          bgColor: "var(--color-info)",
+          textColor: "var(--color-primary-fg)",
         };
       case CertificateSource.MANUAL_APPLY:
         return {
           label: t("source.manual_apply") || "Manual Apply",
-          bgColor: "#10b981", // Green
-          textColor: "#ffffff",
+          bgColor: "var(--color-success)",
+          textColor: "var(--color-primary-fg)",
         };
       case CertificateSource.MANUAL_ADD:
         return {
           label: t("source.manual_add") || "Manual Add",
-          bgColor: "#f59e0b", // Amber
-          textColor: "#ffffff",
+          bgColor: "var(--color-warning)",
+          textColor: "var(--color-primary-fg)",
         };
       default:
         return {
           label: t("source.auto") || "Auto",
-          bgColor: "#6b7280", // Gray
-          textColor: "#ffffff",
+          bgColor: "var(--color-bg-4)",
+          textColor: "var(--color-fg-text)",
         };
     }
   }, [source, t]);

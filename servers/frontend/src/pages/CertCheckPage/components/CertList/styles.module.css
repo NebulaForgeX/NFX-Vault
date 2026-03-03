@@ -16,7 +16,7 @@
 .emptyState {
   padding: 3rem;
   text-align: center;
-  color: var(--color-fg-secondary);
+  color: var(--color-fg);
   font-size: 1rem;
   background: var(--color-bg-2);
   border-radius: 0.5rem;
@@ -30,7 +30,7 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 2rem 0;
-  color: var(--color-fg-secondary);
+  color: var(--color-fg);
   font-size: 0.875rem;
 }
 
@@ -55,7 +55,7 @@
   justify-content: center;
   gap: 1rem;
   padding: 2rem 0;
-  color: var(--color-fg-secondary);
+  color: var(--color-fg);
 }
 
 .endLine {

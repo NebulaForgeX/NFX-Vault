@@ -39,8 +39,8 @@
 .input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border: 1px solid var(--color-border-4);
+  border-radius: var(--radius-input, 4px);
   font-family: monospace;
   font-size: 0.875rem;
   background-color: var(--color-bg);
@@ -62,8 +62,8 @@
   min-height: 100px;
   max-height: 300px;
   overflow-y: auto;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border: 1px solid var(--color-border-4);
+  border-radius: var(--radius-input, 4px);
   background-color: var(--color-bg);
   padding: 0.5rem;
 }
@@ -79,14 +79,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  background-color: var(--color-bg-secondary, rgba(0, 0, 0, 0.05));
-  border-radius: 4px;
-  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-2);
+  border-radius: var(--radius-input, 4px);
+  border: 1px solid var(--color-border-3);
   transition: background-color 0.2s;
 }
 
 .item:hover {
-  background-color: var(--color-bg-hover, rgba(0, 0, 0, 0.08));
+  background-color: var(--color-bg-3);
 }
 
 .itemText {
@@ -117,8 +117,8 @@
 
 .removeButton:hover {
   opacity: 1;
-  background-color: var(--color-error, rgba(220, 38, 38, 0.1));
-  color: var(--color-error, #dc2626);
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
 }
 
 .removeButton:active {

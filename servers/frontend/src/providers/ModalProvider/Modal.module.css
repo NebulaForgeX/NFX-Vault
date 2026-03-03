@@ -58,7 +58,7 @@
 }
 
 .content.error .icon {
-    color: #ef4444;
+    color: var(--color-danger);
 }
 
 .content.info .icon {
