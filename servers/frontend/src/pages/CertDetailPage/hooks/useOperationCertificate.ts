@@ -1,12 +1,12 @@
 import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ROUTES } from "@/types/navigation";
+
+import { routerEventEmitter } from "@/events/router";
+import { ROUTES } from "@/navigations";
 import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
 import { useDeleteCertificate, useApplyCertificate, useCertificateDetailById } from "@/hooks";
 
 export const useOperationCertificate = (certificateId: string) => {
-  const navigate = useNavigate();
   const { t } = useTranslation("certDetail");
   const deleteMutation = useDeleteCertificate();
   const applyMutation = useApplyCertificate();
@@ -17,8 +17,8 @@ export const useOperationCertificate = (certificateId: string) => {
       console.error("Certificate ID is required");
       return;
     }
-    navigate(ROUTES.CERT_EDIT_PATH(certificateId));
-  }, [navigate, certificateId]);
+    routerEventEmitter.navigate({ to: ROUTES.CERT_EDIT.replace(":certificateId", encodeURIComponent(certificateId)) });
+  }, [certificateId]);
 
   const handleReapply = useCallback(() => {
     if (!certificate) {
@@ -26,17 +26,17 @@ export const useOperationCertificate = (certificateId: string) => {
       return;
     }
     const domain = certificate.domain;
-    
+
     showConfirm({
       title: t("reapply.title") || "Re-apply Certificate",
       message: (t("reapply.confirm") || `Are you sure you want to re-apply certificate for "${domain}"?`).replace("{{domain}}", domain),
       confirmText: t("actions.reapply") || "Re-apply",
       cancelText: t("delete.confirm.cancel") || "Cancel",
       onConfirm: async () => {
-        navigate(ROUTES.CERT_EDIT_APPLY_PATH(certificateId));
+        routerEventEmitter.navigate({ to: ROUTES.CERT_EDIT_APPLY.replace(":certificateId", encodeURIComponent(certificateId)) });
       },
     });
-  }, [navigate, certificate, certificateId, t]);
+  }, [certificate, certificateId, t]);
 
   const handleDelete = useCallback(() => {
     if (!certificate) {
@@ -44,7 +44,7 @@ export const useOperationCertificate = (certificateId: string) => {
       return;
     }
     const domain = certificate.domain;
-    
+
     showConfirm({
       title: t("delete.confirm.title") || "Delete Certificate",
       message: (t("delete.confirm.message") || `Are you sure you want to delete the certificate for domain "${domain}"?`).replace("{{domain}}", domain),
@@ -58,7 +58,7 @@ export const useOperationCertificate = (certificateId: string) => {
 
           if (result.success) {
             showSuccess(result.message || t("delete.success") || "Certificate deleted successfully");
-            navigate(ROUTES.CHECK);
+            routerEventEmitter.navigate({ to: ROUTES.CHECK });
           } else {
             showError(result.message || t("delete.error") || "Failed to delete certificate");
           }
@@ -67,7 +67,7 @@ export const useOperationCertificate = (certificateId: string) => {
         }
       },
     });
-  }, [deleteMutation, certificate, certificateId, navigate, t]);
+  }, [deleteMutation, certificate, certificateId, t]);
 
   return {
     handleEdit,

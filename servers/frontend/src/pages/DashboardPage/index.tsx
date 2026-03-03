@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Button } from "@/components";
-import { ROUTES } from "@/types/navigation";
+import { Button } from "nfx-ui/components";
+import { ROUTES } from "@/navigations";
 import { useRefreshCertificates } from "@/hooks";
 import { showSuccess, showError } from "@/stores/modalStore";
 import type { CertType } from "@/types";

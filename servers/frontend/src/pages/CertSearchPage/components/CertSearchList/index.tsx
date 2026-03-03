@@ -1,12 +1,12 @@
 import { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { VirtualWindowList } from "@/components";
-import { useSearchCertificateList, certKeys } from "@/hooks";
+import { VirtualWindowList } from "nfx-ui/components";
+import { useSearchCertificateList } from "@/hooks";
 import { CertificateSource, type CertType } from "@/types";
 import type { CertificateInfo } from "@/types";
-import { ROUTES } from "@/types/navigation";
+import { routerEventEmitter } from "@/events/router";
 import { useCertificateSource } from "@/hooks";
-import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/navigations";
 import styles from "./styles.module.css";
 
 interface CertSearchListProps {
@@ -17,7 +17,6 @@ interface CertSearchListProps {
 
 const CertSearchCard = memo(({ cert }: { cert: CertificateInfo }) => {
   const { t } = useTranslation("certSearch");
-  const navigate = useNavigate();
   const sourceInfo = useCertificateSource(cert.source);
 
   const handleClick = () => {
@@ -25,7 +24,7 @@ const CertSearchCard = memo(({ cert }: { cert: CertificateInfo }) => {
       console.error("Certificate ID is required", cert);
       return;
     }
-    navigate(ROUTES.CERT_DETAIL_PATH(cert.id));
+    routerEventEmitter.navigate({ to: ROUTES.CERT_DETAIL.replace(":certificateId", encodeURIComponent(cert.id)) });
   };
 
   return (
@@ -90,11 +89,7 @@ const CertSearchList = memo(({ keyword, store, source }: CertSearchListProps) =>
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-  } = useSearchCertificateList(
-    certKeys.search(keyword.trim(), store, source),
-    filter,
-    { staleTime: 1000 * 60 * 5 } // 5 minutes
-  );
+  } = useSearchCertificateList(filter, { staleTime: 1000 * 60 * 5 });
 
   const emptyStateContent = useMemo(() => {
     return (

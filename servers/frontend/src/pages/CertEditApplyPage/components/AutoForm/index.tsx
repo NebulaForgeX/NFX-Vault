@@ -5,7 +5,7 @@ import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { Input } from "@/components";
+import { Input } from "nfx-ui/components";
 import { ForceRenewalController, SANsController, WebrootController } from "@/elements/certificate/components";
 import styles from "./styles.module.css";
 
@@ -80,11 +80,8 @@ const AutoForm = memo(({ onSubmit, onSubmitError, isPending }: AutoFormProps) =>
                   })}
                   type="email"
                   placeholder={t("form.emailPlaceholder")}
-                  error={!!errors.email}
+                  error={errors.email?.message}
                 />
-                {errors.email && (
-                  <p className={styles.errorText}>{errors.email.message}</p>
-                )}
                 <p className={styles.helpText}>
                   {t("form.emailHelp")}
                 </p>

@@ -1,10 +1,11 @@
 import { memo } from "react";
 import { ArrowLeft } from "@/assets/icons/lucide";
 import { FormProvider } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { Suspense } from "@/components";
+import { Suspense } from "nfx-ui/components";
+import { routerEventEmitter } from "@/events/router";
 import { useInitCertificateForm, useEditCertificate } from "@/elements/certificate";
 import { useCertificateDetailById } from "@/hooks";
 import { CertificateSource } from "@/types";
@@ -14,11 +15,10 @@ import styles from "./styles.module.css";
 
 const CertEditPageContent = memo(() => {
   const { t } = useTranslation("certEdit");
-  const navigate = useNavigate();
   const { certificateId } = useParams<{ certificateId: string }>();
 
   if (!certificateId) {
-    navigate(-1);
+    routerEventEmitter.navigateBack();
     return null;
   }
 
@@ -30,9 +30,7 @@ const CertEditPageContent = memo(() => {
     certificate.id
   );
 
-  const handleBack = () => {
-    navigate(-1);
-  };
+  const handleBack = () => routerEventEmitter.navigateBack();
 
   if (!certificate) return null;
   

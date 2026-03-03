@@ -2,15 +2,14 @@ import type { FieldErrors } from "react-hook-form";
 import type { CertificateFormValues } from "../controllers/certificateSchema";
 
 import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import { routerEventEmitter } from "@/events/router";
 import { useCreateCertificate } from "@/hooks";
+import { ROUTES } from "@/navigations";
 import { showError, showSuccess } from "@/stores/modalStore";
-import { ROUTES } from "@/types/navigation";
 
 export const useSubmitCertificate = () => {
-  const navigate = useNavigate();
   const { t } = useTranslation("common");
   const { mutateAsync, isPending } = useCreateCertificate();
 
@@ -30,7 +29,7 @@ export const useSubmitCertificate = () => {
 
         if (result.success) {
           showSuccess(result.message || t("messages.certificateCreateSuccess"));
-          navigate(ROUTES.CHECK);
+          routerEventEmitter.navigate({ to: ROUTES.CHECK });
         } else {
           showError(result.message || t("messages.certificateCreateFailed"));
         }
@@ -39,7 +38,7 @@ export const useSubmitCertificate = () => {
         showError(error?.message || t("messages.certificateCreateFailed"));
       }
     },
-    [mutateAsync, navigate, t],
+    [mutateAsync, t],
   );
 
   const onSubmitError = useCallback(

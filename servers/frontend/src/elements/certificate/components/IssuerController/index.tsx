@@ -4,7 +4,7 @@ import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { Input } from "@/components";
+import { Input } from "nfx-ui/components";
 import styles from "./styles.module.css";
 
 const IssuerController = memo(() => {
@@ -23,9 +23,8 @@ const IssuerController = memo(() => {
         {...register("issuer")}
         type="text"
         placeholder={t("form.issuerPlaceholder")}
-        error={!!errors.issuer}
+        error={errors.issuer?.message}
       />
-      {errors.issuer && <p className={styles.errorMessage}>{errors.issuer.message}</p>}
     </div>
   );
 });

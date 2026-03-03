@@ -1,9 +1,10 @@
 import { memo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button, Suspense } from "@/components";
+import { Button, Suspense } from "nfx-ui/components";
+import { routerEventEmitter } from "@/events/router";
 import { useCertificateDetailById } from "@/hooks";
-import { ROUTES } from "@/types/navigation";
+import { ROUTES } from "@/navigations";
 import { showSuccess } from "@/stores/modalStore";
 import {
   CertDetailHeader,
@@ -57,7 +58,6 @@ CertDetailContent.displayName = "CertDetailContent";
 // 主组件：使用 Suspense 包装
 const CertDetailPage = memo(() => {
   const { certificateId } = useParams<{ certificateId: string }>();
-  const navigate = useNavigate();
   const { t } = useTranslation("certDetail");
 
   if (!certificateId) {
@@ -65,7 +65,7 @@ const CertDetailPage = memo(() => {
       <div className={styles.container}>
         <div className={styles.errorContainer}>
           <p className={styles.errorText}>{t("error.loadFailed") || "Invalid certificate parameters"}</p>
-          <Button onClick={() => navigate(ROUTES.CHECK)} variant="primary">
+          <Button onClick={() => routerEventEmitter.navigate({ to: ROUTES.CHECK })} variant="primary">
             {t("back") || "Back to Certificate List"}
           </Button>
         </div>

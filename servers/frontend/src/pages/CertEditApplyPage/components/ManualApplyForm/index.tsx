@@ -5,7 +5,7 @@ import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { Input } from "@/components";
+import { Input } from "nfx-ui/components";
 import { ForceRenewalController, SANsController, WebrootController } from "@/elements/certificate/components";
 import styles from "./styles.module.css";
 
@@ -51,11 +51,8 @@ const ManualApplyForm = memo(({ onSubmit, onSubmitError, isPending }: ManualAppl
                   })}
                   type="text"
                   placeholder={t("form.domainPlaceholder")}
-                  error={!!errors.domain}
+                  error={errors.domain?.message}
                 />
-                {errors.domain && (
-                  <p className={styles.errorText}>{errors.domain.message}</p>
-                )}
               </div>
               <div className={styles.formGroup}>
                 <label className={styles.label}>
@@ -71,11 +68,8 @@ const ManualApplyForm = memo(({ onSubmit, onSubmitError, isPending }: ManualAppl
                   })}
                   type="text"
                   placeholder={t("form.folderNamePlaceholder")}
-                  error={!!errors.folderName}
+                  error={errors.folderName?.message}
                 />
-                {errors.folderName && (
-                  <p className={styles.errorText}>{errors.folderName.message}</p>
-                )}
                 <p className={styles.helpText}>
                   {t("form.folderNameHelp")}
                 </p>
@@ -94,11 +88,8 @@ const ManualApplyForm = memo(({ onSubmit, onSubmitError, isPending }: ManualAppl
                   })}
                   type="email"
                   placeholder={t("form.emailPlaceholder")}
-                  error={!!errors.email}
+                  error={errors.email?.message}
                 />
-                {errors.email && (
-                  <p className={styles.errorText}>{errors.email.message}</p>
-                )}
                 <p className={styles.helpText}>
                   {t("form.emailHelp")}
                 </p>

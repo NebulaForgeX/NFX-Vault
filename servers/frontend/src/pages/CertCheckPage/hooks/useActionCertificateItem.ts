@@ -1,43 +1,36 @@
 import type { CertificateInfo } from "@/types";
 
 import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 
-import { ROUTES } from "@/types/navigation";
+import { routerEventEmitter } from "@/events/router";
+import { ROUTES } from "@/navigations";
 import { useDeleteCertificate } from "@/hooks";
 import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
 import { useTranslation } from "react-i18next";
 
 export const useActionCertificateItem = () => {
-  const navigate = useNavigate();
   const { t } = useTranslation("certCheck");
   const deleteMutation = useDeleteCertificate();
 
-  const handleEdit = useCallback(
-    (cert: CertificateInfo) => {
-      return () => {
-        if (!cert.id) {
-          console.error("Certificate ID is required", cert);
-          return;
-        }
-        navigate(ROUTES.CERT_EDIT_PATH(cert.id));
-      };
-    },
-    [navigate],
-  );
+  const handleEdit = useCallback((cert: CertificateInfo) => {
+    return () => {
+      if (!cert.id) {
+        console.error("Certificate ID is required", cert);
+        return;
+      }
+      routerEventEmitter.navigate({ to: ROUTES.CERT_EDIT.replace(":certificateId", encodeURIComponent(cert.id)) });
+    };
+  }, []);
 
-  const handleView = useCallback(
-    (cert: CertificateInfo) => {
-      return () => {
-        if (!cert.id) {
-          console.error("Certificate ID is required", cert);
-          return;
-        }
-        navigate(ROUTES.CERT_DETAIL_PATH(cert.id));
-      };
-    },
-    [navigate],
-  );
+  const handleView = useCallback((cert: CertificateInfo) => {
+    return () => {
+      if (!cert.id) {
+        console.error("Certificate ID is required", cert);
+        return;
+      }
+      routerEventEmitter.navigate({ to: ROUTES.CERT_DETAIL.replace(":certificateId", encodeURIComponent(cert.id)) });
+    };
+  }, []);
 
   const handleDelete = useCallback(
     (cert: CertificateInfo) => {

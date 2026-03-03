@@ -5,24 +5,23 @@ import { CertificateSource } from "@/types";
 
 import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { 
-  ApplyCertificate, 
-  ReapplyAutoCertificate, 
-  ReapplyManualApplyCertificate, 
-  ReapplyManualAddCertificate 
+import {
+  ApplyCertificate,
+  ReapplyAutoCertificate,
+  ReapplyManualApplyCertificate,
+  ReapplyManualAddCertificate,
 } from "@/apis/cert.api";
-import { showError, showSuccess, showLoading, hideLoading, showConfirm } from "@/stores/modalStore";
-import { ROUTES } from "@/types/navigation";
+import { routerEventEmitter } from "@/events/router";
 import { cacheEventEmitter, cacheEvents } from "@/events";
+import { ROUTES } from "@/navigations";
+import { showError, showSuccess, showLoading, hideLoading, showConfirm } from "@/stores/modalStore";
 
 export const useSubmitApplyCertificate = (
   source: CertificateSource = CertificateSource.MANUAL_APPLY,
   certificate?: CertificateDetailResponse | null
 ) => {
-  const navigate = useNavigate();
   const { t: tElements } = useTranslation("certificateElements");
   const { t: tEditApply } = useTranslation("certEditApply");
 
@@ -87,7 +86,7 @@ export const useSubmitApplyCertificate = (
         cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "websites");
         cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "apis");
         showSuccess(result.message || tElements("messages.certificateApplySuccess"));
-        navigate(ROUTES.CHECK);
+        routerEventEmitter.navigate({ to: ROUTES.CHECK });
       } else {
         const errorMsg = result.error 
           ? `${result.message}\n${tElements("messages.errorReason")}: ${result.error}`

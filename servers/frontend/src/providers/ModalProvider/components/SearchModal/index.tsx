@@ -8,10 +8,9 @@ import {
   Shield,
   X,
 } from "@/assets/icons/lucide";
-import { useNavigate } from "react-router-dom";
-
+import { routerEventEmitter } from "@/events/router";
 import ModalStore, { useModalStore } from "@/stores/modalStore";
-import { ROUTES } from "@/types/navigation";
+import { ROUTES } from "@/navigations";
 
 import styles from "./styles.module.css";
 
@@ -24,7 +23,6 @@ interface SearchItem {
 }
 
 const SearchModal = memo(() => {
-  const navigate = useNavigate();
   const isOpen = useModalStore((state) => state.searchModal.isOpen);
   const hideModal = ModalStore.getState().hideModal;
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,13 +70,13 @@ const SearchModal = memo(() => {
   const handleSelect = useCallback(
     (item: SearchItem) => {
       if (item.route) {
-        navigate(item.route);
+        routerEventEmitter.navigate({ to: item.route });
       }
       hideModal("search");
       setSearchQuery("");
       setSelectedIndex(0);
     },
-    [navigate, hideModal],
+    [hideModal],
   );
 
   // 键盘导航

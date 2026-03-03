@@ -1,36 +1,20 @@
+import { EventEmitter, defineEvents, type EventNamesOf } from "nfx-ui/events";
+import { singleton } from "nfx-ui/utils";
+
 /**
- * Cache Events - 事件系统用于触发 React Query 缓存刷新
+ * 缓存事件（与 Sjgz-Admin 一致：使用 nfx-ui/events + singleton）
  */
-
-export const cacheEvents = {
+export const cacheEvents = defineEvents({
   REFRESH_CERTIFICATES: "CACHE:REFRESH_CERTIFICATES",
-} as const;
+});
 
-type CacheEvent = (typeof cacheEvents)[keyof typeof cacheEvents];
+type CacheEvent = EventNamesOf<typeof cacheEvents>;
 
-class CacheEventEmitter {
-  private listeners: Record<CacheEvent, Set<Function>> = {
-    [cacheEvents.REFRESH_CERTIFICATES]: new Set<Function>(),
-  };
-
-  on(event: CacheEvent, callback: Function) {
-    this.listeners[event].add(callback);
-  }
-
-  off(event: CacheEvent, callback: Function) {
-    this.listeners[event].delete(callback);
-  }
-
-  emit(event: CacheEvent, ...args: unknown[]) {
-    this.listeners[event].forEach((callback) => {
-      try {
-        callback(...args);
-      } catch (error) {
-        console.error(`Error in cache event listener for ${event}:`, error);
-      }
-    });
+class CacheEventEmitter extends EventEmitter<CacheEvent> {
+  constructor() {
+    super(cacheEvents);
   }
 }
 
-export const cacheEventEmitter = new CacheEventEmitter();
-
+/** 单例导出 */
+export const cacheEventEmitter = new (singleton(CacheEventEmitter))();

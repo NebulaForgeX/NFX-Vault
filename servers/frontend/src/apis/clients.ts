@@ -4,7 +4,7 @@ import type { AxiosRequestTransformer, InternalAxiosRequestConfig } from "axios"
 import axios, { AxiosError } from "axios";
 import applyCaseMiddleware from "axios-case-converter";
 
-import type { ApiErrorBody } from "@/types/apiError";
+import type { ApiErrorBody } from "nfx-ui/types";
 import { API_ENDPOINTS } from "@/apis/ip";
 
 // 让 config._retry 有类型

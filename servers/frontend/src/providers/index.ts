@@ -1,3 +1,3 @@
-export { ThemeProvider, useTheme } from "./ThemeProvider";
-export { default as QueryProvider } from "./QueryProvider";
+export { BrowserRouterProvider } from "./BrowserRouterProvider";
 export { default as ModalProvider } from "./ModalProvider";
+export { default as QueryProvider } from "./QueryProvider";

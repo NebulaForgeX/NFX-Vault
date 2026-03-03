@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Routes, Route } from "react-router-dom";
-import { LayoutSwitcher } from "@/layouts";
+import { AppLayout } from "@/layouts";
 import { DashboardPage, CertCheckPage, CertDetailPage, CertAddPage, CertEditPage, CertApplyPage, CertEditApplyPage, CertSearchPage, TLSAnalysisPage, FileFolderPage } from "@/pages";
-import { ROUTES } from "@/types/navigation";
+import { ROUTES } from "@/navigations";
 
 function App() {
   const { t } = useTranslation("common");
@@ -13,7 +13,7 @@ function App() {
   }, [t]);
 
   return (
-    <LayoutSwitcher>
+    <AppLayout>
       <Routes>
         <Route path={ROUTES.HOME} element={<DashboardPage />} />
         <Route path={ROUTES.CHECK} element={<CertCheckPage />} />
@@ -27,7 +27,7 @@ function App() {
         <Route path={ROUTES.FILE_FOLDER_APIS} element={<FileFolderPage />} />
         <Route path={ROUTES.FILE_FOLDER_WEBSITES} element={<FileFolderPage />} />
       </Routes>
-    </LayoutSwitcher>
+    </AppLayout>
   );
 }
 

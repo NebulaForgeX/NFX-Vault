@@ -2,17 +2,16 @@ import type { FieldErrors } from "react-hook-form";
 import type { CertificateFormValues } from "../controllers/certificateSchema";
 
 import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import { routerEventEmitter } from "@/events/router";
 import { useUpdateManualAddCertificate, useUpdateManualApplyCertificate } from "@/hooks";
 import { CertificateSource } from "@/types";
 import type { CertType } from "@/types";
 import { showError, showSuccess } from "@/stores/modalStore";
-import { ROUTES } from "@/types/navigation";
+import { ROUTES } from "@/navigations";
 
 export const useEditCertificate = (domain: string, source: CertificateSource, certificateId?: string) => {
-  const navigate = useNavigate();
   const { t } = useTranslation("common");
   const { mutateAsync: mutateManualAdd, isPending: isPendingManualAdd } = useUpdateManualAddCertificate();
   const { mutateAsync: mutateManualApply, isPending: isPendingManualApply } = useUpdateManualApplyCertificate();
@@ -57,7 +56,7 @@ export const useEditCertificate = (domain: string, source: CertificateSource, ce
 
         if (result.success) {
           showSuccess(result.message || t("messages.certificateUpdateSuccess"));
-          navigate(ROUTES.CHECK);
+          routerEventEmitter.navigate({ to: ROUTES.CHECK });
         } else {
           showError(result.message || t("messages.certificateUpdateFailed"));
         }
@@ -66,7 +65,7 @@ export const useEditCertificate = (domain: string, source: CertificateSource, ce
         showError(error?.message || t("messages.certificateUpdateFailed"));
       }
     },
-    [mutateManualAdd, mutateManualApply, navigate, domain, source, certificateId, t],
+    [mutateManualAdd, mutateManualApply, domain, source, certificateId, t],
   );
 
   const onSubmitError = useCallback(

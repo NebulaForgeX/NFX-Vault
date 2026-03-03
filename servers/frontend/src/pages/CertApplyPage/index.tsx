@@ -1,9 +1,9 @@
 import { memo } from "react";
 import { ArrowLeft } from "@/assets/icons/lucide";
 import { FormProvider } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import { routerEventEmitter } from "@/events/router";
 import { useInitApplyCertificateForm, useSubmitApplyCertificate } from "@/elements/certificate";
 
 import { ApplyForm } from "./components";
@@ -11,15 +11,11 @@ import styles from "./styles.module.css";
 
 const CertApplyPage = memo(() => {
   const { t } = useTranslation("certApply");
-  const navigate = useNavigate();
 
-  // Form setup
   const methods = useInitApplyCertificateForm();
   const { onSubmit, onSubmitError, isPending } = useSubmitApplyCertificate();
 
-  const handleBack = () => {
-    navigate(-1);
-  };
+  const handleBack = () => routerEventEmitter.navigateBack();
 
   return (
     <FormProvider {...methods}>

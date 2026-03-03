@@ -1,6 +1,8 @@
 import { memo, useState, useEffect } from "react";
 import { ArrowLeft } from "@/assets/icons/lucide";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
+
+import { routerEventEmitter } from "@/events/router";
 
 import { ListDirectory, downloadFile, DeleteFileOrFolder } from "@/apis/file.api";
 import type { FileItem } from "@/types";
@@ -10,7 +12,6 @@ import styles from "./styles.module.css";
 import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
 
 const FileFolderPage = memo(() => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const pathParam = searchParams.get("path") || "";
@@ -29,7 +30,7 @@ const FileFolderPage = memo(() => {
 
   useEffect(() => {
     if (!store || (store !== "apis" && store !== "websites")) {
-      navigate(-1);
+      routerEventEmitter.navigateBack();
       return;
     }
 
@@ -64,19 +65,16 @@ const FileFolderPage = memo(() => {
 
   const handleBack = () => {
     if (currentPath.length > 0) {
-      // 返回上一级目录
       const newPath = currentPath.slice(0, -1).join("/");
-      navigate(`/filefolder/${store}${newPath ? `?path=${encodeURIComponent(newPath)}` : ""}`);
+      routerEventEmitter.navigate({ to: `/filefolder/${store}${newPath ? `?path=${encodeURIComponent(newPath)}` : ""}` });
     } else {
-      // 返回主页
-      navigate(-1);
+      routerEventEmitter.navigateBack();
     }
   };
 
   const handleItemClick = (item: FileItem) => {
     if (item.type === "directory") {
-      // 文件夹在页面上导航显示
-      navigate(`/filefolder/${store}?path=${encodeURIComponent(item.path)}`);
+      routerEventEmitter.navigate({ to: `/filefolder/${store}?path=${encodeURIComponent(item.path)}` });
     } else if (item.type === "file") {
       // 文件内容打开 modal
       ModalStore.getState().showFileModal({

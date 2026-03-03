@@ -1,4 +1,4 @@
-import type { ValueOf } from "@/utils/types";
+import type { ValueOf } from "nfx-ui/types";
 
 // Page translations
 import en_certCheck from "./en/certCheck.json";

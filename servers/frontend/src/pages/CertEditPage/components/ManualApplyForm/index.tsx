@@ -5,7 +5,7 @@ import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { Input } from "@/components";
+import { Input } from "nfx-ui/components";
 import { StoreController } from "@/elements/certificate/components";
 import styles from "./styles.module.css";
 
@@ -60,11 +60,8 @@ const ManualApplyForm = memo(({ onSubmit, isPending }: ManualApplyFormProps) => 
                   })}
                   type="text"
                   placeholder={t("form.folderNamePlaceholder") || "例如: api_lucaslyu_com"}
-                  error={!!errors.folderName}
+                  error={errors.folderName?.message}
                 />
-                {errors.folderName && (
-                  <p className={styles.errorText}>{errors.folderName.message}</p>
-                )}
                 <p className={styles.helpText}>
                   {t("form.folderNameHelp") || "唯一标识符，只能包含字母、数字、下划线和连字符"}
                 </p>

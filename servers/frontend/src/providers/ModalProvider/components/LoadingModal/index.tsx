@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { TruckLoading } from "@/components";
+import { TruckLoading } from "nfx-ui/animations";
 import { useModalStore } from "@/stores/modalStore";
 import styles from "./styles.module.css";
 

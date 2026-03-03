@@ -1,10 +1,11 @@
 import { memo } from "react";
 import { ArrowLeft } from "@/assets/icons/lucide";
 import { FormProvider } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { Suspense } from "@/components";
+import { Suspense } from "nfx-ui/components";
+import { routerEventEmitter } from "@/events/router";
 import { useInitApplyCertificateForm, useSubmitApplyCertificate } from "@/elements/certificate";
 import { useCertificateDetailById } from "@/hooks";
 import { CertificateSource } from "@/types";
@@ -14,11 +15,10 @@ import styles from "./styles.module.css";
 
 const CertEditApplyPageContent = memo(() => {
   const { t } = useTranslation("certEditApply");
-  const navigate = useNavigate();
   const { certificateId } = useParams<{ certificateId: string }>();
 
   if (!certificateId) {
-    navigate(-1);
+    routerEventEmitter.navigateBack();
     return null;
   }
 
@@ -29,7 +29,7 @@ const CertEditApplyPageContent = memo(() => {
   const methods = useInitApplyCertificateForm(certificate);
   const { onSubmit, onSubmitError, isPending } = useSubmitApplyCertificate(certificate.source, certificate);
 
-  const handleBack = () => navigate(-1);
+  const handleBack = () => routerEventEmitter.navigateBack();
   
 
   // 根据 source 选择不同的表单组件

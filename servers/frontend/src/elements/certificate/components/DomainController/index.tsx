@@ -4,7 +4,7 @@ import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { Input } from "@/components";
+import { Input } from "nfx-ui/components";
 import styles from "./styles.module.css";
 
 const DomainController = memo(() => {
@@ -23,9 +23,8 @@ const DomainController = memo(() => {
         {...register("domain")}
         type="text"
         placeholder={t("form.domainPlaceholder")}
-        error={!!errors.domain}
+        error={errors.domain?.message}
       />
-      {errors.domain && <p className={styles.errorMessage}>{errors.domain.message}</p>}
     </div>
   );
 });

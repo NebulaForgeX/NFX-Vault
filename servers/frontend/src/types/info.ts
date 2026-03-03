@@ -1,4 +1,4 @@
-import type { ValueOf } from "@/utils/types";
+import type { ValueOf } from "nfx-ui/types";
 
 export type UUID = string;
 export type Timestamp = string;

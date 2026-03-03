@@ -1,7 +1,8 @@
 import { memo, useState } from "react";
 import { ArrowLeft, FileSearch, Upload } from "@/assets/icons/lucide";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
+import { routerEventEmitter } from "@/events/router";
 
 import type { AnalyzeTLSResponse } from "@/types";
 import { AnalyzeTLS } from "@/apis/analysis.api";
@@ -10,17 +11,14 @@ import styles from "./styles.module.css";
 
 const TLSAnalysisPage = memo(() => {
   const { t } = useTranslation("tlsAnalysis");
-  const navigate = useNavigate();
-  
+
   const [certificate, setCertificate] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [result, setResult] = useState<AnalyzeTLSResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleBack = () => {
-    navigate(-1);
-  };
+  const handleBack = () => routerEventEmitter.navigateBack();
 
   const handleCertificateFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

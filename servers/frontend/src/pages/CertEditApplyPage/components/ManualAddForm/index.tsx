@@ -4,11 +4,11 @@ import type { CertificateDetailResponse } from "@/types";
 
 import { memo } from "react";
 import { useFormContext } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { Input, Button } from "@/components";
-import { ROUTES } from "@/types/navigation";
+import { Input, Button } from "nfx-ui/components";
+import { routerEventEmitter } from "@/events/router";
+import { ROUTES } from "@/navigations";
 import type { CertType } from "@/types";
 import { ForceRenewalController, SANsController, WebrootController } from "@/elements/certificate/components";
 import styles from "./styles.module.css";
@@ -25,17 +25,18 @@ interface ManualAddFormProps {
  */
 const ManualAddForm = memo(({ onSubmit, onSubmitError, isPending, certificate }: ManualAddFormProps) => {
   const { t } = useTranslation("certEditApply");
-  const navigate = useNavigate();
   const methods = useFormContext<ApplyCertificateFormValues>();
   const { watch, handleSubmit } = methods;
-  
+
   const domain = watch("domain");
   const folderName = watch("folderName");
   const email = watch("email");
 
   const handleEditClick = () => {
     const certType = (certificate.store as CertType) || "database";
-    navigate(`${ROUTES.CERT_EDIT}?domain=${domain}&source=${certificate.source}&certType=${certType}`);
+    routerEventEmitter.navigate({
+      to: `${ROUTES.CERT_EDIT.replace(":certificateId", encodeURIComponent(certificate.id))}?domain=${encodeURIComponent(domain)}&source=${certificate.source}&certType=${certType}`,
+    });
   };
 
   return (

@@ -2,7 +2,7 @@ import { memo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Search, X } from "@/assets/icons/lucide";
 
-import { Button, Input, Suspense } from "@/components";
+import { Button, Input, Suspense } from "nfx-ui/components";
 import { CertificateSource, type CertType } from "@/types";
 import { CertSearchList } from "./components";
 import styles from "./styles.module.css";

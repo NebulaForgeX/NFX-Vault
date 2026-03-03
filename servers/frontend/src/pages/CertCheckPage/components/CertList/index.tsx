@@ -1,8 +1,7 @@
 import { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { VirtualWindowList } from "@/components";
+import { VirtualWindowList } from "nfx-ui/components";
 import { useCertificateList } from "@/hooks";
-import { certKeys } from "@/hooks/useCert";
 import type { CertType } from "@/types";
 import  CertCard  from "../CertCard";
 import styles from "./styles.module.css";
@@ -15,18 +14,13 @@ const CertList = memo(({ certType }: CertListProps) => {
   const { t } = useTranslation("certCheck");
   
   const filter = useMemo(() => ({ certType }), [certType]);
-  
-  // Use infinite query hook for data fetching
+
   const {
     data: certificates = [],
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-  } = useCertificateList(
-    certKeys.list(certType),
-    filter,
-    { staleTime: 1000 * 60 * 5 } // 5 minutes
-  );
+  } = useCertificateList(filter, { staleTime: 1000 * 60 * 5 });
 
   const emptyStateContent = useMemo(() => {
     return (

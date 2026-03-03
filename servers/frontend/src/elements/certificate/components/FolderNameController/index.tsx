@@ -4,7 +4,7 @@ import { memo, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { Input } from "@/components";
+import { Input } from "nfx-ui/components";
 import styles from "../DomainController/styles.module.css";
 
 const FolderNameController = memo(() => {
@@ -20,7 +20,6 @@ const FolderNameController = memo(() => {
   );
 
   const displayError = errors.folderName?.message;
-  const hasError = !!displayError;
 
   return (
     <div className={styles.formControl}>
@@ -31,14 +30,9 @@ const FolderNameController = memo(() => {
         {...folderNameRegister}
         type="text"
         placeholder={t("form.folderNamePlaceholder")}
-        error={hasError}
+        error={displayError}
+        helperText={!displayError ? t("form.folderNameHelp") : undefined}
       />
-      {displayError && <p className={styles.errorMessage}>{displayError}</p>}
-      {!displayError && (
-        <p className={styles.helpText}>
-          {t("form.folderNameHelp")}
-        </p>
-      )}
     </div>
   );
 });
