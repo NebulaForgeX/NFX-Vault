@@ -1,5 +1,5 @@
-# 构建阶段
-FROM node:22-alpine AS builder
+# 构建阶段（Node 24 LTS / Krypton）
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
