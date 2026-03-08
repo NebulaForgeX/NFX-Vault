@@ -50,7 +50,7 @@ const CertCard = memo(({ cert }: CertCardProps) => {
   return (
     <div
       className={styles.certCard}
-      style={{ borderColor: statusColor }}
+      style={{ borderLeftColor: statusColor }}
       onClick={handleCardClick}
       role="button"
       tabIndex={0}

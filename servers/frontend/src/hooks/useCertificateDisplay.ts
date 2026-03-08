@@ -63,8 +63,8 @@ export const useCertificateTime = (cert: CertificateInfo | undefined): Certifica
     if (isExpired) {
       return {
         label: t("status.expired"),
-        bgColor: "var(--color-danger)",
-        textColor: "var(--color-primary-fg)",
+        bgColor: "var(--color-danger-light)",
+        textColor: "var(--color-danger)",
       };
     }
 
@@ -74,24 +74,24 @@ export const useCertificateTime = (cert: CertificateInfo | undefined): Certifica
       if (days >= 0 && days < 7) {
         return {
           label: `${t("status.expiringSoon")} (${t("status.remainingDays", { days })})`,
-          bgColor: "var(--color-warning)",
-          textColor: "var(--color-primary-fg)",
+          bgColor: "var(--color-warning-light)",
+          textColor: "var(--color-warning)",
         };
       }
 
       if (days >= 7) {
         return {
           label: `${t("status.valid")} (${t("status.remainingDays", { days })})`,
-          bgColor: "var(--color-success)",
-          textColor: "var(--color-primary-fg)",
+          bgColor: "var(--color-success-light)",
+          textColor: "var(--color-success)",
         };
       }
     }
 
     return {
       label: t("status.valid"),
-      bgColor: "var(--color-success)",
-      textColor: "var(--color-primary-fg)",
+      bgColor: "var(--color-success-light)",
+      textColor: "var(--color-success)",
     };
   }, [cert, t]);
 
@@ -121,20 +121,20 @@ export const useCertificateSource = (source?: CertificateSource | string): Certi
       case CertificateSource.AUTO:
         return {
           label: t("source.auto") || "Auto",
-          bgColor: "var(--color-info)",
-          textColor: "var(--color-primary-fg)",
+          bgColor: "var(--color-info-light)",
+          textColor: "var(--color-fg-text)",
         };
       case CertificateSource.MANUAL_APPLY:
         return {
           label: t("source.manual_apply") || "Manual Apply",
-          bgColor: "var(--color-success)",
-          textColor: "var(--color-primary-fg)",
+          bgColor: "var(--color-success-light)",
+          textColor: "var(--color-success)",
         };
       case CertificateSource.MANUAL_ADD:
         return {
           label: t("source.manual_add") || "Manual Add",
-          bgColor: "var(--color-warning)",
-          textColor: "var(--color-primary-fg)",
+          bgColor: "var(--color-warning-light)",
+          textColor: "var(--color-warning)",
         };
       default:
         return {
