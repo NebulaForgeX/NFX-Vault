@@ -22,7 +22,7 @@
     "i18next": "^25.8.13",
     "i18next-browser-languagedetector": "^8.2.1",
     "lucide-react": "^0.575.0",
-    "nfx-ui": "^0.1.5",
+    "nfx-ui": "0.5.1",
     "react": "^19.2.4",
     "react-datepicker": "^9.1.0",
     "react-dom": "^19.2.4",

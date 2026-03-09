@@ -66,16 +66,17 @@
   color: var(--color-danger);
 }
 
+/* 警告按钮：与其它按钮一致透明底，仅图标用 danger 色提示有错误，无红底 */
 .errorButton {
-  color: var(--color-danger);
-  background-color: var(--color-danger-light);
+  background-color: transparent;
   border-color: transparent;
+  color: var(--color-danger);
 }
 
 .errorButton:hover {
-  background-color: var(--color-danger-light);
+  background-color: var(--color-bg-3);
+  border-color: var(--color-border-4);
   color: var(--color-danger);
-  box-shadow: 0 0 0 1px var(--color-danger);
 }
 
 .processButton {

@@ -5,7 +5,7 @@ import { CertificateStatus } from "@/types";
 import { Edit, Eye, Trash2, Loader2, AlertTriangle } from "@/assets/icons/lucide";
 import { useCertificateStatus, useCertificateTime, useCertificateSource } from "@/hooks";
 import { useActionCertificateItem } from "../../hooks";
-import { showTooltipModal, hideTooltipModal } from "@/stores/modalStore";
+import { showTooltipModal } from "@/stores/modalStore";
 import styles from "./styles.module.css";
 
 interface CertCardProps {
@@ -28,23 +28,18 @@ const CertCard = memo(({ cert }: CertCardProps) => {
     handleView(cert)();
   };
 
-  const handleErrorHover = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleErrorClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     if (cert.lastErrorMessage) {
-      const rect = e.currentTarget.getBoundingClientRect();
       showTooltipModal({
         message: cert.lastErrorMessage,
         errorTime: cert.lastErrorTime,
         position: {
-          x: rect.left,
-          y: rect.bottom,
+          x: window.innerWidth / 2 - 175,
+          y: window.innerHeight / 2 - 120,
         },
       });
     }
-  };
-
-  const handleErrorLeave = () => {
-    hideTooltipModal();
   };
 
   return (
@@ -106,9 +101,7 @@ const CertCard = memo(({ cert }: CertCardProps) => {
             {cert.lastErrorMessage && (
               <button
                 className={`${styles.actionButton} ${styles.errorButton}`}
-                onClick={(e) => e.stopPropagation()}
-                onMouseEnter={handleErrorHover}
-                onMouseLeave={handleErrorLeave}
+                onClick={handleErrorClick}
                 title={t("certificate.lastError") || "Last Error"}
               >
                 <AlertTriangle size={18} />

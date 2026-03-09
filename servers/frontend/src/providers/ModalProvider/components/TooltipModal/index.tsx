@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef, useCallback } from "react";
-import { AlertTriangle } from "@/assets/icons/lucide";
+import { AlertTriangle, X } from "@/assets/icons/lucide";
 import { useTranslation } from "react-i18next";
 import ModalStore, { useModalStore } from "@/stores/modalStore";
 import styles from "./Modal.module.css";
@@ -68,16 +68,38 @@ const TooltipModal = memo(() => {
     hideModal("tooltip");
   }, [hideModal]);
 
+  const handleBackdropClick = useCallback(
+    (e: React.MouseEvent<HTMLDialogElement>) => {
+      if (e.target === dialogRef.current) {
+        handleClose();
+      }
+    },
+    [handleClose]
+  );
+
   if (!isOpen || !message) {
     return null;
   }
 
   return (
-    <dialog ref={dialogRef} className={styles.modal} onClose={handleClose}>
+    <dialog
+      ref={dialogRef}
+      className={styles.modal}
+      onClose={handleClose}
+      onClick={handleBackdropClick}
+    >
       <div className={styles.content}>
         <div className={styles.header}>
           <AlertTriangle size={20} className={styles.icon} />
           <h3 className={styles.title}>{t("error.lastError") || "Last Error"}</h3>
+          <button
+            type="button"
+            className={styles.closeButton}
+            onClick={handleClose}
+            aria-label={t("common.close") || "Close"}
+          >
+            <X size={18} />
+          </button>
         </div>
         <p className={styles.message}>{message}</p>
         {errorTime && (
