@@ -34,14 +34,14 @@ export const useEditCertificate = (domain: string, source: CertificateSource, ce
             folderName: values.folderName,
             store: values.store as CertType,
           });
-        } else if (source === CertificateSource.MANUAL_ADD) {
-          // MANUAL_ADD 可以更新所有字段
+        } else {
+          // 其它来源（含 MANUAL_ADD、AUTO 等）：同一域名全局一条记录，均可更新 PEM 等字段
           if (!certificateId) {
             showError(t("messages.certificateIdMissing"));
             return;
           }
           result = await mutateManualAdd({
-            certificateId, // 传递证书 ID（必需）
+            certificateId,
             certificate: values.certificate?.trim(),
             privateKey: values.privateKey?.trim(),
             store: values.store as CertType,
@@ -49,9 +49,6 @@ export const useEditCertificate = (domain: string, source: CertificateSource, ce
             folderName: values.folderName?.trim() || undefined,
             email: values.email?.trim() || undefined,
           });
-        } else {
-          showError(t("messages.unsupportedSource"));
-          return;
         }
 
         if (result.success) {

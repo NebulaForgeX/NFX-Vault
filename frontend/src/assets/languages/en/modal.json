@@ -1,6 +1,8 @@
 {
   "loading": {
-    "defaultMessage": "Loading, please wait..."
+    "shortTitle": "Please wait",
+    "defaultMessage": "Working on it…",
+    "hint": "Keep this page open"
   },
   "search": {
     "noResults": "No results found for \"{{query}}\""

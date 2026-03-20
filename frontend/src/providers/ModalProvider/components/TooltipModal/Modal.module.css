@@ -2,9 +2,9 @@
   border: none;
   border-radius: 8px;
   padding: 0;
-  max-width: 400px;
-  min-width: 300px;
-  width: auto;
+  width: min(92vw, 640px);
+  max-width: min(92vw, 640px);
+  min-width: min(300px, 92vw);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   animation: fadeIn 0.2s ease-out;
   position: fixed;
@@ -88,8 +88,12 @@
   color: var(--color-fg-text);
   line-height: 1.5;
   margin: 0 0 0.75rem 0;
+  overflow-wrap: anywhere;
   word-break: break-word;
   white-space: pre-wrap;
+  text-align: left;
+  max-height: min(55vh, 480px);
+  overflow: auto;
 }
 
 .time {

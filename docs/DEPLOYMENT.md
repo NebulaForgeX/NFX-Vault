@@ -219,18 +219,14 @@ REDIS_PASSWORD=
 
 ### 服务配置
 
-`docker-compose.yml` 定义三个主要服务：
+`docker-compose.yml` 当前定义两个服务：
 
-1. **backend-api**：HTTP API 服务
-   - 端口：10200
-   - 依赖：MySQL、Redis、Kafka
+1. **backend-api**：统一后端（镜像构建自 `./backend`）
+   - HTTP API、`/vault/*`、ACME 挑战路由
+   - **同容器内**：Kafka Consumer、APScheduler（与原 `backend-pipeline` 能力合并）
+   - 端口：由 `.env` 的 `BACKEND_HOST` / `BACKEND_PORT` 映射到容器 8000
 
-2. **backend-pipeline**：Kafka 消费者服务
-   - 无外部端口
-   - 处理异步事件
-
-3. **frontend**：Web 界面
-   - 端口：10199
+2. **frontend**：Web 界面
    - Nginx 提供 React 应用
 
 ### 卷挂载
@@ -350,7 +346,6 @@ docker compose logs -f
 
 # 查看特定服务日志
 docker compose logs -f backend-api
-docker compose logs -f backend-pipeline
 docker compose logs -f frontend
 
 # 导出日志

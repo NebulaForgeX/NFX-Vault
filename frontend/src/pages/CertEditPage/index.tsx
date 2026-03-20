@@ -11,7 +11,7 @@ import { useInitCertificateForm, useEditCertificate } from "@/elements/certifica
 import { useCertificateDetailById } from "@/hooks";
 import { CertificateSource } from "@/types";
 
-import { AutoForm, ManualApplyForm, ManualAddForm } from "./components";
+import { ManualApplyForm, ManualAddForm } from "./components";
 import styles from "./styles.module.css";
 
 const CertEditPageContent = memo(() => {
@@ -42,7 +42,7 @@ const CertEditPageContent = memo(() => {
     switch (source) {
       case CertificateSource.AUTO:
         return (
-          <AutoForm
+          <ManualAddForm
             onSubmit={onSubmit}
             onSubmitError={onSubmitError}
             isPending={isPending}

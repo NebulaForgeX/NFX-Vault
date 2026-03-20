@@ -78,108 +78,69 @@ LOG_LEVEL=DEBUG
 
 ### 关键目录
 
-- `backend/` - Python FastAPI 后端
-- `frontend/` - React TypeScript 前端
-- `docs/` - 文档
-- `Websites/` - 网站证书
-- `Apis/` - API 证书
+- **`backend/`** — 生产后端（FastAPI，同进程 Kafka Consumer + 定时任务）
+- `backend_old/` — 旧版实现（对照用，新改动请在 `backend/`）
+- `frontend/` — React + TypeScript
+- `docs/` — 文档
+- `Websites/`、`Apis/` — 证书目录
 
 ---
 
-## 后端开发
+## 后端开发（`backend/`）
 
-### 设置后端环境
+### 推荐：仓库根目录一键启动
+
+```bash
+./scripts/dev-api.sh
+```
+
+会使用 `backend/.venv`、`PYTHONPATH` 指向 `backend/`，端口与根目录 `.env` 的 `BACKEND_PORT` / Vite 代理一致（默认 `10151`）。
+
+### 手动设置虚拟环境
 
 ```bash
 cd backend
-
-# 创建虚拟环境
-python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 安装依赖
+python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+export PYTHONPATH=.
+uvicorn main:app --reload --host 0.0.0.0 --port 10151
 ```
 
-### 本地运行后端
+### 架构（Farmwatch 风格）
 
-```bash
-# 从 backend 目录
-cd inputs/api
-python main.py
+详见 [`backend/README.md`](../backend/README.md)。摘要：
 
-# 或直接使用 uvicorn
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
+- `routers/urls.py` — 根路由聚合  
+- `apps/wiring.py` — 依赖组装（`ApplicationStack`）  
+- `apps/<domain>/handlers/` — HTTP（按文件拆分）  
+- `apps/<domain>/services/`、`repos/`、`dto/`、`vo/`、`models/`  
+- `utils/` — 外设与纯工具（`mysql` / `redis` / `kafka` / `acme` / `certbot`、`pem/` 等）；证书发 Kafka 在 `apps/certificate/kafka/certificate_pipeline.py`  
+- `tasks/` — APScheduler 任务  
 
-### 后端架构
+### 添加新 HTTP 路由
 
-- **Models** (`models/`)：SQLAlchemy ORM 模型
-- **Applications** (`modules/applications/`)：业务逻辑
-- **Interfaces** (`modules/interfaces/http/handler/`)：HTTP 处理器
-- **Repositories** (`modules/repositories/`)：数据访问
-- **Events** (`events/`)：Kafka 事件定义
-- **Tasks** (`tasks/`)：定时任务
-- **Utils** (`utils/`)：辅助函数
+1. 在对应域下新增/修改 `apps/<domain>/handlers/*.py`（或子路由 `router.py` 里 `include_router`）。  
+2. 业务写在 `services/`，数据访问写在 `repos/`。  
+3. 在 `routers/urls.py` 或 `apps/<domain>/urls.py` 挂载路由。  
 
-### 添加新的 API 端点
+（旧 `backend_old/modules/...` 的写法已不再用于生产构建。）
 
-1. **添加处理器方法**（`modules/interfaces/http/handler/tls/tls.py` 或相应的处理器）：
-```python
-@router.get("/example")
-async def example_endpoint(store: CertStore):
-    """示例端点"""
-    try:
-        request = ExampleRequest(store=store.value)
-        result = example_operation(
-            app=self.certificate_application,
-            request=request
-        )
-        return result
-    except Exception as e:
-        logger.error(f"❌ 示例操作失败: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e))
-```
+### 数据库表
 
-2. **添加应用逻辑**（`modules/applications/tls/handler/`）：
-```python
-def example_operation(app: CertificateApplication, request: ExampleRequest):
-    # 业务逻辑
-    return {"success": True, "data": {...}}
-```
-
-3. **添加 DTO**（`modules/interfaces/http/dto/reqdto/` 和 `respdto/`）：
-```python
-class ExampleRequest(BaseModel):
-    store: str
-```
-
-路由通过处理器的 `create_router()` 方法自动注册。
-
-### 数据库迁移
-
-数据库架构通过 SQLAlchemy 模型管理。表在首次运行时自动创建，也可以手动创建：
-
-```python
-# 从模型创建表
-from models.base import Base
-from modules.server.resources import get_db_engine
-
-engine = get_db_engine()
-Base.metadata.create_all(engine)
-```
+表由 `backend/apps/wiring.py` 在启动时调用 `mysql.create_tables(Base)` 创建（`Base` 来自 `apps.certificate.models.base`）。模型在 `backend/apps/certificate/models/`。
 
 ### 运行测试
 
 ```bash
-# 安装测试依赖
+cd backend
+source .venv/bin/activate  # 可选
 pip install pytest pytest-asyncio
 
-# 运行测试
-pytest
+PYTHONPATH=. pytest
 
-# 带覆盖率运行
-pytest --cov=modules tests/
+# 带覆盖率（按实际测试目录调整）
+PYTHONPATH=. pytest --cov=apps tests/
 ```
 
 ---
@@ -380,13 +341,11 @@ test('渲染证书列表', () => {
 ### 后端调试
 
 ```bash
-# 使用调试器运行
-python -m pdb inputs/api/main.py
-
-# 使用日志
-import logging
-logging.basicConfig(level=logging.DEBUG)
+# 在 backend 目录且已激活 .venv、PYTHONPATH=.
+python -m pdb -m uvicorn main:app --host 0.0.0.0 --port 10151
 ```
+
+或使用日志：`logging.basicConfig(level=logging.DEBUG)`（`main.py` 已配置 INFO）。
 
 ### 前端调试
 
@@ -446,31 +405,21 @@ test: 为证书视图添加单元测试
 
 ### 添加新的证书存储
 
-1. 更新枚举（`enums/certificate_store.py`）
-2. 根据需要更新模型（`models/tls_certificate.py`）
-3. 更新处理器（`modules/interfaces/http/handler/tls/tls.py`）
-4. 更新前端类型
-5. 更新 API 文档
+1. 更新 `backend/enums/certificate_store.py`（及必要时 DB 枚举/列）
+2. 更新 `backend/apps/certificate/models/tls_certificate.py`（若 schema 变）
+3. 更新 `backend/apps/certificate/` 下 handlers、services、repos
+4. 更新前端类型与文档
 
 ### 添加定时任务
 
-```python
-# tasks/example_task.py
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
-async def example_task():
-    # 任务逻辑
-    pass
-
-# 在 scheduler.py 中注册
-scheduler.add_job(example_task, 'cron', hour=2, minute=0)
-```
+在 `backend/tasks/` 新增任务函数，并在 `backend/tasks/scheduler.py` 的 `setup_scheduler` 里 `add_job`（当前为每周读目录、每日更新剩余天数）。
 
 ### 更新依赖
 
 **后端：**
 ```bash
 cd backend
+source .venv/bin/activate  # 若使用 venv
 pip install package-name
 pip freeze > requirements.txt
 ```
@@ -484,9 +433,9 @@ npm install package-name
 
 ### 数据库架构更改
 
-1. 更新模型（`models/tls_certificate.py`）
-2. 创建迁移（如果使用 Alembic）
-3. 测试迁移
+1. 更新 `backend/apps/certificate/models/tls_certificate.py`
+2. 若引入 Alembic，在 `backend/` 下维护迁移（当前多为启动时 `create_all`）
+3. 测试迁移或手工改表
 4. 更新文档
 
 ---

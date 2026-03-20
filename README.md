@@ -169,13 +169,12 @@ docker compose logs -f frontend
 适用于只改 Python 代码、本机已安装 **Python 3.11+**（`python3 --version`；**推荐 3.11** 与 Docker 一致，3.12 亦可）且 MySQL / Redis / Kafka 可按 `.env` 访问的场景。
 
 1. 配置 `.env`：`cp .example.env .env` 并编辑（与 Docker 用同一份即可）。
-2. 在 **仓库根目录** 执行：`scripts/dev-*.sh` 会在 **没有** `backend/.venv` 时创建它；**已有则沿用**。依赖仅在 **新建 venv** 或 **`requirements.txt` 有更新** 时执行 `pip install`，否则跳过以加快启动。
+2. 在 **仓库根目录** 执行：`dev-api.sh` 使用 **`backend/.venv`**（代码目录为 `backend/`）。依赖在 **新建 venv** 或 **`backend/requirements.txt` 有更新** 时执行 `pip install`。
    ```bash
-   chmod +x scripts/dev-api.sh scripts/dev-pipeline.sh   # 首次
-   ./scripts/dev-api.sh       # API + Swagger：端口与 Vite 一致，默认 10151 → http://127.0.0.1:10151/docs
-   # 另开终端（如需异步任务与调度）：
-   ./scripts/dev-pipeline.sh
+   chmod +x scripts/dev-api.sh   # 首次
+   ./scripts/dev-api.sh       # 统一后端：HTTP + Kafka Consumer + 定时任务；端口与 Vite 一致，默认 10151 → http://127.0.0.1:10151/docs
    ```
+   （`dev-pipeline.sh` 已废弃：原 Pipeline 已并入 `backend/main.py`。）
 
 **前端本地开发**：`cd frontend` 后按该目录 `package.json` 的脚本执行（例如 `npm run dev`）。
 
@@ -185,8 +184,9 @@ docker compose logs -f frontend
 
 ```
 Certs/
-├── scripts/                  # 本地开发启动脚本（dev-api / dev-pipeline）
-├── backend/                  # 后端服务（Python FastAPI）
+├── scripts/                  # 本地开发（dev-api → backend）
+├── backend/                  # 默认后端（FastAPI + Kafka Consumer + 调度）
+├── backend_old/              # 旧版双进程单体（保留参考）
 ├── frontend/                 # 前端应用（React + TypeScript）
 ├── Websites/                 # 网站证书存储目录
 │   ├── acme.json            # Traefik 证书存储文件

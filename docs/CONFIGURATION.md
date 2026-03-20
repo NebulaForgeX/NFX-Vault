@@ -324,8 +324,7 @@ query_cache_size = 64M
 
 - `tls_certificates` - TLS 证书元数据
   - 存储所有证书信息，包括域名、颁发者、有效期、证书内容、私钥
-  - 按 store、domain、source 和 folder_name 建立索引
-  - (domain, source, store) 上的唯一约束
+  - `domain` 全局唯一；索引含 `store`、`domain`
 
 ---
 

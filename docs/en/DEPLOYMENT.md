@@ -219,18 +219,14 @@ REDIS_PASSWORD=
 
 ### Service Configuration
 
-The `docker-compose.yml` defines three main services:
+The `docker-compose.yml` defines two services:
 
-1. **backend-api**: HTTP API service
-   - Port: 10200
-   - Depends on: MySQL, Redis, Kafka
+1. **backend-api**: Unified backend (built from `./backend`)
+   - FastAPI, `/vault/*`, ACME challenge routes
+   - **Same container**: Kafka consumer and APScheduler (formerly `backend-pipeline`)
+   - Port mapping from `.env` (`BACKEND_HOST` / `BACKEND_PORT`) to container port 8000
 
-2. **backend-pipeline**: Kafka consumer service
-   - No external ports
-   - Processes async events
-
-3. **frontend**: Web interface
-   - Port: 10199
+2. **frontend**: Web interface
    - Nginx serving React app
 
 ### Volume Mounts
@@ -350,7 +346,6 @@ docker compose logs -f
 
 # View specific service logs
 docker compose logs -f backend-api
-docker compose logs -f backend-pipeline
 docker compose logs -f frontend
 
 # Export logs

@@ -4,9 +4,7 @@
 
 ## 🌐 基础 URL
 
-```
-http://your-host:10200
-```
+由仓库根 `.env` 的 `BACKEND_HOST` / `BACKEND_PORT` 决定（Docker Compose 映射到容器内 `8000`）。本地开发常见为 `http://127.0.0.1:10151`（与 Vite 代理一致）。下文示例中的 `10200` 仅作演示，请按你的环境替换。
 
 ## 📋 API 概览
 

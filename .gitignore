@@ -17,6 +17,11 @@ acme.json
 # Certbot 工作目录（包含配置、日志、证书等）
 .certbot/
 
+
+# Python 缓存文件
+__pycache__/
+
+
 # 证书存储文件（敏感信息）
 # 忽略 Websites 和 Apis 目录下的所有内容（包含证书和密钥）
 # 但保留目录本身和 .gitkeep 文件
@@ -61,6 +66,7 @@ desktop.ini
 .project
 .classpath
 .settings/
+.cursor/
 
 # 临时文件
 *.tmp
@@ -108,6 +114,23 @@ backend/htmlcov/
 backend/dist/
 backend/build/
 backend/*.egg-info/
+
+# 旧版 backend_old（与 backend 同源命名忽略）
+backend_old/__pycache__/
+backend_old/*.py[cod]
+backend_old/*$py.class
+backend_old/*.pyo
+backend_old/*.pyd
+backend_old/*.so
+backend_old/.Python
+backend_old/.env
+backend_old/.env.local
+backend_old/.pytest_cache/
+backend_old/.coverage
+backend_old/htmlcov/
+backend_old/dist/
+backend_old/build/
+backend_old/*.egg-info/
 
 # Root still holds certs & compose; keep IDE ignores generic
 .vscode/

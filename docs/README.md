@@ -168,7 +168,8 @@ docker compose logs -f frontend
 
 ```
 Certs/
-├── backend/                  # 后端服务（Python FastAPI）
+├── backend/                  # 生产后端（FastAPI + Consumer + 调度）
+├── backend_old/              # 旧版双进程（参考）
 ├── frontend/                 # 前端应用（React + TypeScript）
 ├── scripts/                  # 本地开发启动脚本（可选）
 ├── Websites/                 # 网站证书存储目录

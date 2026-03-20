@@ -168,7 +168,8 @@ docker compose logs -f frontend
 
 ```
 Certs/
-├── backend/                  # Backend service (Python FastAPI)
+├── backend/                  # Production backend (FastAPI + consumer + scheduler)
+├── backend_old/              # Legacy dual-process backend (reference)
 ├── frontend/                 # Frontend application (React + TypeScript)
 ├── scripts/                  # Local dev helper scripts (optional)
 ├── Websites/                 # Website certificate storage directory

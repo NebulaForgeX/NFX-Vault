@@ -78,107 +78,55 @@ See [STRUCTURE.md](STRUCTURE.md) for detailed project structure.
 
 ### Key Directories
 
-- `backend/` - Python FastAPI backend
-- `frontend/` - React TypeScript frontend
-- `docs/` - Documentation
-- `Websites/` - Website certificates
-- `Apis/` - API certificates
+- **`backend/`** — Production backend (FastAPI, in-process Kafka consumer + scheduler)
+- `backend_old/` — Legacy codebase (reference only; develop in `backend/`)
+- `frontend/` — React TypeScript
+- `docs/` — Documentation
+- `Websites/`, `Apis/` — Certificate storage
 
 ---
 
-## Backend Development
+## Backend Development (`backend/`)
 
-### Setup Backend Environment
+### Recommended: repo-root script
+
+```bash
+./scripts/dev-api.sh
+```
+
+Uses `backend/.venv`, `PYTHONPATH` pointing at `backend/`, and the same port as Vite (default `10151`, from root `.env` `BACKEND_PORT`).
+
+### Manual venv
 
 ```bash
 cd backend
-
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+export PYTHONPATH=.
+uvicorn main:app --reload --host 0.0.0.0 --port 10151
 ```
 
-### Run Backend Locally
+### Architecture
 
-```bash
-# From backend directory
-python main.py
+See [`backend/README.md`](../../backend/README.md). Summary: `routers/urls.py`, `apps/wiring.py` (`ApplicationStack`), per-domain `handlers/`, `services/`, `repos/`, `dto/`, `vo/`, `models/`, `utils/` (integrations), `tasks/`.
 
-# Or using uvicorn directly
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
+### Adding HTTP routes
 
-### Backend Architecture
+Add or change handlers under `apps/<domain>/handlers/`, business logic in `services/`, persistence in `repos/`, mount in `routers/urls.py` or `apps/<domain>/urls.py`. The old `backend_old/modules/...` layout is not used for production images.
 
-- **Models** (`models/`): SQLAlchemy ORM models
-- **Applications** (`modules/applications/`): Business logic
-- **Interfaces** (`modules/interfaces/http/handler/`): HTTP handlers
-- **Repositories** (`modules/repositories/`): Data access
-- **Events** (`events/`): Kafka event definitions
-- **Tasks** (`tasks/`): Scheduled tasks
-- **Utils** (`utils/`): Helper functions
+### Database tables
 
-### Adding a New API Endpoint
-
-1. **Add Handler Method** (`modules/interfaces/http/handler/tls/tls.py` or appropriate handler):
-```python
-@router.get("/example")
-async def example_endpoint(store: CertStore):
-    """Example endpoint"""
-    try:
-        request = ExampleRequest(store=store.value)
-        result = example_operation(
-            app=self.certificate_application,
-            request=request
-        )
-        return result
-    except Exception as e:
-        logger.error(f"❌ Example operation failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e))
-```
-
-2. **Add Application Logic** (`modules/applications/tls/handler/`):
-```python
-def example_operation(app: CertificateApplication, request: ExampleRequest):
-    # Business logic here
-    return {"success": True, "data": {...}}
-```
-
-3. **Add DTO** (`modules/interfaces/http/dto/reqdto/` and `respdto/`):
-```python
-class ExampleRequest(BaseModel):
-    store: str
-```
-
-Routes are automatically registered through the handler's `create_router()` method.
-
-### Database Migrations
-
-The database schema is managed through SQLAlchemy models. Tables are created automatically on first run or can be created manually:
-
-```python
-# Create tables from models
-from models.base import Base
-from modules.server.resources import get_db_engine
-
-engine = get_db_engine()
-Base.metadata.create_all(engine)
-```
+Created on startup via `mysql.create_tables(Base)` in `apps/wiring.py` (`Base` from `apps.certificate.models.base`). Models live in `backend/apps/certificate/models/`.
 
 ### Running Tests
 
 ```bash
-# Install test dependencies
+cd backend
+source .venv/bin/activate  # optional
 pip install pytest pytest-asyncio
-
-# Run tests
-pytest
-
-# Run with coverage
-pytest --cov=app tests/
+PYTHONPATH=. pytest
+PYTHONPATH=. pytest --cov=apps tests/
 ```
 
 ---
@@ -379,12 +327,9 @@ test('renders cert list', () => {
 ### Backend Debugging
 
 ```bash
-# Run with debugger
-python -m pdb main.py
-
-# Use logging
-import logging
-logging.basicConfig(level=logging.DEBUG)
+cd backend
+# With venv activated and PYTHONPATH=.
+python -m pdb -m uvicorn main:app --host 0.0.0.0 --port 10151
 ```
 
 ### Frontend Debugging
@@ -446,25 +391,14 @@ test: add unit tests for cert view
 
 ### Adding a New Certificate Store
 
-1. Update enum (`enums/certificate_store.py`)
-2. Update models if needed (`models/tls_certificate.py`)
-3. Update handlers (`modules/interfaces/http/handler/tls/tls.py`)
-4. Update frontend types
-5. Update API documentation
+1. Update `backend/enums/certificate_store.py` (and DB/schema if needed)
+2. Update `backend/apps/certificate/models/tls_certificate.py` when the schema changes
+3. Update handlers/services under `backend/apps/certificate/`
+4. Update frontend types and API docs
 
 ### Adding a Scheduled Task
 
-```python
-# tasks/example_task.py
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
-async def example_task():
-    # Task logic
-    pass
-
-# Register in main.py
-scheduler.add_job(example_task, 'cron', hour=2, minute=0)
-```
+Add a function under `backend/tasks/` and register it in `backend/tasks/scheduler.py` (`setup_scheduler`).
 
 ### Updating Dependencies
 
@@ -484,8 +418,8 @@ npm install package-name
 
 ### Database Schema Changes
 
-1. Update model (`app/models/`)
-2. Create migration (if using Alembic)
+1. Update `backend/apps/certificate/models/tls_certificate.py`
+2. Add Alembic migrations under `backend/` if you adopt Alembic
 3. Test migration
 4. Update documentation
 

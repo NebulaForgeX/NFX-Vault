@@ -324,8 +324,7 @@ The main database table is created automatically on first run:
 
 - `tls_certificates` - TLS certificate metadata
   - Stores all certificate information including domain, issuer, validity, certificate content, private key
-  - Indexed by store, domain, source, and folder_name
-  - Unique constraint on (domain, source, store)
+  - `domain` is globally unique; indexes include `store` and `domain`
 
 ---
 

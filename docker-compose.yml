@@ -1,14 +1,15 @@
 name: nfx-vault
 
 services:
-  # 后端 API 服务（HTTP API）
+  # 统一后端（HTTP + Kafka Consumer + 定时任务），代码目录: backend/
   backend-api:
     build:
       context: ./backend
-      dockerfile: inputs/api/Dockerfile
-    container_name: NFX-Vault-Backend-API
+      dockerfile: Dockerfile
+    container_name: NFX-Vault-Backend
     restart: always
     ports:
+      # host:host_port:container_port（两段式只能是 port:port，不能写 IP）
       - "${BACKEND_HOST}:${BACKEND_PORT}:8000"
     volumes:
       - ${CERTS_DIR}:${CERTS_DIR}:rw
@@ -40,53 +41,10 @@ services:
       - SCHEDULE_WEEKLY_MINUTE=${SCHEDULE_WEEKLY_MINUTE}
     labels:
       - traefik.enable=true
-      # 注意：ACME challenge 路由通过 dynamic/acme-challenge.yml 配置
-      # 这里不需要重复配置，避免冲突
     networks:
       - nfx-vault
       - nfx-edge
 
-  # 后端 Pipeline 服务（Kafka Consumer）
-  backend-pipeline:
-    build:
-      context: ./backend
-      dockerfile: inputs/pipeline/Dockerfile
-    container_name: NFX-Vault-Backend-Pipeline
-    restart: always
-    volumes:
-      - ${CERTS_DIR}:${CERTS_DIR}:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${ACME_CHALLENGE_DIR}:${ACME_CHALLENGE_DIR}:rw
-    environment:
-      - PYTHONUNBUFFERED=1
-      - MYSQL_HOST=${MYSQL_HOST}
-      - MYSQL_DATABASE_PORT=${MYSQL_DATABASE_PORT}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_ROOT_USERNAME=${MYSQL_ROOT_USERNAME}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_DATABASE_PORT=${REDIS_DATABASE_PORT}
-      - REDIS_DB=${REDIS_DB}
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - REDIS_CACHE_TTL=${REDIS_CACHE_TTL}
-      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}
-      - KAFKA_EVENT_TOPIC=${KAFKA_EVENT_TOPIC}
-      - KAFKA_EVENT_POISON_TOPIC=${KAFKA_EVENT_POISON_TOPIC}
-      - KAFKA_CONSUMER_GROUP_ID=${KAFKA_CONSUMER_GROUP_ID}
-      - CERT_MAX_WAIT_TIME=${CERT_MAX_WAIT_TIME}
-      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
-      - CERTS_DIR=${CERTS_DIR}
-      - READ_ON_STARTUP=${READ_ON_STARTUP}
-      - SCHEDULE_ENABLED=${SCHEDULE_ENABLED}
-      - SCHEDULE_WEEKLY_DAY=${SCHEDULE_WEEKLY_DAY}
-      - SCHEDULE_WEEKLY_HOUR=${SCHEDULE_WEEKLY_HOUR}
-      - SCHEDULE_WEEKLY_MINUTE=${SCHEDULE_WEEKLY_MINUTE}
-    networks:
-      - nfx-vault
-    depends_on:
-      - backend-api
-
-  # 前端服务
   frontend:
     build:
       context: ./frontend
@@ -102,7 +60,6 @@ services:
       - nfx-vault
     depends_on:
       - backend-api
-      - backend-pipeline
 
 networks:
   nfx-vault:
@@ -111,4 +68,3 @@ networks:
   nfx-edge:
     external: true
     name: nfx-edge
-

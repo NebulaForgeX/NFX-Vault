@@ -4,9 +4,7 @@ This document describes all available API endpoints in the NFX-Vault system.
 
 ## 🌐 Base URL
 
-```
-http://your-host:10200
-```
+Determined by root `.env`: `BACKEND_HOST` / `BACKEND_PORT` (Compose maps host port to container `8000`). Local dev is often `http://127.0.0.1:10151` (same as Vite). Examples below using `10200` are illustrative—substitute your real host and port.
 
 ## 📋 API Overview
 

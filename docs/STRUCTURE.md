@@ -2,11 +2,21 @@
 
 本文档详细说明 NFX-Vault 项目的结构。
 
+> **当前默认后端**：`backend/`（单进程 API + Kafka Consumer + 调度）。Docker `backend-api` 与 `./scripts/dev-api.sh` 均使用 `backend/`。下面 **`backend_old/`** 大段树状描述为**旧版参考**，新开发请以 `backend/` 为准（亦见 [`backend/README.md`](../backend/README.md)）。
+
 ## 📁 整体目录结构
 
 ```
 Certs/
-├── backend/                         # 后端服务（Python FastAPI）
+├── backend/                         # 生产后端（FastAPI + Kafka + 调度；见 backend/README.md）
+│   ├── main.py                      # 应用入口
+│   ├── apps/                        # 业务域（wiring、certificate、file、analysis）
+│   ├── config/
+│   ├── utils/                       # mysql/redis/kafka/acme/certbot、pem 等
+│   ├── routers/
+│   ├── tasks/
+│   └── requirements.txt
+├── backend_old/                     # 旧版双进程单体（参考）
 │   ├── models/                      # 数据模型（SQLAlchemy）
 │   │   ├── base.py                  # 基础模型类
 │   │   └── tls_certificate.py       # TLS 证书模型
@@ -94,14 +104,14 @@ Certs/
 
 ---
 
-## 🔧 后端结构
+## 🔧 旧版后端结构（`backend_old/`）
 
-### 后端架构
+### 架构说明
 
-后端采用**分层架构**模式：
+旧版 `backend_old/` 采用**分层架构**模式：
 
 ```
-backend/
+backend_old/
 ├── models/                          # 数据模型（SQLAlchemy ORM）
 │   ├── base.py                      # 基础模型类
 │   └── tls_certificate.py           # TLS 证书表模型
@@ -265,23 +275,14 @@ frontend/
 
 ### Docker 服务
 
-项目包含三个主要的 Docker 服务：
+项目 Docker Compose 包含两个服务：
 
-1. **backend-api** - HTTP API 服务
-   - FastAPI 应用（入口：`inputs/api/main.py`）
-   - 处理 REST API 请求
-   - 端口：10200
-   - 处理 HTTP 请求并发布 Kafka 事件
+1. **backend-api** - 统一后端（构建上下文 `./backend`，入口 `backend/main.py`）
+   - FastAPI：`/vault/tls`、`/vault/file`、`/vault/analysis`、`/.well-known/...`
+   - **同进程**：Kafka Consumer、定时任务（原独立 pipeline 已合并）
 
-2. **backend-pipeline** - Kafka 消费者服务
-   - Kafka 消费者（入口：`inputs/pipeline/main.py`）
-   - 处理异步事件（证书刷新、文件操作）
-   - 无外部端口
-   - 运行定时任务（APScheduler）
-
-3. **frontend** - Web 界面
+2. **frontend** - Web 界面
    - Nginx 提供 React 应用
-   - 端口：10199
    - 代理 API 请求到 backend-api
 
 ### Docker 网络

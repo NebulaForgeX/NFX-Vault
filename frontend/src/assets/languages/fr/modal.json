@@ -1,6 +1,8 @@
 {
   "loading": {
-    "defaultMessage": "Chargement en cours, veuillez patienter..."
+    "shortTitle": "Veuillez patienter",
+    "defaultMessage": "Traitement en cours…",
+    "hint": "Ne fermez pas cette page"
   },
   "search": {
     "noResults": "Aucun résultat trouvé pour \"{{query}}\""

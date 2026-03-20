@@ -1,31 +1,12 @@
-# NFX-Vault backend — runtime dependencies
-# Python: 3.11+（与 Docker 镜像一致）；3.12 请使用下方 kafka-python-ng
-# 系统：需 openssl 可执行文件（证书解析 utils/certificate）；Certbot 相关在容器 Dockerfile 中安装
-
-# --- HTTP API ---
 fastapi==0.115.0
 uvicorn[standard]==0.32.0
 pydantic==2.9.2
 python-multipart==0.0.12
-
-# --- MySQL / ORM ---
 sqlalchemy==2.0.36
 pymysql==1.1.1
 cryptography==43.0.3
-
-# --- Redis ---
 redis==5.2.0
 hiredis==2.3.2
-
-# --- Kafka（维护分支，兼容 Python 3.12+；import 仍为 kafka.*）---
-kafka-python-ng==2.2.3
-
-# --- Scheduled tasks ---
-apscheduler==3.10.4
-
-# --- Configuration / local .env ---
 python-dotenv==1.0.1
-
-# Docker
-docker==7.1.0
-
+kafka-python-ng==2.2.3
+apscheduler==3.10.4

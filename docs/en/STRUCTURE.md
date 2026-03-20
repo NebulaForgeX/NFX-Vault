@@ -2,11 +2,21 @@
 
 This document provides a detailed explanation of the NFX-Vault project structure.
 
+> **Default backend today**: **`backend/`** (single process: API + Kafka consumer + scheduler). Docker `backend-api` and `./scripts/dev-api.sh` use `backend/`. The large **`backend_old/`** tree below is **legacy reference**; new work should target `backend/` (see [`backend/README.md`](../../backend/README.md)).
+
 ## 📁 Overall Directory Structure
 
 ```
 Certs/
-├── backend/                         # Backend service (Python FastAPI)
+├── backend/                         # Production backend (FastAPI + Kafka + scheduler; see backend/README.md)
+│   ├── main.py                      # Application entry
+│   ├── apps/                        # Domains (wiring, certificate, file, analysis)
+│   ├── config/
+│   ├── utils/                       # mysql/redis/kafka/acme/certbot, pem helpers
+│   ├── routers/
+│   ├── tasks/
+│   └── requirements.txt
+├── backend_old/                     # Legacy dual-process monolith (reference)
 │   ├── models/                      # Data models (SQLAlchemy)
 │   │   ├── base.py                  # Base model class
 │   │   └── tls_certificate.py       # TLS certificate model
@@ -93,14 +103,14 @@ Certs/
 
 ---
 
-## 🔧 Backend Structure
+## 🔧 Legacy backend structure (`backend_old/`)
 
-### Backend Architecture
+### Architecture
 
-The backend follows a **layered architecture** pattern:
+The legacy `backend_old/` tree follows a **layered architecture** pattern:
 
 ```
-backend/
+backend_old/
 ├── models/                          # Data Models (SQLAlchemy ORM)
 │   ├── base.py                      # Base model class
 │   └── tls_certificate.py           # TLS certificate table model
@@ -264,23 +274,14 @@ frontend/
 
 ### Docker Services
 
-The project consists of three main Docker services:
+Docker Compose includes two services:
 
-1. **backend-api** - HTTP API service
-   - FastAPI application (entry: `inputs/api/main.py`)
-   - Handles REST API requests
-   - Port: 10200
-   - Handles HTTP requests and publishes Kafka events
+1. **backend-api** - Unified backend (build context `./backend`, entry `backend/main.py`)
+   - FastAPI: `/vault/tls`, `/vault/file`, `/vault/analysis`, `/.well-known/...`
+   - **Same process**: Kafka consumer and scheduler (previous standalone pipeline merged here)
 
-2. **backend-pipeline** - Kafka Consumer service
-   - Kafka consumer (entry: `inputs/pipeline/main.py`)
-   - Processes asynchronous events (certificate refresh, file operations)
-   - No external ports
-   - Runs scheduled tasks (APScheduler)
-
-3. **frontend** - Web interface
+2. **frontend** - Web interface
    - Nginx serving React app
-   - Port: 10199
    - Proxies API requests to backend-api
 
 ### Docker Networks
