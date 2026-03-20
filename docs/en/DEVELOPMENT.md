@@ -78,8 +78,8 @@ See [STRUCTURE.md](STRUCTURE.md) for detailed project structure.
 
 ### Key Directories
 
-- `server/backend/` - Python FastAPI backend
-- `server/frontend/` - React TypeScript frontend
+- `backend/` - Python FastAPI backend
+- `frontend/` - React TypeScript frontend
 - `docs/` - Documentation
 - `Websites/` - Website certificates
 - `Apis/` - API certificates
@@ -91,7 +91,7 @@ See [STRUCTURE.md](STRUCTURE.md) for detailed project structure.
 ### Setup Backend Environment
 
 ```bash
-cd server/backend
+cd backend
 
 # Create virtual environment
 python3 -m venv venv
@@ -104,7 +104,7 @@ pip install -r requirements.txt
 ### Run Backend Locally
 
 ```bash
-# From server/backend directory
+# From backend directory
 python main.py
 
 # Or using uvicorn directly
@@ -188,7 +188,7 @@ pytest --cov=app tests/
 ### Setup Frontend Environment
 
 ```bash
-cd server/frontend
+cd frontend
 
 # Install dependencies
 npm install
@@ -470,14 +470,14 @@ scheduler.add_job(example_task, 'cron', hour=2, minute=0)
 
 **Backend:**
 ```bash
-cd server/backend
+cd backend
 pip install package-name
 pip freeze > requirements.txt
 ```
 
 **Frontend:**
 ```bash
-cd server/frontend
+cd frontend
 npm install package-name
 # package.json and package-lock.json updated automatically
 ```

@@ -197,7 +197,7 @@ The `docker-compose.yml` file defines service configurations:
 services:
   backend-api:
     build:
-      context: ./server/backend
+      context: ./backend
       dockerfile: inputs/api/Dockerfile
     container_name: NFX-Vault-Backend-API
     restart: always

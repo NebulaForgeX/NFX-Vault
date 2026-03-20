@@ -4,7 +4,7 @@ services:
   # 后端 API 服务（HTTP API）
   backend-api:
     build:
-      context: ./servers/backend
+      context: ./backend
       dockerfile: inputs/api/Dockerfile
     container_name: NFX-Vault-Backend-API
     restart: always
@@ -49,7 +49,7 @@ services:
   # 后端 Pipeline 服务（Kafka Consumer）
   backend-pipeline:
     build:
-      context: ./servers/backend
+      context: ./backend
       dockerfile: inputs/pipeline/Dockerfile
     container_name: NFX-Vault-Backend-Pipeline
     restart: always
@@ -89,7 +89,7 @@ services:
   # 前端服务
   frontend:
     build:
-      context: ./servers/frontend
+      context: ./frontend
       dockerfile: Dockerfile
       args:
         BACKEND_HOST: ${BACKEND_HOST}

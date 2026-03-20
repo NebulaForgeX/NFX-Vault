@@ -197,7 +197,7 @@ SCHEDULE_WEEKLY_MINUTE=0
 services:
   backend-api:
     build:
-      context: ./server/backend
+      context: ./backend
       dockerfile: inputs/api/Dockerfile
     container_name: NFX-Vault-Backend-API
     restart: always

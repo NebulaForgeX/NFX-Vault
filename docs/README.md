@@ -168,9 +168,9 @@ docker compose logs -f frontend
 
 ```
 Certs/
-├── server/                    # 服务端代码
-│   ├── backend/              # 后端服务（Python FastAPI）
-│   └── frontend/             # 前端应用（React + TypeScript）
+├── backend/                  # 后端服务（Python FastAPI）
+├── frontend/                 # 前端应用（React + TypeScript）
+├── scripts/                  # 本地开发启动脚本（可选）
 ├── Websites/                 # 网站证书存储目录
 │   ├── acme.json            # Traefik 证书存储文件
 │   └── exported/            # 导出的证书文件

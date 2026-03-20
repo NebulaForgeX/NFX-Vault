@@ -209,7 +209,7 @@ REDIS_HOST=localhost
 REDIS_PASSWORD=
 
 # Enable hot reload (if developing)
-# Frontend: npm run dev in server/frontend
+# Frontend: npm run dev in frontend/
 # Backend: uvicorn main:app --reload
 ```
 

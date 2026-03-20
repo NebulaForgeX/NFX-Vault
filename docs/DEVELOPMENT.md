@@ -78,8 +78,8 @@ LOG_LEVEL=DEBUG
 
 ### 关键目录
 
-- `server/backend/` - Python FastAPI 后端
-- `server/frontend/` - React TypeScript 前端
+- `backend/` - Python FastAPI 后端
+- `frontend/` - React TypeScript 前端
 - `docs/` - 文档
 - `Websites/` - 网站证书
 - `Apis/` - API 证书
@@ -91,7 +91,7 @@ LOG_LEVEL=DEBUG
 ### 设置后端环境
 
 ```bash
-cd server/backend
+cd backend
 
 # 创建虚拟环境
 python3 -m venv venv
@@ -104,7 +104,7 @@ pip install -r requirements.txt
 ### 本地运行后端
 
 ```bash
-# 从 server/backend 目录
+# 从 backend 目录
 cd inputs/api
 python main.py
 
@@ -189,7 +189,7 @@ pytest --cov=modules tests/
 ### 设置前端环境
 
 ```bash
-cd server/frontend
+cd frontend
 
 # 安装依赖
 npm install
@@ -470,14 +470,14 @@ scheduler.add_job(example_task, 'cron', hour=2, minute=0)
 
 **后端：**
 ```bash
-cd server/backend
+cd backend
 pip install package-name
 pip freeze > requirements.txt
 ```
 
 **前端：**
 ```bash
-cd server/frontend
+cd frontend
 npm install package-name
 # package.json 和 package-lock.json 自动更新
 ```

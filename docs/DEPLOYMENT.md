@@ -209,7 +209,7 @@ REDIS_HOST=localhost
 REDIS_PASSWORD=
 
 # 启用热重载（如果正在开发）
-# 前端：在 server/frontend 中运行 npm run dev
+# 前端：在 frontend 中运行 npm run dev
 # 后端：uvicorn main:app --reload
 ```
 

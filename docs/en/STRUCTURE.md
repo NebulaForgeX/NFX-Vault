@@ -6,70 +6,70 @@ This document provides a detailed explanation of the NFX-Vault project structure
 
 ```
 Certs/
-├── server/                          # Server-side application
-│   ├── backend/                     # Backend service (Python FastAPI)
-│   │   ├── models/                  # Data models (SQLAlchemy)
-│   │   │   ├── base.py              # Base model class
-│   │   │   └── tls_certificate.py   # TLS certificate model
-│   │   ├── enums/                   # Enumeration definitions
-│   │   │   ├── certificate_store.py # Certificate store enum
-│   │   │   ├── certificate_source.py # Certificate source enum
-│   │   │   └── certificate_status.py # Certificate status enum
-│   │   ├── events/                  # Event handlers
-│   │   │   ├── export_certificate_event.py
-│   │   │   └── delete_file_or_folder_event.py
-│   │   ├── inputs/                  # Service entry points
-│   │   │   ├── api/                 # API service entry
-│   │   │   │   └── main.py         # FastAPI HTTP server
-│   │   │   └── pipeline/            # Pipeline service entry
-│   │   │       └── main.py          # Kafka consumer server
-│   │   ├── modules/                 # Functional modules
-│   │   │   ├── applications/        # Application layer (business logic)
-│   │   │   ├── interfaces/          # Interface layer (HTTP, Kafka)
-│   │   │   │   ├── http/            # HTTP handlers
-│   │   │   │   │   ├── handler/     # Request handlers
-│   │   │   │   │   │   ├── tls/     # TLS certificate handlers
-│   │   │   │   │   │   ├── file/    # File operation handlers
-│   │   │   │   │   │   └── analysis/ # Analysis handlers
-│   │   │   │   │   ├── dto/         # Data transfer objects
-│   │   │   │   │   └── router.py    # Router registration
-│   │   │   │   └── kafka/           # Kafka event handlers
-│   │   │   ├── repositories/        # Repository layer (data access)
-│   │   │   │   ├── database/        # Database repositories
-│   │   │   │   ├── cache/           # Cache repositories
-│   │   │   │   └── tls/             # TLS file repositories
-│   │   │   ├── configs/             # Configuration
-│   │   │   │   ├── types.py         # Config dataclasses
-│   │   │   │   ├── cert_config.py  # Certificate config loader
-│   │   │   │   └── database_config.py # Database config loader
-│   │   │   └── server/              # Server initialization
-│   │   │       ├── wiring.py        # Dependency injection
-│   │   │       └── resources.py     # Resource management
-│   │   ├── resources/               # Static resources
-│   │   │   └── certbot/             # Certbot client
-│   │   ├── tasks/                   # Scheduled tasks
-│   │   │   ├── scheduler.py         # Task scheduler setup
-│   │   │   └── update_days_remaining_task.py
+├── backend/                         # Backend service (Python FastAPI)
+│   ├── models/                      # Data models (SQLAlchemy)
+│   │   ├── base.py                  # Base model class
+│   │   └── tls_certificate.py       # TLS certificate model
+│   ├── enums/                       # Enumeration definitions
+│   │   ├── certificate_store.py     # Certificate store enum
+│   │   ├── certificate_source.py    # Certificate source enum
+│   │   └── certificate_status.py    # Certificate status enum
+│   ├── events/                      # Event handlers
+│   │   ├── export_certificate_event.py
+│   │   └── delete_file_or_folder_event.py
+│   ├── inputs/                      # Service entry points
+│   │   ├── api/                     # API service entry
+│   │   │   └── main.py              # FastAPI HTTP server
+│   │   └── pipeline/                # Pipeline service entry
+│   │       └── main.py              # Kafka consumer server
+│   ├── modules/                     # Functional modules
+│   │   ├── applications/            # Application layer (business logic)
+│   │   ├── interfaces/              # Interface layer (HTTP, Kafka)
+│   │   │   ├── http/                # HTTP handlers
+│   │   │   │   ├── handler/         # Request handlers
+│   │   │   │   │   ├── tls/         # TLS certificate handlers
+│   │   │   │   │   ├── file/        # File operation handlers
+│   │   │   │   │   └── analysis/    # Analysis handlers
+│   │   │   │   ├── dto/             # Data transfer objects
+│   │   │   │   └── router.py        # Router registration
+│   │   │   └── kafka/               # Kafka event handlers
+│   │   ├── repositories/            # Repository layer (data access)
+│   │   │   ├── database/            # Database repositories
+│   │   │   ├── cache/               # Cache repositories
+│   │   │   └── tls/                 # TLS file repositories
+│   │   ├── configs/                 # Configuration
+│   │   │   ├── types.py             # Config dataclasses
+│   │   │   ├── cert_config.py       # Certificate config loader
+│   │   │   └── database_config.py   # Database config loader
+│   │   └── server/                  # Server initialization
+│   │       ├── wiring.py            # Dependency injection
+│   │       └── resources.py         # Resource management
+│   ├── resources/                   # Static resources
+│   │   └── certbot/                 # Certbot client
+│   ├── tasks/                       # Scheduled tasks
+│   │   ├── scheduler.py             # Task scheduler setup
+│   │   └── update_days_remaining_task.py
+│   ├── utils/                       # Utility functions
+│   │   └── certificate.py           # Certificate utilities
+│   └── requirements.txt             # Python dependencies
+├── frontend/                        # Frontend application (React + TypeScript)
+│   ├── src/
+│   │   ├── apis/                    # API client
+│   │   ├── components/              # React components
+│   │   ├── hooks/                   # React hooks
+│   │   ├── pages/                   # Page components
+│   │   ├── stores/                  # State management (Zustand)
+│   │   ├── types/                   # TypeScript type definitions
 │   │   ├── utils/                   # Utility functions
-│   │   │   └── certificate.py      # Certificate utilities
-│   │   └── requirements.txt          # Python dependencies
-│   └── frontend/                    # Frontend application (React + TypeScript)
-│       ├── src/
-│       │   ├── apis/                # API client
-│       │   ├── components/          # React components
-│       │   ├── hooks/               # React hooks
-│       │   ├── pages/               # Page components
-│       │   ├── stores/              # State management (Zustand)
-│       │   ├── types/               # TypeScript type definitions
-│       │   ├── utils/               # Utility functions
-│       │   ├── providers/           # Context providers
-│       │   ├── layouts/             # Layout components
-│       │   └── main.tsx             # Entry file
-│       ├── public/                  # Static assets
-│       ├── Dockerfile               # Frontend Docker image
-│       ├── nginx.conf               # Nginx configuration
-│       ├── package.json             # Node.js dependencies
-│       └── vite.config.ts           # Vite configuration
+│   │   ├── providers/               # Context providers
+│   │   ├── layouts/                 # Layout components
+│   │   └── main.tsx                 # Entry file
+│   ├── public/                      # Static assets
+│   ├── Dockerfile                   # Frontend Docker image
+│   ├── nginx.conf                   # Nginx configuration
+│   ├── package.json                 # Node.js dependencies
+│   └── vite.config.ts               # Vite configuration
+├── scripts/                         # Local dev helper scripts (optional)
 ├── Websites/                        # Website certificate storage
 │   ├── acme.json                    # Traefik certificate storage file
 │   └── exported/                    # Exported certificate files

@@ -71,48 +71,50 @@ desktop.ini
 # NFX-Vault Web 服务相关
 # ============================================
 
+# Python 虚拟环境（仓库内任意路径，含 backend/、根目录等）
+venv/
+.venv/
+env/
+ENV/
+
 # 前端
-servers/frontend/node_modules/
-servers/frontend/dist/
-servers/frontend/dist-ssr
-servers/frontend/*.local
-servers/frontend/.env.local
-servers/frontend/.env.*.local
-servers/frontend/logs
-servers/frontend/*.log
-servers/frontend/npm-debug.log*
-servers/frontend/yarn-debug.log*
-servers/frontend/yarn-error.log*
-servers/frontend/pnpm-debug.log*
-servers/frontend/lerna-debug.log*
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr
+frontend/*.local
+frontend/.env.local
+frontend/.env.*.local
+frontend/logs
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
 
 # 后端
-servers/backend/__pycache__/
-servers/backend/*.py[cod]
-servers/backend/*$py.class
-servers/backend/*.pyo
-servers/backend/*.pyd
-servers/backend/*.so
-servers/backend/.Python
-servers/backend/env/
-servers/backend/venv/
-servers/backend/ENV/
-servers/backend/.venv/
-servers/backend/.env
-servers/backend/.env.local
-servers/backend/.pytest_cache/
-servers/backend/.coverage
-servers/backend/htmlcov/
-servers/backend/dist/
-servers/backend/build/
-servers/backend/*.egg-info/
+backend/__pycache__/
+backend/*.py[cod]
+backend/*$py.class
+backend/*.pyo
+backend/*.pyd
+backend/*.so
+backend/.Python
+backend/.env
+backend/.env.local
+backend/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+backend/dist/
+backend/build/
+backend/*.egg-info/
 
-# IDE
-servers/.vscode/
-servers/.idea/
-servers/*.suo
-servers/*.ntvs*
-servers/*.njsproj
-servers/*.sln
-servers/*.sw?
+# Root still holds certs & compose; keep IDE ignores generic
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 

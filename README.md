@@ -164,15 +164,30 @@ docker compose logs -f frontend
 - **API 文档（Swagger）**：http://192.168.1.64:10151/docs
 - **API 文档（ReDoc）**：http://192.168.1.64:10151/redoc
 
+### 本地开发启动后端（不经过 Docker）
+
+适用于只改 Python 代码、本机已安装 **Python 3.11+**（`python3 --version`；**推荐 3.11** 与 Docker 一致，3.12 亦可）且 MySQL / Redis / Kafka 可按 `.env` 访问的场景。
+
+1. 配置 `.env`：`cp .example.env .env` 并编辑（与 Docker 用同一份即可）。
+2. 在 **仓库根目录** 执行：`scripts/dev-*.sh` 会在 **没有** `backend/.venv` 时创建它；**已有则沿用**。依赖仅在 **新建 venv** 或 **`requirements.txt` 有更新** 时执行 `pip install`，否则跳过以加快启动。
+   ```bash
+   chmod +x scripts/dev-api.sh scripts/dev-pipeline.sh   # 首次
+   ./scripts/dev-api.sh       # API + Swagger：端口与 Vite 一致，默认 10151 → http://127.0.0.1:10151/docs
+   # 另开终端（如需异步任务与调度）：
+   ./scripts/dev-pipeline.sh
+   ```
+
+**前端本地开发**：`cd frontend` 后按该目录 `package.json` 的脚本执行（例如 `npm run dev`）。
+
 ---
 
 ## 📁 目录结构
 
 ```
 Certs/
-├── server/                    # 服务端代码
-│   ├── backend/              # 后端服务（Python FastAPI）
-│   └── frontend/             # 前端应用（React + TypeScript）
+├── scripts/                  # 本地开发启动脚本（dev-api / dev-pipeline）
+├── backend/                  # 后端服务（Python FastAPI）
+├── frontend/                 # 前端应用（React + TypeScript）
 ├── Websites/                 # 网站证书存储目录
 │   ├── acme.json            # Traefik 证书存储文件
 │   └── exported/            # 导出的证书文件

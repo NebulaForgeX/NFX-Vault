@@ -1,0 +1,220 @@
+/* 与 CertCheck CertCard 同一视觉体系：主色渐变表面 + 圆角药丸 + meta 区 */
+
+.section {
+  margin-top: 2rem;
+}
+
+.resultsHeader {
+  margin-bottom: 1rem;
+}
+
+.resultsCount {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-fg-heading);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.listContainer {
+  width: 100%;
+}
+
+.certCard {
+  position: relative;
+  margin-bottom: 0.875rem;
+  border-radius: var(--radius-card);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 22%, var(--color-border-3));
+  border-left-width: 4px;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--color-primary) 9%, var(--color-bg-2)) 0%,
+    var(--color-bg-2) 42%,
+    var(--color-bg-2) 100%
+  );
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-primary) 12%, transparent);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  outline: none;
+}
+
+.certCard:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-primary) 40%, var(--color-border-4));
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--color-primary) 18%, transparent),
+    0 12px 28px color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.certCard:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--color-bg),
+    0 0 0 4px var(--color-primary);
+}
+
+.cardInner {
+  padding: 1rem 1.125rem 0.875rem;
+}
+
+.certHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.certTitleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.625rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.certDomain {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-fg-heading);
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.sourceBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, var(--color-border-3));
+  flex-shrink: 0;
+}
+
+.expiryPill {
+  flex-shrink: 0;
+  max-width: min(100%, 16rem);
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  text-align: right;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+}
+
+.certInfo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  background: color-mix(in srgb, var(--color-bg-3) 55%, var(--color-bg-2));
+  border-radius: var(--radius-input);
+  border: 1px solid var(--color-border-3);
+}
+
+.certInfoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.certInfoLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted, var(--color-fg));
+}
+
+.certInfoValue {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-fg-text);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.certInfoWide {
+  grid-column: 1 / -1;
+}
+
+.emptyState {
+  padding: 3rem;
+  text-align: center;
+}
+
+.emptyText {
+  font-size: 0.9375rem;
+  color: var(--color-fg-muted, var(--color-fg));
+  margin: 0;
+}
+
+.loadingMore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  color: var(--color-fg-muted, var(--color-fg));
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--color-border-4);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.endState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  color: var(--color-fg-muted, var(--color-fg));
+}
+
+.endLine {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border-4);
+}
+
+.endText {
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .certHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .expiryPill {
+    max-width: none;
+    text-align: center;
+  }
+
+  .certInfo {
+    grid-template-columns: 1fr;
+  }
+}

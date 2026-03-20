@@ -6,70 +6,70 @@
 
 ```
 Certs/
-├── server/                          # 服务端应用
-│   ├── backend/                     # 后端服务（Python FastAPI）
-│   │   ├── models/                  # 数据模型（SQLAlchemy）
-│   │   │   ├── base.py              # 基础模型类
-│   │   │   └── tls_certificate.py   # TLS 证书模型
-│   │   ├── enums/                   # 枚举定义
-│   │   │   ├── certificate_store.py # 证书存储枚举
-│   │   │   ├── certificate_source.py # 证书来源枚举
-│   │   │   └── certificate_status.py # 证书状态枚举
-│   │   ├── events/                  # 事件处理器
-│   │   │   ├── export_certificate_event.py
-│   │   │   └── delete_file_or_folder_event.py
-│   │   ├── inputs/                  # 服务入口点
-│   │   │   ├── api/                 # API 服务入口
-│   │   │   │   └── main.py         # FastAPI HTTP 服务器
-│   │   │   └── pipeline/            # Pipeline 服务入口
-│   │   │       └── main.py          # Kafka 消费者服务器
-│   │   ├── modules/                 # 功能模块
-│   │   │   ├── applications/        # 应用层（业务逻辑）
-│   │   │   ├── interfaces/          # 接口层（HTTP, Kafka）
-│   │   │   │   ├── http/            # HTTP 处理器
-│   │   │   │   │   ├── handler/     # 请求处理器
-│   │   │   │   │   │   ├── tls/     # TLS 证书处理器
-│   │   │   │   │   │   ├── file/    # 文件操作处理器
-│   │   │   │   │   │   └── analysis/ # 分析处理器
-│   │   │   │   │   ├── dto/         # 数据传输对象
-│   │   │   │   │   └── router.py    # 路由注册
-│   │   │   │   └── kafka/           # Kafka 事件处理器
-│   │   │   ├── repositories/        # 仓库层（数据访问）
-│   │   │   │   ├── database/        # 数据库仓库
-│   │   │   │   ├── cache/           # 缓存仓库
-│   │   │   │   └── tls/             # TLS 文件仓库
-│   │   │   ├── configs/             # 配置
-│   │   │   │   ├── types.py         # 配置数据类
-│   │   │   │   ├── cert_config.py  # 证书配置加载器
-│   │   │   │   └── database_config.py # 数据库配置加载器
-│   │   │   └── server/              # 服务器初始化
-│   │   │       ├── wiring.py        # 依赖注入
-│   │   │       └── resources.py     # 资源管理
-│   │   ├── resources/               # 静态资源
-│   │   │   └── certbot/             # Certbot 客户端
-│   │   ├── tasks/                   # 定时任务
-│   │   │   ├── scheduler.py         # 任务调度器设置
-│   │   │   └── update_days_remaining_task.py
+├── backend/                         # 后端服务（Python FastAPI）
+│   ├── models/                      # 数据模型（SQLAlchemy）
+│   │   ├── base.py                  # 基础模型类
+│   │   └── tls_certificate.py       # TLS 证书模型
+│   ├── enums/                       # 枚举定义
+│   │   ├── certificate_store.py     # 证书存储枚举
+│   │   ├── certificate_source.py    # 证书来源枚举
+│   │   └── certificate_status.py    # 证书状态枚举
+│   ├── events/                      # 事件处理器
+│   │   ├── export_certificate_event.py
+│   │   └── delete_file_or_folder_event.py
+│   ├── inputs/                      # 服务入口点
+│   │   ├── api/                     # API 服务入口
+│   │   │   └── main.py              # FastAPI HTTP 服务器
+│   │   └── pipeline/                # Pipeline 服务入口
+│   │       └── main.py              # Kafka 消费者服务器
+│   ├── modules/                     # 功能模块
+│   │   ├── applications/            # 应用层（业务逻辑）
+│   │   ├── interfaces/              # 接口层（HTTP, Kafka）
+│   │   │   ├── http/                # HTTP 处理器
+│   │   │   │   ├── handler/         # 请求处理器
+│   │   │   │   │   ├── tls/         # TLS 证书处理器
+│   │   │   │   │   ├── file/        # 文件操作处理器
+│   │   │   │   │   └── analysis/    # 分析处理器
+│   │   │   │   ├── dto/             # 数据传输对象
+│   │   │   │   └── router.py        # 路由注册
+│   │   │   └── kafka/               # Kafka 事件处理器
+│   │   ├── repositories/            # 仓库层（数据访问）
+│   │   │   ├── database/            # 数据库仓库
+│   │   │   ├── cache/               # 缓存仓库
+│   │   │   └── tls/                 # TLS 文件仓库
+│   │   ├── configs/                 # 配置
+│   │   │   ├── types.py             # 配置数据类
+│   │   │   ├── cert_config.py       # 证书配置加载器
+│   │   │   └── database_config.py   # 数据库配置加载器
+│   │   └── server/                  # 服务器初始化
+│   │       ├── wiring.py            # 依赖注入
+│   │       └── resources.py         # 资源管理
+│   ├── resources/                   # 静态资源
+│   │   └── certbot/                 # Certbot 客户端
+│   ├── tasks/                       # 定时任务
+│   │   ├── scheduler.py             # 任务调度器设置
+│   │   └── update_days_remaining_task.py
+│   ├── utils/                       # 工具函数
+│   │   └── certificate.py           # 证书工具
+│   └── requirements.txt             # Python 依赖
+├── frontend/                        # 前端应用（React + TypeScript）
+│   ├── src/
+│   │   ├── apis/                    # API 客户端
+│   │   ├── components/              # React 组件
+│   │   ├── hooks/                   # React Hooks
+│   │   ├── pages/                   # 页面组件
+│   │   ├── stores/                  # 状态管理（Zustand）
+│   │   ├── types/                   # TypeScript 类型定义
 │   │   ├── utils/                   # 工具函数
-│   │   │   └── certificate.py      # 证书工具
-│   │   └── requirements.txt          # Python 依赖
-│   └── frontend/                    # 前端应用（React + TypeScript）
-│       ├── src/
-│       │   ├── apis/                # API 客户端
-│       │   ├── components/          # React 组件
-│       │   ├── hooks/               # React Hooks
-│       │   ├── pages/               # 页面组件
-│       │   ├── stores/              # 状态管理（Zustand）
-│       │   ├── types/               # TypeScript 类型定义
-│       │   ├── utils/               # 工具函数
-│       │   ├── providers/           # Context 提供者
-│       │   ├── layouts/             # 布局组件
-│       │   └── main.tsx             # 入口文件
-│       ├── public/                  # 静态资源
-│       ├── Dockerfile               # 前端 Docker 镜像
-│       ├── nginx.conf               # Nginx 配置
-│       ├── package.json             # Node.js 依赖
-│       └── vite.config.ts           # Vite 配置
+│   │   ├── providers/               # Context 提供者
+│   │   ├── layouts/                 # 布局组件
+│   │   └── main.tsx                 # 入口文件
+│   ├── public/                      # 静态资源
+│   ├── Dockerfile                   # 前端 Docker 镜像
+│   ├── nginx.conf                   # Nginx 配置
+│   ├── package.json                 # Node.js 依赖
+│   └── vite.config.ts               # Vite 配置
+├── scripts/                         # 本地开发启动脚本（可选）
 ├── Websites/                        # 网站证书存储
 │   ├── acme.json                    # Traefik 证书存储文件
 │   └── exported/                    # 导出的证书文件
