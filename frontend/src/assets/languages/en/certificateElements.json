@@ -48,6 +48,7 @@
   "messages": {
     "certificateApplySuccess": "Certificate applied successfully",
     "certificateApplyFailed": "Certificate application failed",
+    "applyPollTimeout": "Timed out waiting for issuance; check the certificate list later",
     "errorReason": "Error reason",
     "checkFormErrors": "Please check form errors"
   },

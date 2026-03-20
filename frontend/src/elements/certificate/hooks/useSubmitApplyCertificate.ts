@@ -1,7 +1,7 @@
 import type { FieldErrors } from "react-hook-form";
 import type { ApplyCertificateFormValues } from "../controllers/applyCertificateSchema";
-import type { CertificateDetailResponse } from "@/types";
-import { CertificateSource } from "@/types";
+import type { CertificateDetailResponse, CertificateResponse } from "@/types";
+import { CertificateSource, CertificateStatus } from "@/types";
 
 import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 import {
   ApplyCertificate,
+  GetCertificateDetailById,
   ReapplyAutoCertificate,
   ReapplyManualApplyCertificate,
   ReapplyManualAddCertificate,
@@ -17,6 +18,24 @@ import { routerEventEmitter } from "@/events/router";
 import { cacheEventEmitter, cacheEvents } from "@/events";
 import { ROUTES } from "@/navigations";
 import { showError, showSuccess, showLoading, hideLoading, showConfirm } from "@/stores/modalStore";
+
+/** 后台异步签发后轮询详情，直到成功/失败或超时（默认 6 分钟） */
+async function waitForIssuanceOutcome(
+  certificateId: string,
+  maxMs: number,
+): Promise<"success" | "fail" | "timeout"> {
+  const start = Date.now();
+  const interval = 2000;
+  while (Date.now() - start < maxMs) {
+    const detail = await GetCertificateDetailById(certificateId);
+    if (detail.status === CertificateStatus.SUCCESS) return "success";
+    if (detail.status === CertificateStatus.FAIL) return "fail";
+    await new Promise<void>((r) => {
+      setTimeout(r, interval);
+    });
+  }
+  return "timeout";
+}
 
 export const useSubmitApplyCertificate = (
   source: CertificateSource = CertificateSource.MANUAL_APPLY,
@@ -79,20 +98,62 @@ export const useSubmitApplyCertificate = (
         hideLoading();
       }
     },
-    onSuccess: (result) => {
-      if (result.success) {
-        // apply 的证书存储在 database，但也需要刷新所有类型的缓存
+    onSuccess: (result: CertificateResponse) => {
+      const emitCaches = () => {
         cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "database");
         cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "websites");
         cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES, "apis");
-        showSuccess(result.message || tElements("messages.certificateApplySuccess"));
-        routerEventEmitter.navigate({ to: ROUTES.CHECK });
-      } else {
-        const errorMsg = result.error 
+      };
+
+      if (!result.success) {
+        const errorMsg = result.error
           ? `${result.message}\n${tElements("messages.errorReason")}: ${result.error}`
           : result.message || tElements("messages.certificateApplyFailed");
         showError(errorMsg);
+        return;
       }
+
+      emitCaches();
+
+      const cid = result.certificateId ?? certificate?.id;
+      if (result.status === CertificateStatus.PROCESS && cid) {
+        showSuccess(result.message || tElements("messages.certificateApplySuccess"));
+        void (async () => {
+          try {
+            const outcome = await waitForIssuanceOutcome(cid, 360000);
+            emitCaches();
+            if (outcome === "success") {
+              showSuccess(tElements("messages.certificateApplySuccess"));
+              routerEventEmitter.navigate({ to: ROUTES.CHECK });
+              return;
+            }
+            if (outcome === "fail") {
+              const detail = await GetCertificateDetailById(cid);
+              const err =
+                detail.lastErrorMessage?.trim() ||
+                tElements("messages.certificateApplyFailed");
+              showError(err);
+              routerEventEmitter.navigate({ to: ROUTES.CHECK });
+              return;
+            }
+            showError(tElements("messages.applyPollTimeout"));
+            routerEventEmitter.navigate({ to: ROUTES.CHECK });
+          } catch (e) {
+            console.error("Poll issuance outcome:", e);
+            showError(tElements("messages.certificateApplyFailed"));
+          }
+        })();
+        return;
+      }
+
+      if (result.status === CertificateStatus.PROCESS && !cid) {
+        showSuccess(result.message || tElements("messages.certificateApplySuccess"));
+        routerEventEmitter.navigate({ to: ROUTES.CHECK });
+        return;
+      }
+
+      showSuccess(result.message || tElements("messages.certificateApplySuccess"));
+      routerEventEmitter.navigate({ to: ROUTES.CHECK });
     },
     onError: (error: Error) => {
       console.error("Apply certificate error:", error);

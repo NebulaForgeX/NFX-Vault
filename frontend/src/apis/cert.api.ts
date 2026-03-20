@@ -33,8 +33,13 @@ export const GetCertificateList = async (params: GetCertificateListParams): Prom
   return data;
 };
 
-export const GetCertificateDetailById = async (certificateId: string): Promise<CertificateDetailResponse> => {
-  const { data } = await publicClient.get<CertificateDetailResponse>(URL_PATHS.TLS.detailById(certificateId));
+export const GetCertificateDetailById = async (
+  certificateId: string,
+  options?: { timeout?: number },
+): Promise<CertificateDetailResponse> => {
+  const { data } = await publicClient.get<CertificateDetailResponse>(URL_PATHS.TLS.detailById(certificateId), {
+    timeout: options?.timeout ?? 30000,
+  });
   return data;
 };
 

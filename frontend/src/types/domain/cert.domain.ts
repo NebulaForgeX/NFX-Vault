@@ -60,6 +60,8 @@ export interface CertificateResponse {
   message: string;
   status?: CertificateStatus;
   error?: string;
+  /** 异步签发时用于轮询详情（axios-case-converter 转为 camelCase） */
+  certificateId?: string;
 }
 
 export interface SearchCertificateResponse {

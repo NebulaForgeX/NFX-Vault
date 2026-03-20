@@ -48,6 +48,7 @@
   "messages": {
     "certificateApplySuccess": "证书申请成功",
     "certificateApplyFailed": "证书申请失败",
+    "applyPollTimeout": "等待签发结果超时，请稍后在证书列表中查看状态",
     "errorReason": "错误原因",
     "checkFormErrors": "请检查表单错误"
   },

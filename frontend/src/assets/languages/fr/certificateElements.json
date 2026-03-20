@@ -48,6 +48,7 @@
   "messages": {
     "certificateApplySuccess": "Certificat demandé avec succès",
     "certificateApplyFailed": "Échec de la demande de certificat",
+    "applyPollTimeout": "Délai d'attente dépassé ; consultez la liste des certificats plus tard",
     "errorReason": "Raison de l'erreur",
     "checkFormErrors": "Veuillez vérifier les erreurs du formulaire"
   },

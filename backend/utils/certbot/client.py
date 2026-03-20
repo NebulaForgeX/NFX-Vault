@@ -122,7 +122,13 @@ class CertbotClient:
         custom_logs_dir = os.path.join(self.certs_dir, ".certbot", "logs")
         for d in (custom_config_dir, custom_work_dir, custom_logs_dir):
             os.makedirs(d, exist_ok=True)
-        domains = [domain, *(sans or [])]
+        raw = [domain, *(sans or [])]
+        seen: set[str] = set()
+        domains: list[str] = []
+        for h in raw:
+            if h and h not in seen:
+                seen.add(h)
+                domains.append(h)
         cmd = [
             "certbot",
             "certonly",
