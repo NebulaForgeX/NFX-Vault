@@ -4,8 +4,8 @@ services:
   # 统一后端（HTTP + Kafka Consumer + 定时任务），代码目录: backend/
   backend-api:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/backend/Dockerfile
     container_name: NFX-Vault-Backend
     restart: always
     ports:
@@ -36,9 +36,6 @@ services:
       - CERTS_DIR=${CERTS_DIR}
       - READ_ON_STARTUP=${READ_ON_STARTUP}
       - SCHEDULE_ENABLED=${SCHEDULE_ENABLED}
-      - SCHEDULE_WEEKLY_DAY=${SCHEDULE_WEEKLY_DAY}
-      - SCHEDULE_WEEKLY_HOUR=${SCHEDULE_WEEKLY_HOUR}
-      - SCHEDULE_WEEKLY_MINUTE=${SCHEDULE_WEEKLY_MINUTE}
     labels:
       - traefik.enable=true
     networks:
@@ -47,11 +44,10 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/frontend/Dockerfile
       args:
-        BACKEND_HOST: ${BACKEND_HOST}
-        BACKEND_PORT: ${BACKEND_PORT}
+        VITE_API_URL: ${VITE_API_URL:-/vault}
     container_name: NFX-Vault-Frontend
     restart: always
     ports:

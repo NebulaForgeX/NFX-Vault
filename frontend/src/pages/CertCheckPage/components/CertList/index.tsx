@@ -2,32 +2,21 @@ import { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { VirtualWindowList } from "nfx-ui/components";
 import { useCertificateList } from "@/hooks";
-import type { CertType } from "@/types";
-import  CertCard  from "../CertCard";
+import CertCard from "../CertCard";
 import styles from "./styles.module.css";
 
-interface CertListProps {
-  certType: CertType;
-}
-
-const CertList = memo(({ certType }: CertListProps) => {
+const CertList = memo(() => {
   const { t } = useTranslation("certCheck");
-  
-  const filter = useMemo(() => ({ certType }), [certType]);
 
   const {
     data: certificates = [],
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-  } = useCertificateList(filter, { staleTime: 1000 * 60 * 5 });
+  } = useCertificateList({ staleTime: 1000 * 60 * 5 });
 
   const emptyStateContent = useMemo(() => {
-    return (
-      <div className={styles.emptyState}>
-        {t("certificate.empty")}
-      </div>
-    );
+    return <div className={styles.emptyState}>{t("certificate.empty")}</div>;
   }, [t]);
 
   const loadingIndicator = useMemo(() => {
@@ -60,14 +49,9 @@ const CertList = memo(({ certType }: CertListProps) => {
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
           fetchNextPage={fetchNextPage}
-          renderItem={(cert) => (
-            <CertCard
-              key={cert.id || `${cert.domain}-${cert.source || "auto"}`}
-              cert={cert}
-            />
-          )}
+          renderItem={(cert) => <CertCard key={cert.id || cert.domain} cert={cert} />}
           estimateSize={268}
-          getItemKey={(cert) => cert.id || `${cert.domain}-${cert.source || "auto"}`}
+          getItemKey={(cert) => cert.id || cert.domain}
           emptyState={emptyStateContent}
           loadingIndicator={loadingIndicator}
           endOfListIndicator={endOfListIndicator}
@@ -80,4 +64,3 @@ const CertList = memo(({ certType }: CertListProps) => {
 CertList.displayName = "CertList";
 
 export default CertList;
-

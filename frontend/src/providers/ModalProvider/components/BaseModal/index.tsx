@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useCallback } from "react";
 
-import { PrimaryButton } from "@/components";
+import { Button } from "nfx-ui/components";
 import { CheckCircle, Info, XCircle } from "@/assets/icons/lucide";
 
 import ModalStore, { useModalStore } from "@/stores/modalStore";
@@ -59,7 +59,9 @@ const BaseModal = memo(() => {
         <div className={styles.icon}>{getIcon()}</div>
         {title && <h3 className={styles.title}>{title}</h3>}
         <p className={styles.message}>{message || "No message"}</p>
-        <PrimaryButton text={confirmText || "OK"} handler={handleClose} fullWidth />
+        <Button type="button" variant="primary" onClick={handleClose} fullWidth>
+          {confirmText || "OK"}
+        </Button>
       </div>
     </dialog>
   );

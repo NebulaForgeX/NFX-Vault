@@ -1,9 +1,7 @@
 import { memo } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Suspense } from "nfx-ui/components";
-
-import { PrimaryButton } from "@/components";
+import { Button, Suspense } from "nfx-ui/components";
 import { routerEventEmitter } from "@/events/router";
 import { useCertificateDetailById } from "@/hooks";
 import { ROUTES } from "@/navigations";
@@ -67,10 +65,9 @@ const CertDetailPage = memo(() => {
       <div className={styles.container}>
         <div className={styles.errorContainer}>
           <p className={styles.errorText}>{t("error.loadFailed") || "Invalid certificate parameters"}</p>
-          <PrimaryButton
-            text={t("back") || "Back to Certificate List"}
-            handler={() => routerEventEmitter.navigate({ to: ROUTES.CHECK })}
-          />
+          <Button type="button" variant="primary" onClick={() => routerEventEmitter.navigate({ to: ROUTES.CHECK })}>
+            {t("back") || "Back to Certificate List"}
+          </Button>
         </div>
       </div>
     );

@@ -18,8 +18,6 @@ async def search(
 ) -> dict:
     return svc.search_certificate(
         req.keyword,
-        store=req.store,
-        source=req.source,
         offset=req.offset,
         limit=req.limit,
     )

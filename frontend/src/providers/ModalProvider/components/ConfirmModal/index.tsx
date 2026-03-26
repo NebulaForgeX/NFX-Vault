@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useCallback } from "react";
 
-import { PrimaryButton, SecondaryButton } from "@/components";
+import { Button } from "nfx-ui/components";
 import { AlertCircle } from "@/assets/icons/lucide";
 
 import ModalStore, { useModalStore } from "@/stores/modalStore";
@@ -51,8 +51,12 @@ const ConfirmModal = memo(() => {
         {title && <h3 className={styles.title}>{title}</h3>}
         <p className={styles.message}>{message || "No message"}</p>
           <div className={styles.buttonGroup}>
-            <SecondaryButton text={cancelText || "Cancel"} handler={handleCancel} />
-            <PrimaryButton text={confirmText || "Confirm"} handler={handleConfirm} />
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              {cancelText || "Cancel"}
+            </Button>
+            <Button type="button" variant="primary" onClick={handleConfirm}>
+              {confirmText || "Confirm"}
+            </Button>
           </div>
       </div>
     </dialog>

@@ -1,5 +1,5 @@
 # coding=utf-8
-"""证书相关 Kafka 事件处理（对齐原 CertificateKafkaHandler）。"""
+"""证书相关 Kafka 事件处理。"""
 from __future__ import annotations
 
 import asyncio
@@ -16,7 +16,6 @@ from apps.certificate.events import (
 )
 from apps.certificate.services.certificate_service import CertificateService
 from apps.file.services.file_service import FileService
-from enums import CertificateSource, CertificateStore
 
 logger = logging.getLogger(__name__)
 
@@ -48,9 +47,8 @@ class CertificateKafkaHandler:
 
     def process_cache_invalidate(self, event_data: dict[str, Any]) -> None:
         try:
-            event = CacheInvalidateEvent.from_dict(event_data)
-            for store in event.stores:
-                self.certificate_service.cache_repo.clear_store_cache(store)
+            CacheInvalidateEvent.from_dict(event_data)
+            self.certificate_service.cache_repo.clear_all_certificate_cache()
         except Exception as e:  # noqa: BLE001
             logger.error("process_cache_invalidate: %s", e, exc_info=True)
             raise
@@ -90,14 +88,7 @@ class CertificateKafkaHandler:
             if not cert_detail:
                 logger.error("证书不存在: %s", event.certificate_id)
                 return
-            store = cert_detail.get("store")
-            source = cert_detail.get("source")
-            if source == CertificateSource.AUTO.value and store == CertificateStore.DATABASE.value:
-                logger.warning(
-                    "AUTO 证书不应在 database store，跳过导出: id=%s", event.certificate_id
-                )
-                return
-            self.file_service.export_single_certificate(event.certificate_id, store=str(store))
+            self.file_service.export_single_certificate(event.certificate_id)
         except Exception as e:  # noqa: BLE001
             logger.error("process_export_certificate: %s", e, exc_info=True)
             raise

@@ -7,7 +7,7 @@ import os
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 
-from utils.acme.challenge_storage import ACMEChallengeStorage
+from utils import ACMEChallengeStorage
 
 logger = logging.getLogger(__name__)
 

@@ -43,19 +43,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
-}
-
-.spinner {
-  display: block;
-  width: 2.35rem;
-  height: 2.35rem;
-  border-radius: 50%;
-  border: 2.5px solid var(--color-border-3, rgba(148, 163, 184, 0.35));
-  border-top-color: var(--color-primary, #3b82f6);
-  border-right-color: color-mix(in srgb, var(--color-primary) 55%, transparent);
-  animation: spin 0.75s linear infinite;
+  min-height: 3rem;
 }
 
 .copy {
@@ -90,17 +78,3 @@
   opacity: 0.72;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .spinner {
-    animation: none;
-    border-top-color: var(--color-primary);
-    border-right-color: var(--color-primary);
-    opacity: 0.85;
-  }
-}

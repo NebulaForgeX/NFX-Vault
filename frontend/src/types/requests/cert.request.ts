@@ -1,10 +1,17 @@
 /**
- * 证书 API 请求体 — 与 NFX-Vault Backend 路由参数 / JSON body 对齐。
+ * 证书 API 请求体 — camelCase，由 axios-case-converter 转 snake_case
  */
-import type { CertType, CertificateSource } from "@/types/enums";
+
+export interface ApplyCertificateRequest {
+  domain: string;
+  email: string;
+  sans?: string[];
+  folderName?: string;
+  webroot?: string;
+  forceRenewal?: boolean;
+}
 
 export interface CreateCertificateRequest {
-  store: CertType | "database";
   domain: string;
   certificate: string;
   privateKey: string;
@@ -16,62 +23,21 @@ export interface CreateCertificateRequest {
 
 export interface UpdateManualAddCertificateRequest {
   certificateId: string;
-  certificate?: string;
-  privateKey?: string;
-  store?: CertType;
   sans?: string[];
   folderName?: string;
   email?: string;
 }
 
-export interface UpdateManualApplyCertificateRequest {
-  domain: string;
-  folderName: string;
-  store?: CertType;
-}
-
 export interface DeleteCertificateRequest {
-  certificate_id: string;
-}
-
-export interface ApplyCertificateRequest {
-  domain: string;
-  email: string;
-  folderName: string;
-  sans?: string[];
-  webroot?: string;
-}
-
-export interface ReapplyAutoCertificateRequest {
   certificateId: string;
-  email: string;
-  sans?: string[];
-  webroot?: string;
-  forceRenewal?: boolean;
-}
-
-export interface ReapplyManualApplyCertificateRequest {
-  certificateId: string;
-  domain: string;
-  email: string;
-  folderName: string;
-  sans?: string[];
-  webroot?: string;
-  forceRenewal?: boolean;
-}
-
-export interface ReapplyManualAddCertificateRequest {
-  certificateId: string;
-  email: string;
-  sans?: string[];
-  webroot?: string;
-  forceRenewal?: boolean;
 }
 
 export interface SearchCertificateRequest {
   keyword: string;
-  store?: CertType;
-  source?: CertificateSource;
   offset?: number;
   limit?: number;
+}
+
+export interface ParseCertificatePreviewRequest {
+  certificate: string;
 }

@@ -1,9 +1,9 @@
 {
   "title": "Edit Certificate",
-  "subtitle": "Update certificate information",
+  "subtitle": "Edit folder, email, and SANs. Certificate PEM and private key are not changed here (see detail page).",
   "form": {
     "editTitle": "Edit Certificate",
-    "editSubtitle": "Update certificate information",
+    "editSubtitle": "Edit folder, email, and SANs. PEM and private key are view-only on the detail page.",
     "readOnly": "(Read Only)",
     "autoNotEditable": "Auto-discovered certificates cannot be manually edited. Please refresh from folders to update.",
     "manualApplyEditable": "Manually applied certificates can only edit folder name",
@@ -14,8 +14,6 @@
     "folderName": "Folder Name",
     "folderNamePlaceholder": "e.g., api_lucaslyu_com",
     "folderNameHelp": "Unique identifier, can only contain letters, numbers, underscores, and hyphens",
-    "certificate": "Certificate Content",
-    "privateKey": "Private Key Content",
     "update": "Update Certificate",
     "updating": "Updating..."
   },

@@ -32,7 +32,21 @@
     "forceRenewal": "Activer le renouvellement forcé",
     "forceRenewalHelp": "Lorsqu'il est activé, forcera la redemande du certificat (même s'il n'est pas expiré). Lorsqu'il est désactivé, utilisera le certificat en cache s'il est disponible.",
     "rateLimitTitle": "Informations sur la limite de débit",
-    "rateLimitInfo": "Limite Let's Encrypt : Un maximum de 5 certificats peut être émis pour le même ensemble d'identifiants dans les 168 heures (7 jours). Si le renouvellement forcé est activé, le certificat sera redemandé même s'il n'est pas expiré, ce qui peut déclencher des limites de débit."
+    "rateLimitInfo": "Limite Let's Encrypt : Un maximum de 5 certificats peut être émis pour le même ensemble d'identifiants dans les 168 heures (7 jours). Si le renouvellement forcé est activé, le certificat sera redemandé même s'il n'est pas expiré, ce qui peut déclencher des limites de débit.",
+    "editTitle": "Modifier le certificat",
+    "sectionImport": "Importer un fichier (analyse seule — le PEM n'est pas envoyé)",
+    "sectionImportHint": "Facultatif : téléversez un PEM existant pour préremplir domaine, SAN et émetteur. Ce PEM n'est pas envoyé au serveur. L'envoi du formulaire lance Let's Encrypt et enregistre le nouveau certificat.",
+    "applySubmit": "Demander le certificat",
+    "applySubmitting": "Demande en cours..."
+  },
+  "upload": {
+    "certPem": "Téléverser le PEM du certificat (analyser et remplir)",
+    "certPemParseOnly": "Téléverser le PEM (domaine & SAN seulement)",
+    "privateKeyFile": "Téléverser le fichier de clé privée",
+    "parsing": "Analyse…",
+    "parseOk": "Formulaire rempli à partir du certificat",
+    "parseFailed": "Impossible d'analyser le certificat",
+    "keyReadFailed": "Impossible de lire le fichier de clé privée"
   },
   "apply": {
     "title": "Demander un certificat",

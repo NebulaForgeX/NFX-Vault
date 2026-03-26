@@ -1,7 +1,8 @@
 # coding=utf-8
-"""文件域 Service：证书目录导出/列举/下载/删除（对齐原 FileApplication）。"""
+"""文件域 Service：证书目录导出/列举/下载/删除（仅 Websites 磁盘树）。"""
 from __future__ import annotations
 
+import json
 import logging
 import os
 import shutil
@@ -12,30 +13,35 @@ from apps.certificate.kafka.certificate_pipeline import CertificatePipeline
 from apps.certificate.models import TLSCertificate
 from apps.certificate.repos.certificate_repository import CertificateRepository
 from config.types import DatabaseConfig
-from enums import CertificateSource, CertificateStatus, CertificateStore
-from utils.pem import extract_cert_info_from_pem_sync
+from enums import CertificateStatus
+from utils import extract_cert_info_from_pem_sync
 
 logger = logging.getLogger(__name__)
 
+WEBSITES_STORE = "websites"
 
-def _store_enum(store: str) -> CertificateStore:
-    return CertificateStore(store)
+_TASK = "disk_cert_import"
 
 
-def _skip_apis_scan_when_websites_owns_domain(
-    target_store: CertificateStore, existing: Optional[TLSCertificate], domain: str, folder_name: str
-) -> bool:
-    """磁盘上 Websites 与 Apis 若出现同一域名，DB 只能一行：以 websites 为准，apis 扫目录时跳过。"""
-    if target_store != CertificateStore.APIS or existing is None:
-        return False
-    if existing.store != CertificateStore.WEBSITES:
-        return False
-    logger.warning(
-        "域名 %s 已由 websites 占用，跳过从 Apis 同步（请删除 Apis/%s 重复目录或只保留 Websites 一处）",
-        domain,
-        folder_name,
-    )
-    return True
+def _log_disk_import(record: dict[str, Any]) -> None:
+    payload = dict(record)
+    payload.setdefault("task", _TASK)
+    logger.info(json.dumps(payload, ensure_ascii=False, default=str))
+
+
+def _log_disk_import_error(record: dict[str, Any], exc: BaseException) -> None:
+    payload = dict(record)
+    payload.setdefault("task", _TASK)
+    payload["error"] = str(exc)
+    logger.error(json.dumps(payload, ensure_ascii=False, default=str), exc_info=True)
+
+
+def _fmt_dt(value: Any) -> Optional[str]:
+    if value is None:
+        return None
+    if hasattr(value, "isoformat"):
+        return value.isoformat()
+    return str(value)
 
 
 class FileService:
@@ -51,7 +57,8 @@ class FileService:
         self.pipeline_repo = pipeline_repo
         self.db_config = db_config
 
-    async def read_folders_and_store_certificates(self, store: str) -> dict[str, Any]:
+    async def read_folders_and_store_certificates(self, store: str = WEBSITES_STORE) -> dict[str, Any]:
+        """读取磁盘证书目录写入 DB（启动时仅调用 websites）。"""
         if not self.database_repo.db_session.enable_mysql:
             return {"success": False, "message": "Database repository not initialized", "processed": 0}
         base_dir = self.base_dir
@@ -59,10 +66,11 @@ class FileService:
         if not os.path.exists(store_dir):
             return {"success": True, "message": f"Directory not found: {store_dir}", "processed": 0}
         try:
-            st_enum = _store_enum(store)
-            processed_count = 0
+            inserted_count = 0
+            skipped_existing_count = 0
+            skipped_missing_files_count = 0
+            skipped_no_domain_count = 0
             failed_count = 0
-            skipped_dupe = 0
             for folder_name in os.listdir(store_dir):
                 folder_path = os.path.join(store_dir, folder_name)
                 if not os.path.isdir(folder_path) or folder_name.startswith("."):
@@ -70,6 +78,19 @@ class FileService:
                 cert_file = os.path.join(folder_path, "cert.crt")
                 key_file = os.path.join(folder_path, "key.key")
                 if not os.path.exists(cert_file) or not os.path.exists(key_file):
+                    has_c = os.path.exists(cert_file)
+                    has_k = os.path.exists(key_file)
+                    _log_disk_import(
+                        {
+                            "event": "skip_missing_files",
+                            "store": store,
+                            "disk_folder": folder_name,
+                            "path": folder_path,
+                            "has_cert_crt": has_c,
+                            "has_key_key": has_k,
+                        }
+                    )
+                    skipped_missing_files_count += 1
                     continue
                 try:
                     with open(cert_file, encoding="utf-8") as f:
@@ -81,7 +102,15 @@ class FileService:
                         cert_info.get("subject") or {}
                     ).get("CN", "")
                     if not domain:
-                        logger.warning("无法从证书提取域名，跳过: %s", folder_name)
+                        _log_disk_import(
+                            {
+                                "event": "skip_no_domain",
+                                "store": store,
+                                "disk_folder": folder_name,
+                                "path": folder_path,
+                            }
+                        )
+                        skipped_no_domain_count += 1
                         continue
                     parsed_sans = cert_info.get("sans", [])
                     all_domains = cert_info.get("all_domains", [])
@@ -100,64 +129,106 @@ class FileService:
                             .first()
                         )
                         if existing:
-                            if _skip_apis_scan_when_websites_owns_domain(
-                                st_enum, existing, domain, folder_name
-                            ):
-                                skipped_dupe += 1
-                                continue
-                            existing.store = st_enum
-                            existing.source = CertificateSource.AUTO
-                            existing.folder_name = folder_name
-                            existing.certificate = cert_pem
-                            existing.private_key = key_pem
-                            existing.sans = all_domains if all_domains else []
-                            existing.issuer = cert_info.get("issuer", "Let's Encrypt")
-                            existing.not_before = cert_info.get("not_before")
-                            existing.not_after = cert_info.get("not_after")
-                            existing.is_valid = cert_info.get("is_valid", True)
-                            existing.days_remaining = cert_info.get("days_remaining")
-                            existing.status = CertificateStatus.SUCCESS
-                            existing.updated_at = datetime.now()
-                        else:
-                            new_cert = TLSCertificate(
-                                store=st_enum,
-                                domain=domain,
-                                folder_name=folder_name,
-                                certificate=cert_pem,
-                                private_key=key_pem,
-                                source=CertificateSource.AUTO,
-                                status=CertificateStatus.SUCCESS,
-                                sans=all_domains if all_domains else [],
-                                issuer=cert_info.get("issuer", "Let's Encrypt"),
-                                not_before=cert_info.get("not_before"),
-                                not_after=cert_info.get("not_after"),
-                                is_valid=cert_info.get("is_valid", True),
-                                days_remaining=cert_info.get("days_remaining"),
+                            _log_disk_import(
+                                {
+                                    "event": "skip_domain_exists",
+                                    "store": store,
+                                    "disk_folder": folder_name,
+                                    "domain": domain,
+                                    "certificate_id": existing.id,
+                                    "db_folder_name": existing.folder_name,
+                                    "db_status": existing.status.value if existing.status else None,
+                                    "db_issuer": existing.issuer,
+                                    "db_not_before": _fmt_dt(existing.not_before),
+                                    "db_not_after": _fmt_dt(existing.not_after),
+                                    "db_days_remaining": existing.days_remaining,
+                                    "db_sans": existing.sans,
+                                    "db_updated_at": _fmt_dt(existing.updated_at),
+                                }
                             )
-                            session.add(new_cert)
-                    processed_count += 1
+                            skipped_existing_count += 1
+                            continue
+                        new_cert = TLSCertificate(
+                            domain=domain,
+                            folder_name=folder_name,
+                            certificate=cert_pem,
+                            private_key=key_pem,
+                            status=CertificateStatus.SUCCESS,
+                            sans=all_domains if all_domains else [],
+                            issuer=cert_info.get("issuer", "Let's Encrypt"),
+                            not_before=cert_info.get("not_before"),
+                            not_after=cert_info.get("not_after"),
+                            is_valid=cert_info.get("is_valid", True),
+                            days_remaining=cert_info.get("days_remaining"),
+                        )
+                        session.add(new_cert)
+                        session.flush()
+                        _log_disk_import(
+                            {
+                                "event": "insert_ok",
+                                "store": store,
+                                "disk_folder": folder_name,
+                                "certificate_id": new_cert.id,
+                                "domain": domain,
+                                "issuer": new_cert.issuer,
+                                "not_before": _fmt_dt(new_cert.not_before),
+                                "not_after": _fmt_dt(new_cert.not_after),
+                                "days_remaining": new_cert.days_remaining,
+                                "is_valid": new_cert.is_valid,
+                                "sans": new_cert.sans,
+                            }
+                        )
+                        inserted_count += 1
                 except Exception as e:  # noqa: BLE001
-                    logger.error("处理证书失败 folder=%s: %s", folder_name, e, exc_info=True)
+                    _log_disk_import_error(
+                        {
+                            "event": "row_error",
+                            "store": store,
+                            "disk_folder": folder_name,
+                            "path": folder_path,
+                        },
+                        e,
+                    )
                     failed_count += 1
-            msg = f"Processed {processed_count} certificates from {store}"
-            if skipped_dupe:
-                msg += f" (skipped {skipped_dupe} Apis/Websites duplicate domains)"
+            msg = (
+                f"read_folders_and_store_certificates store={store}: "
+                f"inserted={inserted_count} skipped_existing={skipped_existing_count} "
+                f"skipped_missing_files={skipped_missing_files_count} "
+                f"skipped_no_domain={skipped_no_domain_count} failed={failed_count}"
+            )
+            _log_disk_import(
+                {
+                    "event": "batch_summary",
+                    "store": store,
+                    "inserted": inserted_count,
+                    "skipped_existing": skipped_existing_count,
+                    "skipped_missing_files": skipped_missing_files_count,
+                    "skipped_no_domain": skipped_no_domain_count,
+                    "failed": failed_count,
+                    "message": msg,
+                }
+            )
             return {
                 "success": True,
                 "message": msg,
-                "processed": processed_count,
-                "skipped_duplicate_domain": skipped_dupe,
+                "processed": inserted_count,
+                "inserted": inserted_count,
+                "skipped_existing": skipped_existing_count,
+                "skipped_missing_files": skipped_missing_files_count,
+                "skipped_no_domain": skipped_no_domain_count,
+                "failed": failed_count,
             }
         except Exception as e:  # noqa: BLE001
-            logger.error("read_folders_and_store_certificates: %s", e, exc_info=True)
+            _log_disk_import_error({"event": "batch_fatal", "store": store}, e)
             return {"success": False, "message": str(e), "processed": 0}
 
-    def export_certificates(self, store: str) -> dict[str, Any]:
+    def export_certificates(self) -> dict[str, Any]:
         try:
             cert_dicts, _total = self.database_repo.get_certificate_list(
-                store, offset=0, limit=10000
+                offset=0, limit=10000
             )
             exported_certs: list[dict[str, Any]] = []
+            store = WEBSITES_STORE
             for cert_dict in cert_dicts:
                 domain = cert_dict.get("domain")
                 if not domain:
@@ -167,8 +238,7 @@ class FileService:
                     continue
                 folder_name = cert_detail.get("folder_name")
                 if folder_name:
-                    base_dir = self.base_dir
-                    store_dir = os.path.join(base_dir, store.capitalize())
+                    store_dir = os.path.join(self.base_dir, store.capitalize())
                     folder_path = os.path.join(store_dir, folder_name)
                     os.makedirs(folder_path, exist_ok=True)
                     cert_file = os.path.join(folder_path, "cert.crt")
@@ -182,9 +252,7 @@ class FileService:
                 exported_certs.append(
                     {
                         "domain": cert_detail.get("domain"),
-                        "store": cert_detail.get("store", store),
                         "folder_name": cert_detail.get("folder_name"),
-                        "source": cert_detail.get("source", "auto"),
                         "status": cert_detail.get("status"),
                         "certificate": cert_detail.get("certificate"),
                         "private_key": cert_detail.get("private_key"),
@@ -198,7 +266,7 @@ class FileService:
                 )
             return {
                 "success": True,
-                "message": f"Successfully exported {len(exported_certs)} certificates from {store}",
+                "message": f"Successfully exported {len(exported_certs)} certificates",
                 "certificates": exported_certs,
                 "total": len(exported_certs),
             }
@@ -211,7 +279,8 @@ class FileService:
                 "total": 0,
             }
 
-    def export_single_certificate(self, certificate_id: str, store: str) -> dict[str, Any]:
+    def export_single_certificate(self, certificate_id: str) -> dict[str, Any]:
+        store = WEBSITES_STORE
         try:
             cert_detail = self.database_repo.get_certificate_by_id(certificate_id)
             if not cert_detail:
@@ -219,7 +288,6 @@ class FileService:
                     "success": False,
                     "message": f"Certificate not found: {certificate_id}",
                     "certificate_id": certificate_id,
-                    "store": store,
                 }
             folder_name = cert_detail.get("folder_name")
             if not folder_name:
@@ -227,7 +295,6 @@ class FileService:
                     "success": False,
                     "message": f"Folder name not found for certificate: {certificate_id}",
                     "certificate_id": certificate_id,
-                    "store": store,
                 }
             domain = cert_detail.get("domain")
             certificate = cert_detail.get("certificate", "") or ""
@@ -237,7 +304,6 @@ class FileService:
                     "success": False,
                     "message": f"Certificate or private key is empty for certificate: {certificate_id}",
                     "certificate_id": certificate_id,
-                    "store": store,
                 }
             store_dir = os.path.join(self.base_dir, store.capitalize())
             folder_path = os.path.join(store_dir, folder_name)
@@ -246,7 +312,6 @@ class FileService:
                 f.write(certificate)
             with open(os.path.join(folder_path, "key.key"), "w", encoding="utf-8") as f:
                 f.write(private_key)
-            st_target = _store_enum(store)
             if self.database_repo.db_session.enable_mysql:
                 try:
                     cert_info = extract_cert_info_from_pem_sync(certificate)
@@ -267,8 +332,6 @@ class FileService:
                             .first()
                         )
                         if existing:
-                            existing.store = st_target
-                            existing.source = CertificateSource.AUTO
                             existing.folder_name = folder_name
                             existing.certificate = certificate
                             existing.private_key = private_key
@@ -296,12 +359,10 @@ class FileService:
                         else:
                             session.add(
                                 TLSCertificate(
-                                    store=st_target,
                                     domain=domain,
                                     folder_name=folder_name,
                                     certificate=certificate,
                                     private_key=private_key,
-                                    source=CertificateSource.AUTO,
                                     status=CertificateStatus.SUCCESS,
                                     sans=all_domains if all_domains else cert_detail.get("sans", []),
                                     issuer=cert_info.get("issuer") or cert_detail.get("issuer"),
@@ -333,10 +394,9 @@ class FileService:
                 "success": False,
                 "message": str(e),
                 "certificate_id": certificate_id,
-                "store": store,
             }
 
-    def list_directory(self, store: str, subpath: Optional[str] = None) -> dict[str, Any]:
+    def list_directory(self, store: str = WEBSITES_STORE, subpath: Optional[str] = None) -> dict[str, Any]:
         try:
             store_dir = os.path.join(self.base_dir, store.capitalize())
             if subpath:
@@ -382,7 +442,7 @@ class FileService:
             logger.error("list_directory: %s", e, exc_info=True)
             return {"success": False, "message": str(e), "items": []}
 
-    def download_file(self, store: str, file_path: str) -> dict[str, Any]:
+    def download_file(self, store: str = WEBSITES_STORE, file_path: str = "") -> dict[str, Any]:
         try:
             store_dir = os.path.join(self.base_dir, store.capitalize())
             file_path = file_path.lstrip("/").lstrip("\\")
@@ -407,7 +467,7 @@ class FileService:
             logger.error("download_file: %s", e, exc_info=True)
             return {"success": False, "message": str(e), "content": None, "filename": None}
 
-    def get_file_content(self, store: str, file_path: str) -> dict[str, Any]:
+    def get_file_content(self, store: str = WEBSITES_STORE, file_path: str = "") -> dict[str, Any]:
         try:
             store_dir = os.path.join(self.base_dir, store.capitalize())
             file_path = file_path.lstrip("/").lstrip("\\")
@@ -435,7 +495,7 @@ class FileService:
             logger.error("get_file_content: %s", e, exc_info=True)
             return {"success": False, "message": str(e), "content": None, "filename": None}
 
-    def delete_folder(self, store: str, folder_name: str) -> dict[str, Any]:
+    def delete_folder(self, store: str = WEBSITES_STORE, folder_name: str = "") -> dict[str, Any]:
         try:
             store_dir = os.path.join(self.base_dir, store.capitalize())
             folder_path = os.path.join(store_dir, folder_name)
@@ -457,7 +517,7 @@ class FileService:
             logger.error("delete_folder: %s", e, exc_info=True)
             return {"success": False, "message": str(e), "store": store, "folder_name": folder_name}
 
-    def delete_file_or_folder_fs(self, store: str, path: str, item_type: str) -> dict[str, Any]:
+    def delete_file_or_folder_fs(self, store: str = WEBSITES_STORE, path: str = "", item_type: str = "") -> dict[str, Any]:
         try:
             store_dir = os.path.join(self.base_dir, store.capitalize())
             target_path = os.path.join(store_dir, path)

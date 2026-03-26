@@ -10,7 +10,6 @@ import styles from "./Modal.module.css";
 const FileModal = memo(() => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const isOpen = useModalStore((state) => state.fileModal.isOpen);
-  const store = useModalStore((state) => state.fileModal.store);
   const filePath = useModalStore((state) => state.fileModal.filePath);
   const fileName = useModalStore((state) => state.fileModal.fileName);
   const hideModal = ModalStore.getState().hideModal;
@@ -25,7 +24,7 @@ const FileModal = memo(() => {
     if (isOpen && !dialog.open) {
       dialog.showModal();
       // 只加载文件内容
-      if (store && filePath) {
+      if (filePath) {
         loadFileContent();
       }
     } else if (!isOpen && dialog.open) {
@@ -34,14 +33,14 @@ const FileModal = memo(() => {
       setFileContent("");
       setError(null);
     }
-  }, [isOpen, store, filePath]);
+  }, [isOpen, filePath]);
 
   const loadFileContent = async () => {
-    if (!store || !filePath) return;
+    if (!filePath) return;
     setLoading(true);
     setError(null);
     try {
-      const result = await GetFileContent(store, filePath);
+      const result = await GetFileContent(filePath);
       if (result.success && result.content) {
         setFileContent(result.content);
       } else {
@@ -60,14 +59,13 @@ const FileModal = memo(() => {
   };
 
   const handleDownload = async () => {
-    if (!filePath || !store) return;
+    if (!filePath) return;
     try {
-      // 提取所有文件夹层级并拼接
       const pathParts = filePath.split("/").filter(Boolean);
-      pathParts.pop(); // 移除最后一个部分（文件名）
-      const folderLevels = pathParts.join("_"); // 所有父级文件夹用下划线拼接
+      pathParts.pop();
+      const folderLevels = pathParts.join("_");
       const downloadFolderName = folderLevels || "";
-      await downloadFile(store, filePath, downloadFolderName);
+      await downloadFile(filePath, downloadFolderName);
     } catch (err: any) {
       console.error("Failed to download file:", err);
     }

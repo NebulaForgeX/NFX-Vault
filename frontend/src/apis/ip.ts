@@ -1,81 +1,31 @@
 /*
- * API path tree: base paths + dynamic segments via path().
- * path("/a", { b: "/b", c: path("/c", { d: "/d" }) }) => b="/a/b", c="/a/c", c.d="/a/c/d"
+ * API path tree: base paths + dynamic segments via path()（与 nfx-ui/apis、Pqttec-Admin 一致）
  */
+import { path } from "nfx-ui/apis";
 
-const [BASE, CHILDREN] = [Symbol(), Symbol()];
-
-// Recursive type: each key maps to string (leaf), function (dynamic path), or nested PathNode
-type PathNode<T> = string & {
-  [K in keyof T]: T[K] extends (...args: infer A) => infer R
-    ? R extends object
-      ? (...args: A) => PathNode<R> // function returning path
-      : (...args: A) => string // function returning string
-    : T[K] extends object
-      ? PathNode<T[K]>
-      : string;
-};
-
-const path = <T extends Record<string, unknown>>(base: string, children: T): PathNode<T> =>
-  Object.assign(
-    Object.defineProperties(new String(base), {
-      [BASE]: { value: base },
-      [CHILDREN]: { value: children },
-      toString: { value: () => base },
-      valueOf: { value: () => base },
-      [Symbol.toPrimitive]: { value: () => base },
-    }),
-    Object.fromEntries(
-      Object.entries(children).map(([k, v]) => [
-        k,
-        typeof v === "function"
-          ? (...args: unknown[]) => {
-              const result = (v as (...args: unknown[]) => unknown)(...args);
-              return BASE in Object(result)
-                ? path(
-                    `${base}${(result as Record<symbol, string>)[BASE]}`,
-                    (result as Record<symbol, Record<string, unknown>>)[CHILDREN] ?? {},
-                  )
-                : `${base}${result}`;
-            }
-          : BASE in Object(v)
-            ? path(
-                `${base}${(v as Record<symbol, string>)[BASE]}`,
-                (v as Record<symbol, Record<string, unknown>>)[CHILDREN] ?? {},
-              )
-            : `${base}${v}`,
-      ]),
-    ),
-  ) as PathNode<T>;
-
-// 从环境变量获取配置
 const HTTP_BASE_URL = import.meta.env.VITE_API_URL ?? "/vault";
 const WS_BASE_URL = import.meta.env.VITE_WS_URL ?? "";
 const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_URL ?? "";
 
 export const URL_PATHS = {
   TLS: path("/tls", {
-    check: (certType: string) => `/check/${certType}`,
+    check: "/check",
     detailById: (certificateId: string) => `/detail-by-id/${certificateId}`,
-    refresh: (certType: string) => `/refresh/${certType}`,
+    apply: "/apply",
     create: "/create",
     updateManualAdd: "/update/manual-add",
-    updateManualApply: "/update/manual-apply",
     delete: "/delete",
-    apply: "/apply",
-    invalidateCache: (certType: string) => `/invalidate-cache/${certType}`,
-    reapplyAuto: "/reapply/auto",
-    reapplyManualApply: "/reapply/manual-apply",
-    reapplyManualAdd: "/reapply/manual-add",
+    invalidateCache: "/invalidate-cache",
     search: "/search",
+    parsePreview: "/parse-preview",
   }),
 
   FILE: path("/file", {
-    list: (store: string) => `/list/${store}`,
-    export: (store: string) => `/export/${store}`,
+    list: "/list",
+    export: "/export",
     exportSingle: "/export-single",
-    download: (store: string) => `/download/${store}`,
-    content: (store: string) => `/content/${store}`,
+    download: "/download",
+    content: "/content",
     delete: "/delete",
   }),
 

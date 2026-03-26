@@ -141,3 +141,6 @@ backend_old/*.egg-info/
 *.sln
 *.sw?
 
+# Example
+Pqttec-Admin/
+NFX-UI/

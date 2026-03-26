@@ -6,6 +6,7 @@ NFX-Vault Backend（MVC，自包含于 `backend/`）。
 """
 from __future__ import annotations
 
+import json
 import logging
 import os
 import signal
@@ -18,7 +19,7 @@ import uvicorn
 
 from apps.wiring import ApplicationStack, build_application_stack
 from config import load_config, load_repo_dotenv
-from utils.kafka import KafkaConsumerThread
+from utils import KafkaConsumerThread
 from routers.urls import api_router
 from tasks.scheduler import setup_scheduler, shutdown_scheduler
 
@@ -28,6 +29,9 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
 )
+# APScheduler 默认 INFO 为人读句子，与业务 JSON 日志混排；仍可通过 WARNING 及以上看到异常
+logging.getLogger("apscheduler").setLevel(logging.WARNING)
+
 logger = logging.getLogger(__name__)
 
 _stack: Optional[ApplicationStack] = None
@@ -51,26 +55,81 @@ async def lifespan(app: FastAPI):
     if _stack.kafka_consumer and _stack.kafka_consumer.start():
         _consumer_thread = KafkaConsumerThread(_stack.kafka_consumer)
         _consumer_thread.start()
-        logger.info("Kafka Consumer 线程已启动")
+        logger.info(
+            json.dumps(
+                {"task": "kafka_consumer", "event": "thread_started"},
+                ensure_ascii=False,
+            )
+        )
     else:
-        logger.info("Kafka Consumer 未启动（Kafka 不可用或未配置）")
+        logger.info(
+            json.dumps(
+                {
+                    "task": "kafka_consumer",
+                    "event": "not_started",
+                    "reason": "kafka_unavailable_or_unconfigured",
+                },
+                ensure_ascii=False,
+            )
+        )
 
     if cert_cfg.READ_ON_STARTUP:
-        logger.info("READ_ON_STARTUP: 读取 Websites/Apis 目录入库")
+        logger.info(
+            json.dumps(
+                {
+                    "task": "disk_cert_import",
+                    "event": "startup_begin",
+                    "store": "websites",
+                    "message": "READ_ON_STARTUP",
+                },
+                ensure_ascii=False,
+            )
+        )
         try:
-            for store in ("websites", "apis"):
-                r = await _stack.file_service.read_folders_and_store_certificates(store)
-                logger.info("READ_ON_STARTUP store=%s processed=%s", store, r.get("processed", 0))
+            r = await _stack.file_service.read_folders_and_store_certificates("websites")
+            logger.info(
+                json.dumps(
+                    {
+                        "task": "disk_cert_import",
+                        "event": "startup_api_summary",
+                        "success": r.get("success"),
+                        "inserted": r.get("inserted", r.get("processed", 0)),
+                        "skipped_existing": r.get("skipped_existing", 0),
+                        "skipped_missing_files": r.get("skipped_missing_files", 0),
+                        "skipped_no_domain": r.get("skipped_no_domain", 0),
+                        "failed": r.get("failed", 0),
+                        "message": r.get("message", ""),
+                    },
+                    ensure_ascii=False,
+                    default=str,
+                )
+            )
         except Exception as e:  # noqa: BLE001
-            logger.error("READ_ON_STARTUP 失败: %s", e, exc_info=True)
+            logger.error(
+                json.dumps(
+                    {
+                        "task": "disk_cert_import",
+                        "event": "startup_failed",
+                        "error": str(e),
+                    },
+                    ensure_ascii=False,
+                ),
+                exc_info=True,
+            )
 
-    _scheduler = setup_scheduler(cert_cfg, _stack.file_service, _stack.certificate_service)
+    _scheduler = setup_scheduler(cert_cfg, _stack.certificate_service)
 
     logger.info(
-        "mysql=%s redis=%s kafka=%s",
-        getattr(_stack.mysql, "enable_mysql", False),
-        getattr(_stack.redis, "enable_redis", False),
-        getattr(_stack.kafka, "enable_kafka", False),
+        json.dumps(
+            {
+                "task": "startup",
+                "event": "lifespan_deps",
+                "mysql": getattr(_stack.mysql, "enable_mysql", False),
+                "redis": getattr(_stack.redis, "enable_redis", False),
+                "kafka": getattr(_stack.kafka, "enable_kafka", False),
+            },
+            ensure_ascii=False,
+        )
     )
 
     yield

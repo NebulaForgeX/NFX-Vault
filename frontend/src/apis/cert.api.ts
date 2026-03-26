@@ -1,33 +1,28 @@
 import type {
-  CertType,
   CertificateListResponse,
   CertificateDetailResponse,
-  RefreshResponse,
+  ApplyCertificateRequest,
   CreateCertificateRequest,
   UpdateManualAddCertificateRequest,
-  UpdateManualApplyCertificateRequest,
   DeleteCertificateRequest,
-  ApplyCertificateRequest,
-  ReapplyAutoCertificateRequest,
-  ReapplyManualApplyCertificateRequest,
-  ReapplyManualAddCertificateRequest,
   SearchCertificateRequest,
   CertificateResponse,
   SearchCertificateResponse,
+  ParseCertificatePreviewRequest,
+  ParseCertificatePreviewResponse,
 } from "@/types";
 
 import { publicClient } from "@/apis/clients";
 import { URL_PATHS } from "./ip";
 
 export interface GetCertificateListParams {
-  certType: CertType;
   offset?: number;
   limit?: number;
 }
 
-export const GetCertificateList = async (params: GetCertificateListParams): Promise<CertificateListResponse> => {
-  const { certType, offset = 0, limit = 20 } = params;
-  const { data } = await publicClient.get<CertificateListResponse>(URL_PATHS.TLS.check(certType), {
+export const GetCertificateList = async (params: GetCertificateListParams = {}): Promise<CertificateListResponse> => {
+  const { offset = 0, limit = 20 } = params;
+  const { data } = await publicClient.get<CertificateListResponse>(URL_PATHS.TLS.check, {
     params: { offset, limit },
   });
   return data;
@@ -43,8 +38,8 @@ export const GetCertificateDetailById = async (
   return data;
 };
 
-export const RefreshCertificates = async (certType: CertType): Promise<RefreshResponse> => {
-  const { data } = await publicClient.post<RefreshResponse>(URL_PATHS.TLS.refresh(certType));
+export const ApplyCertificate = async (request: ApplyCertificateRequest): Promise<CertificateResponse> => {
+  const { data } = await publicClient.post<CertificateResponse>(URL_PATHS.TLS.apply, request);
   return data;
 };
 
@@ -58,21 +53,9 @@ export const UpdateManualAddCertificate = async (request: UpdateManualAddCertifi
   return data;
 };
 
-export const UpdateManualApplyCertificate = async (request: UpdateManualApplyCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.put<CertificateResponse>(URL_PATHS.TLS.updateManualApply, request);
-  return data;
-};
-
 export const DeleteCertificate = async (request: DeleteCertificateRequest): Promise<CertificateResponse> => {
   const { data } = await publicClient.delete<CertificateResponse>(URL_PATHS.TLS.delete, {
     data: request,
-  });
-  return data;
-};
-
-export const ApplyCertificate = async (request: ApplyCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.post<CertificateResponse>(URL_PATHS.TLS.apply, request, {
-    timeout: 360000,
   });
   return data;
 };
@@ -82,29 +65,8 @@ export interface InvalidateCacheResponse {
   message: string;
 }
 
-export const InvalidateCache = async (certType: CertType): Promise<InvalidateCacheResponse> => {
-  const { data } = await publicClient.post<InvalidateCacheResponse>(URL_PATHS.TLS.invalidateCache(certType));
-  return data;
-};
-
-export const ReapplyAutoCertificate = async (request: ReapplyAutoCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.post<CertificateResponse>(URL_PATHS.TLS.reapplyAuto, request, {
-    timeout: 360000,
-  });
-  return data;
-};
-
-export const ReapplyManualApplyCertificate = async (request: ReapplyManualApplyCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.post<CertificateResponse>(URL_PATHS.TLS.reapplyManualApply, request, {
-    timeout: 360000,
-  });
-  return data;
-};
-
-export const ReapplyManualAddCertificate = async (request: ReapplyManualAddCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await publicClient.post<CertificateResponse>(URL_PATHS.TLS.reapplyManualAdd, request, {
-    timeout: 360000,
-  });
+export const InvalidateCache = async (): Promise<InvalidateCacheResponse> => {
+  const { data } = await publicClient.post<InvalidateCacheResponse>(URL_PATHS.TLS.invalidateCache);
   return data;
 };
 
@@ -113,3 +75,9 @@ export const SearchCertificate = async (request: SearchCertificateRequest): Prom
   return data;
 };
 
+export const ParseCertificatePreview = async (
+  request: ParseCertificatePreviewRequest,
+): Promise<ParseCertificatePreviewResponse> => {
+  const { data } = await publicClient.post<ParseCertificatePreviewResponse>(URL_PATHS.TLS.parsePreview, request);
+  return data;
+};

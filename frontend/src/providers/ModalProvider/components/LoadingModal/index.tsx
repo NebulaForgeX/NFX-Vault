@@ -1,6 +1,8 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 
+import { BounceLoading } from "nfx-ui/animations";
+
 import { useModalStore } from "@/stores/modalStore";
 
 import styles from "./styles.module.css";
@@ -28,7 +30,7 @@ const LoadingModal = memo(() => {
         aria-label={line1}
       >
         <div className={styles.spinnerWrap} aria-hidden>
-          <span className={styles.spinner} />
+          <BounceLoading size="medium" shape="circle" />
         </div>
         <div className={styles.copy}>
           <p className={styles.headline}>{line1}</p>

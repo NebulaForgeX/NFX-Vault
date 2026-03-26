@@ -3,96 +3,39 @@ import { FormProvider } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import { ArrowLeft } from "@/assets/icons/lucide";
 import { Suspense } from "nfx-ui/components";
-
-import { BackButton } from "@/components";
 import { routerEventEmitter } from "@/events/router";
-import { useInitCertificateForm, useEditCertificate } from "@/elements/certificate";
+import { CertificateEditForm, useInitCertificateForm, useEditCertificate } from "@/elements/certificate";
 import { useCertificateDetailById } from "@/hooks";
-import { CertificateSource } from "@/types";
 
-import { ManualApplyForm, ManualAddForm } from "./components";
 import styles from "./styles.module.css";
 
-const CertEditPageContent = memo(() => {
+const CertEditPageContent = memo(({ certificateId }: { certificateId: string }) => {
   const { t } = useTranslation("certEdit");
-  const { certificateId } = useParams<{ certificateId: string }>();
-
-  if (!certificateId) {
-    routerEventEmitter.navigateBack();
-    return null;
-  }
 
   const { data: certificate } = useCertificateDetailById(certificateId);
-  const methods = useInitCertificateForm(certificate || null);
-  const { onSubmit, onSubmitError, isPending } = useEditCertificate(
-    certificate.domain,
-    certificate.source as CertificateSource,
-    certificate.id
-  );
+  const methods = useInitCertificateForm(certificate);
+  const { onSubmit, onSubmitError, isPending } = useEditCertificate(certificateId);
 
   const handleBack = () => routerEventEmitter.navigateBack();
-
-  if (!certificate) return null;
-
-  const source = (certificate.source as CertificateSource) || CertificateSource.AUTO;
-
-  // 根据 source 选择不同的表单组件
-  const renderForm = () => {
-    switch (source) {
-      case CertificateSource.AUTO:
-        return (
-          <ManualAddForm
-            onSubmit={onSubmit}
-            onSubmitError={onSubmitError}
-            isPending={isPending}
-          />
-        );
-      case CertificateSource.MANUAL_APPLY:
-        return (
-          <ManualApplyForm
-            onSubmit={onSubmit}
-            onSubmitError={onSubmitError}
-            isPending={isPending}
-          />
-        );
-      case CertificateSource.MANUAL_ADD:
-        return (
-          <ManualAddForm
-            onSubmit={onSubmit}
-            onSubmitError={onSubmitError}
-            isPending={isPending}
-          />
-        );
-      default:
-        return null;
-    }
-  };
 
   return (
     <FormProvider {...methods}>
       <div className={styles.page}>
-        <div className={styles.header}>
-          <BackButton onClick={handleBack} className={styles.backBtn} />
-          <div>
-            <h1 className={styles.title}>
-              {t("form.editTitle") || "编辑证书"} - {certificate.domain}
-            </h1>
-            <p className={styles.subtitle}>
-              {t("form.editSubtitle") || `更新「${certificate.domain}」的证书信息`}
-              {certificate.source && (
-                <span className={styles.sourceBadge}>
-                  ({t(`source.${certificate.source}`) || certificate.source})
-                </span>
-              )}
-            </p>
+        <div className={styles.main}>
+          <div className={styles.header}>
+            <button type="button" onClick={handleBack} className={styles.backBtn} aria-label={t("title")}>
+              <ArrowLeft size={20} />
+            </button>
+            <div>
+              <h1 className={styles.title}>
+                {t("title")} — {certificate.domain}
+              </h1>
+              <p className={styles.subtitle}>{t("subtitle")}</p>
+            </div>
           </div>
-        </div>
-
-        <div className={styles.content}>
-          <div className={styles.rightColumn}>
-            {renderForm()}
-          </div>
+          <CertificateEditForm onSubmit={onSubmit} onSubmitError={onSubmitError} isPending={isPending} />
         </div>
       </div>
     </FormProvider>
@@ -101,21 +44,18 @@ const CertEditPageContent = memo(() => {
 
 CertEditPageContent.displayName = "CertEditPageContent";
 
-const CertEditPage = memo(() => {
+export default function CertEditPage() {
   const { t } = useTranslation("certEdit");
+  const { certificateId } = useParams<{ certificateId: string }>();
+
+  if (!certificateId) {
+    routerEventEmitter.navigateBack();
+    return null;
+  }
 
   return (
-    <Suspense
-      loadingType="truck"
-      loadingText={t("loading") || "Loading certificate..."}
-      loadingSize="medium"
-    >
-      <CertEditPageContent />
+    <Suspense loadingType="ecg" loadingText={t("loading")} loadingSize="medium">
+      <CertEditPageContent certificateId={certificateId} />
     </Suspense>
   );
-});
-
-CertEditPage.displayName = "CertEditPage";
-
-export default CertEditPage;
-
+}

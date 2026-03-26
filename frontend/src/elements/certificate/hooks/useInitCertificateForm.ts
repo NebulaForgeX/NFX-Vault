@@ -1,55 +1,55 @@
-import type { CertificateFormValues } from "../controllers/certificateSchema";
+import type { EditCertificateFormValues } from "../schemas/certificateSchema";
 import type { CertificateDetailResponse } from "@/types";
 
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { Resolver } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { createCertificateFormSchema } from "../controllers/certificateSchema";
+import { createEditCertificateFormSchema } from "../schemas/certificateSchema";
 
 export default function useInitCertificateForm(certificate?: CertificateDetailResponse | null) {
   const { t } = useTranslation("common");
-  const schema = createCertificateFormSchema(t);
+  const schema = createEditCertificateFormSchema(t);
 
-  const form = useForm<CertificateFormValues>({
-    resolver: zodResolver(schema),
+  const form = useForm<EditCertificateFormValues>({
+    resolver: zodResolver(schema) as Resolver<EditCertificateFormValues>,
     mode: "onChange",
     defaultValues: certificate
       ? {
-          store: (certificate.store as "websites" | "apis") || "websites",
           domain: certificate.domain,
-          certificate: certificate.certificate,
-          privateKey: certificate.privateKey,
           sans: certificate.sans || [],
+          folderName: certificate.folderName || "",
+          email: certificate.email || "",
+          issuer: certificate.issuer || "",
+          webroot: "",
+          forceRenewal: false,
         }
       : {
-          store: "database",
           domain: "",
           folderName: "",
           email: "",
           issuer: "",
-          certificate: "",
-          privateKey: "",
           sans: [],
+          webroot: "",
+          forceRenewal: false,
         },
   });
 
   useEffect(() => {
     if (certificate) {
       form.reset({
-        store: (certificate.store as "websites" | "apis" | "database") || "database",
         domain: certificate.domain,
-        folderName: certificate.folderName || "", // axios-case-converter 将 folder_name 转换为 folderName
+        folderName: certificate.folderName || "",
         email: certificate.email || "",
         issuer: certificate.issuer || "",
-        certificate: certificate.certificate,
-        privateKey: certificate.privateKey,
         sans: certificate.sans || [],
+        webroot: "",
+        forceRenewal: false,
       });
     }
   }, [certificate, form]);
 
   return form;
 }
-

@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import type { CertificateInfo } from "@/types";
-import { CertificateStatus, CertificateSource } from "@/types";
+import { CertificateStatus } from "@/types";
 
 export interface CertificateStatusInfo {
   label: string;
@@ -15,16 +15,6 @@ export interface CertificateTimeInfo {
   textColor: string;
 }
 
-export interface CertificateSourceInfo {
-  label: string;
-  bgColor: string;
-  textColor: string;
-}
-
-/**
- * 列表行左侧强调色：优先证书申请状态，否则按有效期 / 剩余天数（与 Check / Search 列表一致）。
- * Left border accent for list rows — status first, then expiry / days remaining.
- */
 export const useCertificateListAccent = (cert: CertificateInfo | undefined): string => {
   return useMemo(() => {
     if (!cert) {
@@ -53,10 +43,6 @@ export const useCertificateListAccent = (cert: CertificateInfo | undefined): str
   }, [cert]);
 };
 
-/**
- * Hook to get certificate application status color (for border)
- * Uses theme CSS variables for consistency.
- */
 export const useCertificateStatus = (cert: CertificateInfo | undefined): string => {
   const statusColor = useMemo(() => {
     if (!cert || !cert.status) {
@@ -73,11 +59,6 @@ export const useCertificateStatus = (cert: CertificateInfo | undefined): string 
   return statusColor;
 };
 
-/**
- * Hook to get certificate time-based status display information (for valid/expired status)
- * @param cert - Certificate info object
- * @returns Time-based status display information including label, bgColor, and textColor
- */
 export const useCertificateTime = (cert: CertificateInfo | undefined): CertificateTimeInfo => {
   const { t } = useTranslation("certCheck");
 
@@ -130,61 +111,6 @@ export const useCertificateTime = (cert: CertificateInfo | undefined): Certifica
   return timeInfo;
 };
 
-/**
- * Hook to get certificate source display information
- * @param source - Certificate source (auto, manual_apply, manual_add)
- * @returns Source display information including label, bgColor, and textColor
- */
-export const useCertificateSource = (source?: CertificateSource | string): CertificateSourceInfo => {
-  const { t } = useTranslation("certEdit");
-
-  const sourceInfo = useMemo(() => {
-    if (!source) {
-      return {
-        label: t("source.auto") || "Auto",
-        bgColor: "color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-2))",
-        textColor: "var(--color-primary)",
-      };
-    }
-
-    const sourceValue = source as CertificateSource;
-
-    switch (sourceValue) {
-      case CertificateSource.AUTO:
-        return {
-          label: t("source.auto") || "Auto",
-          bgColor: "color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-2))",
-          textColor: "var(--color-primary)",
-        };
-      case CertificateSource.MANUAL_APPLY:
-        return {
-          label: t("source.manual_apply") || "Manual Apply",
-          bgColor: "color-mix(in srgb, var(--color-primary) 18%, var(--color-bg-2))",
-          textColor: "var(--color-primary)",
-        };
-      case CertificateSource.MANUAL_ADD:
-        return {
-          label: t("source.manual_add") || "Manual Add",
-          bgColor: "color-mix(in srgb, var(--color-primary) 26%, var(--color-bg-2))",
-          textColor: "var(--color-fg-heading)",
-        };
-      default:
-        return {
-          label: t("source.auto") || "Auto",
-          bgColor: "var(--color-bg-3)",
-          textColor: "var(--color-fg-text)",
-        };
-    }
-  }, [source, t]);
-
-  return sourceInfo;
-};
-
-/**
- * Hook to get countdown timer information until certificate expiration
- * @param notAfter - Certificate expiration date (ISO string)
- * @returns Countdown information including formatted time string and isExpired flag
- */
 export const useCertificateCountdown = (notAfter?: string): { countdown: string; isExpired: boolean } => {
   const [countdown, setCountdown] = useState<string>("");
   const [isExpired, setIsExpired] = useState<boolean>(false);

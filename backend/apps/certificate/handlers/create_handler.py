@@ -2,7 +2,7 @@
 """POST /vault/tls/create。"""
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 from apps.certificate.dto.certificate_request_dto import CreateCertificateRequest
 from apps.certificate.handlers.deps import get_certificate_service
@@ -17,10 +17,7 @@ async def create(
     req: CreateCertificateRequest,
     svc: CertificateService = Depends(get_certificate_service),
 ) -> CertificateVo:
-    if req.store not in ("websites", "apis", "database"):
-        raise HTTPException(status_code=400, detail="invalid store")
     r = svc.create_certificate(
-        req.store,
         req.domain,
         req.certificate,
         req.private_key,

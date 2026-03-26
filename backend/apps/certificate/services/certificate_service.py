@@ -1,13 +1,12 @@
-"""TLS 证书 Service：由原 `CertificateApplication` + tls handler 合并手写。"""
+"""TLS 证书 Service。"""
 from __future__ import annotations
 
 import logging
-import threading
 from typing import Any, Optional
 
 from config.types import CertConfig, DatabaseConfig
-from enums import CertificateSource, CertificateStatus, CertificateStore
-from utils.pem import extract_cert_info_from_pem_sync
+from enums import CertificateStatus
+from utils import extract_cert_info_from_pem_sync
 
 from apps.certificate.repos.certificate_cache_repo import CertificateCacheRepo
 from apps.certificate.repos.certificate_repository import CertificateRepository
@@ -37,16 +36,15 @@ class CertificateService:
 
     def list_certificates(
         self,
-        store: str,
         offset: int = 0,
         limit: int = 20,
         use_cache: bool = True,
     ) -> dict[str, Any]:
         if use_cache:
-            c = self.cache_repo.get_certificate_list(store, offset, limit)
+            c = self.cache_repo.get_certificate_list(offset, limit)
             if c:
                 return c
-        cert_dicts, total = self.database_repo.get_certificate_list(store, offset, limit)
+        cert_dicts, total = self.database_repo.get_certificate_list(offset, limit)
         items = []
         for d in cert_dicts:
             if not d or not d.get("domain"):
@@ -55,9 +53,7 @@ class CertificateService:
                 {
                     "id": d.get("id"),
                     "domain": d.get("domain", ""),
-                    "store": d.get("store"),
                     "folder_name": d.get("folder_name"),
-                    "source": d.get("source") or "auto",
                     "status": d.get("status"),
                     "email": d.get("email"),
                     "issuer": d.get("issuer"),
@@ -75,7 +71,7 @@ class CertificateService:
             )
         result: dict[str, Any] = {"items": items, "total": total}
         if use_cache:
-            self.cache_repo.set_certificate_list(store, offset, limit, result, ttl=300)
+            self.cache_repo.set_certificate_list(offset, limit, result, ttl=300)
         return result
 
     def get_certificate_detail_by_id(
@@ -84,49 +80,128 @@ class CertificateService:
         cert_dict = self.database_repo.get_certificate_by_id(certificate_id)
         if not cert_dict:
             return None
-        store = cert_dict.get("store")
         domain = cert_dict.get("domain")
-        if use_cache and store and domain:
-            cached = self.cache_repo.get_certificate_detail(str(store), str(domain))
+        if use_cache and domain:
+            cached = self.cache_repo.get_certificate_detail(str(domain))
             if cached and cached.get("id") == certificate_id:
                 if cached.get("sans") is None:
                     cached["sans"] = []
                 return cached
+        nb = cert_dict.get("not_before")
+        na = cert_dict.get("not_after")
         result = {
             "id": cert_dict.get("id"),
             "domain": cert_dict["domain"],
-            "store": cert_dict["store"],
             "folder_name": cert_dict.get("folder_name"),
-            "source": cert_dict.get("source", "auto"),
             "status": cert_dict.get("status"),
             "email": cert_dict.get("email"),
             "certificate": cert_dict["certificate"],
             "private_key": cert_dict["private_key"],
             "sans": cert_dict.get("sans") or [],
             "issuer": cert_dict.get("issuer"),
-            "not_before": cert_dict.get("not_before"),
-            "not_after": cert_dict.get("not_after"),
+            "not_before": nb.isoformat() if hasattr(nb, "isoformat") else nb,
+            "not_after": na.isoformat() if hasattr(na, "isoformat") else na,
             "is_valid": cert_dict.get("is_valid"),
             "days_remaining": cert_dict.get("days_remaining"),
             "last_error_message": cert_dict.get("last_error_message"),
             "last_error_time": cert_dict.get("last_error_time"),
         }
-        if use_cache and store and domain:
-            self.cache_repo.set_certificate_detail(str(store), str(domain), result, ttl=60)
+        if use_cache and domain:
+            self.cache_repo.set_certificate_detail(str(domain), result, ttl=60)
         return result
 
-    def publish_refresh_event(self, store: str, trigger: str = "manual") -> None:
+    def invalidate_cache(self, trigger: str = "manual") -> bool:
+        self.cache_repo.clear_all_certificate_cache()
         if self.pipeline_repo:
-            self.pipeline_repo.send_refresh_event(store, trigger)
+            return self.pipeline_repo.send_cache_invalidate_event(trigger=trigger)
+        return True
 
-    def invalidate_cache(self, stores: list[str], trigger: str = "manual") -> bool:
-        if not self.pipeline_repo:
-            return False
-        return self.pipeline_repo.send_cache_invalidate_event(stores, trigger)
+    def apply_new_certificate(
+        self,
+        domain: str,
+        email: str,
+        sans: Optional[list[str]] = None,
+        folder_name: Optional[str] = None,
+        webroot: Optional[str] = None,
+        force_renewal: bool = False,
+    ) -> dict[str, Any]:
+        """通过 Certbot 申请新证书并入库（/vault/tls/apply）。"""
+        if not self.tls_repo:
+            return {"success": False, "message": "TLS 签发未配置或未启用"}
+        domain_clean = (domain or "").strip()
+        email_clean = (email or "").strip()
+        if not domain_clean or not email_clean:
+            return {"success": False, "message": "domain 与 email 不能为空"}
+        existing = self.database_repo.get_certificate_by_domain(domain_clean)
+        if existing:
+            return {
+                "success": False,
+                "message": f"域名已存在，无法重复申请: {domain_clean}",
+            }
+        r = self.tls_repo.apply_certificate(
+            domain=domain_clean,
+            email=email_clean,
+            sans=sans,
+            webroot=webroot,
+            folder_name=folder_name,
+            force_renewal=force_renewal,
+        )
+        if not r.get("success"):
+            out: dict[str, Any] = {
+                "success": False,
+                "message": (r.get("message") or r.get("error") or "证书申请失败").strip(),
+                "error": r.get("error"),
+                "status": r.get("status"),
+            }
+            if r.get("rate_limit") is not None:
+                out["rate_limit"] = r.get("rate_limit")
+            if r.get("retry_after") is not None:
+                out["retry_after"] = r.get("retry_after")
+            return out
+        certificate = (r.get("certificate") or "").strip()
+        private_key = (r.get("private_key") or "").strip()
+        if not certificate or not private_key:
+            return {"success": False, "message": "签发结果中缺少证书或私钥 PEM"}
+        info = extract_cert_info_from_pem_sync(certificate)
+        parsed_sans = info.get("sans") or []
+        all_domains = info.get("all_domains", [])
+        if not isinstance(all_domains, list):
+            all_domains = []
+        cn = info.get("common_name") or (info.get("subject") or {}).get("CN", "") or domain_clean
+        if cn and cn not in all_domains:
+            all_domains.insert(0, cn)
+        for s in parsed_sans:
+            if s and s not in all_domains:
+                all_domains.append(s)
+        final_issuer = info.get("issuer") or "Let's Encrypt"
+        cert_obj = self.database_repo.create_certificate(
+            domain=domain_clean,
+            certificate=certificate,
+            private_key=private_key,
+            sans=all_domains if all_domains else None,
+            issuer=final_issuer,
+            not_before=info.get("not_before"),
+            not_after=info.get("not_after"),
+            is_valid=info.get("is_valid", True),
+            days_remaining=info.get("days_remaining"),
+            folder_name=folder_name,
+            email=email_clean,
+        )
+        if cert_obj:
+            cid = getattr(cert_obj, "id", None)
+            if cid and self.pipeline_repo:
+                self.pipeline_repo.send_parse_certificate_event(str(cid))
+            self.invalidate_cache(trigger="add")
+            return {
+                "success": True,
+                "message": r.get("message") or "证书已申请并入库",
+                "certificate_id": str(cid) if cid else None,
+                "status": r.get("status"),
+            }
+        return {"success": False, "message": "入库失败"}
 
     def create_certificate(
         self,
-        store: str,
         domain: str,
         certificate: str,
         private_key: str,
@@ -135,7 +210,6 @@ class CertificateService:
         email: Optional[str] = None,
         issuer: Optional[str] = None,
     ) -> dict[str, Any]:
-        actual_store = CertificateStore.DATABASE.value
         existing = self.database_repo.get_certificate_by_domain(domain)
         if existing:
             return {
@@ -145,7 +219,6 @@ class CertificateService:
         info = extract_cert_info_from_pem_sync(certificate)
         final_issuer = issuer or info.get("issuer", "Unknown")
         cert_obj = self.database_repo.create_certificate(
-            store=actual_store,
             domain=domain,
             certificate=certificate,
             private_key=private_key,
@@ -162,16 +235,13 @@ class CertificateService:
             cid = getattr(cert_obj, "id", None)
             if cid and self.pipeline_repo:
                 self.pipeline_repo.send_parse_certificate_event(str(cid))
-            self.invalidate_cache([CertificateStore.DATABASE.value], trigger="add")
+            self.invalidate_cache(trigger="add")
             return {"success": True, "message": "Certificate created", "certificate_id": cid}
         return {"success": False, "message": "Failed to create certificate"}
 
     def update_manual_add_certificate(
         self,
         certificate_id: str,
-        certificate: Optional[str] = None,
-        private_key: Optional[str] = None,
-        store: Optional[str] = None,
         sans: Optional[list[str]] = None,
         folder_name: Optional[str] = None,
         email: Optional[str] = None,
@@ -179,245 +249,65 @@ class CertificateService:
         cur = self.database_repo.get_certificate_by_id(certificate_id)
         if not cur:
             return {"success": False, "message": "Not found"}
-        info = extract_cert_info_from_pem_sync(certificate) if certificate else {}
         self.database_repo.update_certificate_by_id(
             certificate_id,
-            certificate=certificate,
-            private_key=private_key,
-            store=store,
             sans=sans,
             folder_name=folder_name,
             email=email,
-            issuer=info.get("issuer"),
-            not_before=info.get("not_before"),
-            not_after=info.get("not_after"),
-            is_valid=info.get("is_valid"),
-            days_remaining=info.get("days_remaining"),
         )
-        stores = {str(cur.get("store", CertificateStore.DATABASE.value))}
-        if store:
-            stores.add(str(store))
-        self.invalidate_cache(sorted(stores), trigger="update")
-        return {"success": True, "message": "Updated"}
-
-    def update_manual_apply_certificate(
-        self, domain: str, folder_name: str, store: Optional[str] = None
-    ) -> dict[str, Any]:
-        self.database_repo.update_certificate(
-            domain,
-            CertificateSource.MANUAL_APPLY.value,
-            store=store,
-            folder_name=folder_name,
-        )
+        self.invalidate_cache(trigger="update")
         return {"success": True, "message": "Updated"}
 
     def delete_certificate(self, certificate_id: str) -> dict[str, Any]:
         ok = self.database_repo.delete_certificate_by_id(certificate_id)
         if ok:
-            self.invalidate_cache(
-                [
-                    CertificateStore.WEBSITES.value,
-                    CertificateStore.APIS.value,
-                    CertificateStore.DATABASE.value,
-                ],
-                trigger="delete",
-            )
+            self.invalidate_cache(trigger="delete")
             return {"success": True, "message": "Deleted"}
         return {"success": False, "message": "Not found"}
-
-    def _apply_manual_apply_impl(
-        self,
-        domain: str,
-        email: str,
-        folder_name: str,
-        sans: Optional[list[str]],
-        webroot: Optional[str],
-        force_renewal: bool = False,
-    ) -> dict[str, Any]:
-        """同步：ACME 申请并写入 database / manual_apply 行。供 reapply 与后台线程共用。"""
-        if not self.tls_repo:
-            return {
-                "success": False,
-                "message": "TLS 签发未配置",
-                "status": CertificateStatus.FAIL.value,
-                "error": "no_tls_repo",
-            }
-        logger.info(
-            "manual_apply_impl start domain=%s email=%s folder_name=%s sans=%s force_renewal=%s webroot=%s",
-            domain,
-            email,
-            folder_name,
-            sans,
-            force_renewal,
-            webroot,
-        )
-        try:
-            ar = self.tls_repo.apply_certificate(
-                domain=domain,
-                email=email,
-                sans=sans,
-                webroot=webroot,
-                folder_name=folder_name,
-                force_renewal=force_renewal,
-            )
-            if ar.get("success"):
-                cert_pem, key_pem = ar.get("certificate"), ar.get("private_key")
-                if cert_pem and key_pem:
-                    cert_info = extract_cert_info_from_pem_sync(cert_pem)
-                    row = self.database_repo.create_or_update_certificate(
-                        store=CertificateStore.DATABASE.value,
-                        domain=domain,
-                        certificate=cert_pem,
-                        private_key=key_pem,
-                        source=CertificateSource.MANUAL_APPLY.value,
-                        status=CertificateStatus.SUCCESS.value,
-                        email=email,
-                        sans=sans,
-                        folder_name=folder_name,
-                        issuer=cert_info.get("issuer", "Let's Encrypt"),
-                        not_before=cert_info.get("not_before"),
-                        not_after=cert_info.get("not_after"),
-                        is_valid=cert_info.get("is_valid", True),
-                        days_remaining=cert_info.get("days_remaining"),
-                    )
-                    self.invalidate_cache([CertificateStore.DATABASE.value], trigger="add")
-                    cid = str(row.id) if row and getattr(row, "id", None) else None
-                    return {
-                        "success": True,
-                        "message": ar.get("message") or "申请成功",
-                        "status": CertificateStatus.SUCCESS.value,
-                        "error": None,
-                        "certificate_id": cid,
-                    }
-                row = self.database_repo.create_or_update_certificate(
-                    store=CertificateStore.DATABASE.value,
-                    domain=domain,
-                    source=CertificateSource.MANUAL_APPLY.value,
-                    status=CertificateStatus.SUCCESS.value,
-                    email=email,
-                    sans=sans,
-                    folder_name=folder_name,
-                )
-                self.invalidate_cache([CertificateStore.DATABASE.value], trigger="add")
-                cid = str(row.id) if row and getattr(row, "id", None) else None
-                return {
-                    "success": True,
-                    "message": ar.get("message") or "申请成功（无 PEM 回写）",
-                    "status": CertificateStatus.SUCCESS.value,
-                    "error": None,
-                    "certificate_id": cid,
-                }
-            self.database_repo.create_or_update_certificate(
-                store=CertificateStore.DATABASE.value,
-                domain=domain,
-                source=CertificateSource.MANUAL_APPLY.value,
-                status=CertificateStatus.FAIL.value,
-                email=email,
-                sans=sans,
-                folder_name=folder_name,
-            )
-            logger.error(
-                "manual_apply_impl certbot/db fail domain=%s folder_name=%s message=%s error=%s",
-                domain,
-                folder_name,
-                ar.get("message"),
-                ar.get("error"),
-            )
-            return {
-                "success": False,
-                "message": ar.get("message") or "申请失败",
-                "status": CertificateStatus.FAIL.value,
-                "error": ar.get("error"),
-            }
-        except Exception as e:  # noqa: BLE001
-            logger.exception("apply manual_apply")
-            self.database_repo.create_or_update_certificate(
-                store=CertificateStore.DATABASE.value,
-                domain=domain,
-                source=CertificateSource.MANUAL_APPLY.value,
-                status=CertificateStatus.FAIL.value,
-                email=email,
-                sans=sans,
-                folder_name=folder_name,
-            )
-            return {
-                "success": False,
-                "message": str(e),
-                "status": CertificateStatus.FAIL.value,
-                "error": "exception",
-            }
-
-    def _apply_bg(
-        self,
-        domain: str,
-        email: str,
-        folder_name: str,
-        sans: Optional[list[str]],
-        webroot: Optional[str],
-    ) -> None:
-        self._apply_manual_apply_impl(domain, email, folder_name, sans, webroot, force_renewal=False)
-
-    def apply_certificate(
-        self,
-        domain: str,
-        email: str,
-        folder_name: str,
-        sans: Optional[list[str]] = None,
-        webroot: Optional[str] = None,
-    ) -> dict[str, Any]:
-        ex = self.database_repo.get_certificate_by_domain(domain)
-        if ex and ex.get("status") == CertificateStatus.PROCESS.value:
-            return {
-                "success": False,
-                "message": "Application in progress",
-                "status": CertificateStatus.PROCESS.value,
-                "error": "in progress",
-            }
-        self.database_repo.create_or_update_certificate(
-            store=CertificateStore.DATABASE.value,
-            domain=domain,
-            source=CertificateSource.MANUAL_APPLY.value,
-            status=CertificateStatus.PROCESS.value,
-            email=email,
-            sans=sans,
-            folder_name=folder_name,
-        )
-        self.invalidate_cache([CertificateStore.DATABASE.value], trigger="apply_start")
-        logger.info(
-            "apply_certificate async spawn domain=%s folder_name=%s sans=%s webroot=%s",
-            domain,
-            folder_name,
-            sans,
-            webroot,
-        )
-        threading.Thread(
-            target=self._apply_bg,
-            args=(domain, email, folder_name, sans, webroot),
-            daemon=True,
-            name=f"cert-apply-{domain}",
-        ).start()
-        row_after = self.database_repo.get_certificate_by_domain(domain)
-        cid = str(row_after["id"]) if row_after and row_after.get("id") else None
-        return {
-            "success": True,
-            "message": "申请已提交，正在签发中",
-            "status": CertificateStatus.PROCESS.value,
-            "certificate_id": cid,
-            "error": None,
-        }
 
     def search_certificate(
         self,
         keyword: str,
-        store: Optional[str] = None,
-        source: Optional[str] = None,
         offset: int = 0,
         limit: int = 20,
     ) -> dict[str, Any]:
         rows, total = self.database_repo.search_certificates(
-            keyword, store=store, source=source, offset=offset, limit=limit
+            keyword, offset=offset, limit=limit
         )
         return {"items": rows, "total": total}
+
+    def parse_certificate_preview(self, certificate_pem: str) -> dict[str, Any]:
+        """解析 PEM（不入库），供前端上传回填。"""
+        pem = (certificate_pem or "").strip()
+        if not pem:
+            return {"success": False, "message": "certificate is empty"}
+        try:
+            info = extract_cert_info_from_pem_sync(pem)
+        except Exception as e:  # noqa: BLE001
+            logger.exception("parse_certificate_preview")
+            return {"success": False, "message": str(e)}
+        if not info:
+            return {"success": False, "message": "Parse failed"}
+        domain = info.get("common_name") or (info.get("subject") or {}).get("CN", "")
+        sans = info.get("sans") or []
+        all_domains = info.get("all_domains", [])
+        if not isinstance(all_domains, list):
+            all_domains = []
+        if domain and domain not in all_domains:
+            all_domains.insert(0, domain)
+        nb = info.get("not_before")
+        na = info.get("not_after")
+        return {
+            "success": True,
+            "message": "OK",
+            "domain": domain or None,
+            "sans": all_domains if all_domains else sans,
+            "issuer": info.get("issuer"),
+            "not_before": nb.isoformat() if hasattr(nb, "isoformat") else nb,
+            "not_after": na.isoformat() if hasattr(na, "isoformat") else na,
+            "is_valid": info.get("is_valid", True),
+            "days_remaining": info.get("days_remaining"),
+        }
 
     def parse_certificate(self, certificate_id: str) -> dict[str, Any]:
         cert_obj = self.database_repo.get_certificate_by_id(certificate_id)
@@ -452,219 +342,3 @@ class CertificateService:
             days_remaining=info.get("days_remaining"),
         )
         return {"success": True, "message": "Parsed"}
-
-    def _reapply_via_manual_apply_async(
-        self,
-        domain: str,
-        email: str,
-        folder_name: str,
-        sans: Optional[list[str]],
-        webroot: Optional[str],
-        force_renewal: bool,
-    ) -> dict[str, Any]:
-        """reapply（manual-apply / manual-add）：置 PROCESS、刷新缓存，后台线程跑 ACME。"""
-        ex = self.database_repo.get_certificate_by_domain(domain)
-        if ex and ex.get("status") == CertificateStatus.PROCESS.value:
-            return {
-                "success": False,
-                "message": "申请正在处理中",
-                "status": CertificateStatus.PROCESS.value,
-                "error": "in progress",
-            }
-        self.database_repo.create_or_update_certificate(
-            store=CertificateStore.DATABASE.value,
-            domain=domain,
-            source=CertificateSource.MANUAL_APPLY.value,
-            status=CertificateStatus.PROCESS.value,
-            email=email,
-            sans=sans,
-            folder_name=folder_name,
-        )
-        self.invalidate_cache([CertificateStore.DATABASE.value], trigger="reapply_start")
-        threading.Thread(
-            target=self._apply_manual_apply_impl,
-            args=(domain, email, folder_name, sans, webroot, force_renewal),
-            daemon=True,
-            name=f"cert-reapply-manual-{domain}",
-        ).start()
-        return {
-            "success": True,
-            "message": "申请已提交，正在签发中",
-            "status": CertificateStatus.PROCESS.value,
-            "error": None,
-        }
-
-    def _reapply_auto_worker(
-        self,
-        certificate_id: str,
-        email: str,
-        sans: Optional[list[str]],
-        webroot: Optional[str],
-        force_renewal: bool,
-    ) -> None:
-        cur = self.database_repo.get_certificate_by_id(certificate_id)
-        if not cur or cur.get("source") != CertificateSource.AUTO.value:
-            return
-        domain = cur.get("domain")
-        folder = cur.get("folder_name")
-        if not self.tls_repo:
-            return
-        try:
-            ar = self.tls_repo.apply_certificate(
-                domain=str(domain),
-                email=email,
-                sans=sans,
-                webroot=webroot,
-                folder_name=str(folder) if folder else None,
-                force_renewal=force_renewal,
-            )
-            if ar.get("success") and ar.get("certificate") and ar.get("private_key"):
-                info = extract_cert_info_from_pem_sync(ar["certificate"])
-                self.database_repo.update_certificate_by_id(
-                    certificate_id,
-                    certificate=ar["certificate"],
-                    private_key=ar["private_key"],
-                    status=CertificateStatus.SUCCESS.value,
-                    issuer=info.get("issuer"),
-                    not_before=info.get("not_before"),
-                    not_after=info.get("not_after"),
-                    is_valid=info.get("is_valid"),
-                    days_remaining=info.get("days_remaining"),
-                )
-                self.invalidate_cache([CertificateStore.DATABASE.value], trigger="add")
-                logger.info(
-                    "reapply_auto success certificate_id=%s domain=%s", certificate_id, domain
-                )
-                return
-            err_text = ar.get("message") or ar.get("error") or "apply failed"
-            logger.error(
-                "reapply_auto failed certificate_id=%s domain=%s\n--- message ---\n%s\n--- error ---\n%s",
-                certificate_id,
-                domain,
-                ar.get("message"),
-                ar.get("error"),
-            )
-            self.database_repo.update_certificate_by_id(
-                certificate_id,
-                status=CertificateStatus.FAIL.value,
-                last_error_message=str(err_text),
-            )
-            self.invalidate_cache([CertificateStore.DATABASE.value], trigger="add")
-        except Exception as e:  # noqa: BLE001
-            logger.exception("reapply_auto worker certificate_id=%s", certificate_id)
-            self.database_repo.update_certificate_by_id(
-                certificate_id,
-                status=CertificateStatus.FAIL.value,
-                last_error_message=str(e),
-            )
-            self.invalidate_cache([CertificateStore.DATABASE.value], trigger="add")
-
-    def reapply_auto_certificate(
-        self,
-        certificate_id: str,
-        email: str,
-        sans: Optional[list[str]] = None,
-        webroot: Optional[str] = None,
-        force_renewal: bool = False,
-    ) -> dict[str, Any]:
-        cur = self.database_repo.get_certificate_by_id(certificate_id)
-        if not cur or cur.get("source") != CertificateSource.AUTO.value:
-            return {"success": False, "message": "Certificate not AUTO source"}
-        if cur.get("status") == CertificateStatus.PROCESS.value:
-            return {
-                "success": False,
-                "message": "申请正在处理中",
-                "status": CertificateStatus.PROCESS.value,
-                "error": "in progress",
-                "certificate_id": certificate_id,
-            }
-        domain = cur.get("domain")
-        folder = cur.get("folder_name")
-        if not self.tls_repo:
-            return {
-                "success": False,
-                "message": "TLS 签发未配置",
-                "status": CertificateStatus.FAIL.value,
-                "error": "no_tls_repo",
-            }
-        self.database_repo.update_certificate_by_id(
-            certificate_id, status=CertificateStatus.PROCESS.value
-        )
-        self.invalidate_cache([CertificateStore.DATABASE.value], trigger="reapply_start")
-        logger.info(
-            "reapply_auto queued certificate_id=%s domain=%s folder=%s sans=%s force_renewal=%s webroot=%s",
-            certificate_id,
-            domain,
-            folder,
-            sans,
-            force_renewal,
-            webroot,
-        )
-        threading.Thread(
-            target=self._reapply_auto_worker,
-            args=(certificate_id, email, sans, webroot, force_renewal),
-            daemon=True,
-            name=f"cert-reapply-auto-{certificate_id[:8]}",
-        ).start()
-        return {
-            "success": True,
-            "message": "申请已提交，正在签发中",
-            "status": CertificateStatus.PROCESS.value,
-            "certificate_id": certificate_id,
-            "error": None,
-        }
-
-    def reapply_manual_apply_certificate(
-        self,
-        certificate_id: str,
-        domain: str,
-        email: str,
-        folder_name: str,
-        sans: Optional[list[str]] = None,
-        webroot: Optional[str] = None,
-        force_renewal: bool = False,
-    ) -> dict[str, Any]:
-        row = self.database_repo.get_certificate_by_id(certificate_id)
-        if not row:
-            return {
-                "success": False,
-                "message": "Certificate not found",
-                "status": CertificateStatus.FAIL.value,
-                "error": "not_found",
-            }
-        if str(row.get("domain") or "") != str(domain):
-            return {
-                "success": False,
-                "message": "certificate_id 与 domain 不一致",
-                "status": CertificateStatus.FAIL.value,
-                "error": "domain_mismatch",
-            }
-        r = self._reapply_via_manual_apply_async(
-            domain, email, folder_name, sans, webroot, force_renewal
-        )
-        if r.get("success"):
-            r["certificate_id"] = certificate_id
-        return r
-
-    def reapply_manual_add_certificate(
-        self,
-        certificate_id: str,
-        email: str,
-        sans: Optional[list[str]] = None,
-        webroot: Optional[str] = None,
-        force_renewal: bool = False,
-    ) -> dict[str, Any]:
-        cur = self.database_repo.get_certificate_by_id(certificate_id)
-        if not cur:
-            return {"success": False, "message": "Not found"}
-        r = self._reapply_via_manual_apply_async(
-            str(cur["domain"]),
-            email,
-            str(cur.get("folder_name") or ""),
-            sans,
-            webroot,
-            force_renewal,
-        )
-        if r.get("success"):
-            r["certificate_id"] = certificate_id
-        return r

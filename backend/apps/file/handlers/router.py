@@ -1,9 +1,8 @@
 # coding=utf-8
-"""`/vault/file/*` 路由。"""
+"""`/vault/file/*` 路由（仅 Websites 目录）。"""
 from __future__ import annotations
 
 import logging
-from enum import Enum
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
@@ -15,10 +14,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/vault/file", tags=["file"])
 
-
-class FileStore(str, Enum):
-    websites = "websites"
-    apis = "apis"
+_STORE = "websites"
 
 
 def get_file_service(request: Request) -> FileService:
@@ -28,13 +24,12 @@ def get_file_service(request: Request) -> FileService:
     return s
 
 
-@router.post("/export/{store}")
+@router.post("/export")
 async def export_certificates_endpoint(
-    store: FileStore,
     svc: FileService = Depends(get_file_service),
 ) -> dict:
     try:
-        return svc.export_certificates(store.value)
+        return svc.export_certificates()
     except Exception as e:  # noqa: BLE001
         logger.exception("export_certificates")
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -46,33 +41,31 @@ async def export_single_certificate_endpoint(
     svc: FileService = Depends(get_file_service),
 ) -> dict:
     try:
-        return svc.export_single_certificate(req.certificate_id, req.store)
+        return svc.export_single_certificate(req.certificate_id)
     except Exception as e:  # noqa: BLE001
         logger.exception("export_single")
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.get("/list/{store}")
+@router.get("/list")
 async def list_directory_endpoint(
-    store: FileStore,
     path: Optional[str] = None,
     svc: FileService = Depends(get_file_service),
 ) -> dict:
     try:
-        return svc.list_directory(store.value, subpath=path)
+        return svc.list_directory(_STORE, subpath=path)
     except Exception as e:  # noqa: BLE001
         logger.exception("list_directory")
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.get("/download/{store}")
+@router.get("/download")
 async def download_file_endpoint(
-    store: FileStore,
     path: str,
     svc: FileService = Depends(get_file_service),
 ) -> Response:
     try:
-        result = svc.download_file(store.value, path)
+        result = svc.download_file(_STORE, path)
         if result.get("success") and result.get("content") is not None:
             return Response(
                 content=result["content"],
@@ -89,14 +82,13 @@ async def download_file_endpoint(
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.get("/content/{store}")
+@router.get("/content")
 async def get_file_content_endpoint(
-    store: FileStore,
     path: str,
     svc: FileService = Depends(get_file_service),
 ) -> dict:
     try:
-        return svc.get_file_content(store.value, path)
+        return svc.get_file_content(_STORE, path)
     except Exception as e:  # noqa: BLE001
         logger.exception("get_file_content")
         raise HTTPException(status_code=500, detail=str(e)) from e

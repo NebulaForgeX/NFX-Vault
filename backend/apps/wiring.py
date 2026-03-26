@@ -10,12 +10,8 @@ from typing import Optional
 
 from config.types import CertConfig, DatabaseConfig
 from apps.certificate.models.base import Base
-from utils.acme.challenge_storage import ACMEChallengeStorage
-from utils.kafka import KafkaClient
-from utils.kafka.consumer import KafkaEventConsumer
 from apps.certificate.kafka.certificate_pipeline import CertificatePipeline
-from utils.mysql.session import MySQLSession
-from utils.redis.client import RedisClient
+from utils import ACMEChallengeStorage, KafkaClient, KafkaEventConsumer, MySQLSession, RedisClient
 
 from apps.analysis.services.analysis_service import AnalysisService
 from apps.certificate.kafka.certificate_kafka_handler import CertificateKafkaHandler

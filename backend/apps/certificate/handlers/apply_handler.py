@@ -1,5 +1,5 @@
 # coding=utf-8
-"""POST /vault/tls/apply。"""
+"""POST /vault/tls/apply — 新建证书（Certbot 签发后写入 DB）。"""
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
@@ -13,11 +13,16 @@ router = APIRouter()
 
 
 @router.post("/apply", response_model=CertificateVo)
-async def apply(
+async def apply_new(
     req: ApplyCertificateRequest,
     svc: CertificateService = Depends(get_certificate_service),
 ) -> CertificateVo:
-    r = svc.apply_certificate(
-        req.domain, req.email, req.folder_name, sans=req.sans, webroot=req.webroot
+    r = svc.apply_new_certificate(
+        domain=req.domain,
+        email=req.email,
+        sans=req.sans,
+        folder_name=req.folder_name,
+        webroot=req.webroot,
+        force_renewal=req.force_renewal,
     )
     return CertificateVo(**r)

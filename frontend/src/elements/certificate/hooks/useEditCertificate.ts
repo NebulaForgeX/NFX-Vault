@@ -1,55 +1,31 @@
 import type { FieldErrors } from "react-hook-form";
-import type { CertificateFormValues } from "../controllers/certificateSchema";
+import type { EditCertificateFormValues } from "../schemas/certificateSchema";
 
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import { routerEventEmitter } from "@/events/router";
-import { useUpdateManualAddCertificate, useUpdateManualApplyCertificate } from "@/hooks";
-import { CertificateSource } from "@/types";
-import type { CertType } from "@/types";
+import { useUpdateManualAddCertificate } from "@/hooks";
 import { showError, showSuccess } from "@/stores/modalStore";
 import { ROUTES } from "@/navigations";
 
-export const useEditCertificate = (domain: string, source: CertificateSource, certificateId?: string) => {
+export const useEditCertificate = (certificateId: string) => {
   const { t } = useTranslation("common");
-  const { mutateAsync: mutateManualAdd, isPending: isPendingManualAdd } = useUpdateManualAddCertificate();
-  const { mutateAsync: mutateManualApply, isPending: isPendingManualApply } = useUpdateManualApplyCertificate();
-
-  const isPending = isPendingManualAdd || isPendingManualApply;
+  const { mutateAsync, isPending } = useUpdateManualAddCertificate();
 
   const onSubmit = useCallback(
-    async (values: CertificateFormValues) => {
+    async (values: EditCertificateFormValues) => {
       try {
-        let result;
-        
-        if (source === CertificateSource.MANUAL_APPLY) {
-          // MANUAL_APPLY 可以更新 folder_name 和 store
-          if (!values.folderName) {
-            showError(t("messages.folderNameRequired"));
-            return;
-          }
-          result = await mutateManualApply({
-            domain,
-            folderName: values.folderName,
-            store: values.store as CertType,
-          });
-        } else {
-          // 其它来源（含 MANUAL_ADD、AUTO 等）：同一域名全局一条记录，均可更新 PEM 等字段
-          if (!certificateId) {
-            showError(t("messages.certificateIdMissing"));
-            return;
-          }
-          result = await mutateManualAdd({
-            certificateId,
-            certificate: values.certificate?.trim(),
-            privateKey: values.privateKey?.trim(),
-            store: values.store as CertType,
-            sans: values.sans && values.sans.length > 0 ? values.sans : undefined,
-            folderName: values.folderName?.trim() || undefined,
-            email: values.email?.trim() || undefined,
-          });
+        if (!certificateId) {
+          showError(t("messages.certificateIdMissing"));
+          return;
         }
+        const result = await mutateAsync({
+          certificateId,
+          sans: values.sans && values.sans.length > 0 ? values.sans : undefined,
+          folderName: values.folderName?.trim() || undefined,
+          email: values.email?.trim() || undefined,
+        });
 
         if (result.success) {
           showSuccess(result.message || t("messages.certificateUpdateSuccess"));
@@ -57,16 +33,17 @@ export const useEditCertificate = (domain: string, source: CertificateSource, ce
         } else {
           showError(result.message || t("messages.certificateUpdateFailed"));
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Edit certificate error:", error);
-        showError(error?.message || t("messages.certificateUpdateFailed"));
+        const msg = error instanceof Error ? error.message : t("messages.certificateUpdateFailed");
+        showError(msg);
       }
     },
-    [mutateManualAdd, mutateManualApply, domain, source, certificateId, t],
+    [mutateAsync, certificateId, t],
   );
 
   const onSubmitError = useCallback(
-    (errors: FieldErrors<CertificateFormValues>) => {
+    (errors: FieldErrors<EditCertificateFormValues>) => {
       console.error("Form validation errors:", errors);
       const firstError = Object.values(errors)[0];
       showError(firstError?.message || t("messages.checkFormErrors"));
@@ -82,4 +59,3 @@ export const useEditCertificate = (domain: string, source: CertificateSource, ce
 };
 
 export default useEditCertificate;
-

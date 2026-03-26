@@ -1,0 +1,77 @@
+.root {
+  /* 与 Pqttec ProductForm：内容直接铺在页面主区域，无大卡片 */
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.section {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.section:last-of-type {
+  border-bottom: none;
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-fg-heading);
+  margin: 0 0 0.5rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sectionHint {
+  font-size: 0.875rem;
+  color: var(--color-fg-muted, #666);
+  margin: 0 0 1.25rem 0;
+  line-height: 1.4;
+}
+
+.uploadRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.hiddenFile {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.basicInfoGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 0.5rem;
+}
+
+.submitBtn {
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .uploadRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

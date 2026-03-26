@@ -15,7 +15,7 @@ from apps.certificate.events import (
     ParseCertificateEvent,
 )
 from config.types import DatabaseConfig
-from utils.kafka import KafkaClient
+from utils import KafkaClient
 
 logger = logging.getLogger(__name__)
 
@@ -47,8 +47,8 @@ class CertificatePipeline:
         ev = OperationRefreshEvent(store=store, trigger=trigger)
         return self._send(ev.to_dict(), EventType.OPERATION_REFRESH)
 
-    def send_cache_invalidate_event(self, stores: list[str], trigger: str = "manual") -> bool:
-        ev = CacheInvalidateEvent(stores=stores, trigger=trigger)
+    def send_cache_invalidate_event(self, trigger: str = "manual") -> bool:
+        ev = CacheInvalidateEvent(stores=[], trigger=trigger)
         return self._send(ev.to_dict(), EventType.CACHE_INVALIDATE)
 
     def send_parse_certificate_event(self, certificate_id: str) -> bool:

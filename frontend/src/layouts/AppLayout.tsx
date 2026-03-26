@@ -10,19 +10,7 @@ import { useLocation } from "react-router-dom";
 
 import { Footer, LayoutFrame } from "nfx-ui/layouts";
 
-import {
-  Home,
-  Shield,
-  FileSearch,
-  Folder,
-  List,
-  FilePlus,
-  Send,
-  Scan,
-  Server,
-  Globe,
-  Search,
-} from "@/assets/icons/lucide";
+import { Home, Shield, FileSearch, Folder, List, FilePlus, Scan, Globe } from "@/assets/icons/lucide";
 import { routerEventEmitter } from "@/events/router";
 import { ROUTES } from "@/navigations";
 
@@ -47,27 +35,20 @@ function useSidebarItems(): SidebarMenuItem[] {
         icon: <Shield size={size20} />,
         children: [
           { label: t("certList"), path: ROUTES.CHECK, icon: <List size={size18} /> },
-          { label: t("searchCert"), path: ROUTES.CERT_SEARCH, icon: <Search size={size18} /> },
           { label: t("addCert"), path: ROUTES.CERT_ADD, icon: <FilePlus size={size18} /> },
-          { label: t("applyCert"), path: ROUTES.CERT_APPLY, icon: <Send size={size18} /> },
         ],
       },
       {
         label: t("analysis"),
         path: ROUTES.ANALYSIS_TLS,
         icon: <FileSearch size={size20} />,
-        children: [
-          { label: t("analyzeTLS"), path: ROUTES.ANALYSIS_TLS, icon: <Scan size={size18} /> },
-        ],
+        children: [{ label: t("analyzeTLS"), path: ROUTES.ANALYSIS_TLS, icon: <Scan size={size18} /> }],
       },
       {
         label: t("fileFolder"),
-        path: ROUTES.FILE_FOLDER_APIS,
+        path: ROUTES.FILE_FOLDER,
         icon: <Folder size={size20} />,
-        children: [
-          { label: t("apis"), path: ROUTES.FILE_FOLDER_APIS, icon: <Server size={size18} /> },
-          { label: t("websites"), path: ROUTES.FILE_FOLDER_WEBSITES, icon: <Globe size={size18} /> },
-        ],
+        children: [{ label: t("websites"), path: ROUTES.FILE_FOLDER, icon: <Globe size={size18} /> }],
       },
     ],
     [t],
@@ -102,7 +83,9 @@ const AppLayout = memo(({ children }: AppLayoutProps) => {
               padding: "1rem 0",
             }}
           >
-            <span>© {new Date().getFullYear()} {t("footer.copyright")}</span>
+            <span>
+              © {new Date().getFullYear()} {t("footer.copyright")}
+            </span>
             <div style={{ display: "flex", gap: "1.5rem" }}>
               <a href="#">{t("footer.about")}</a>
               <a href="#">{t("footer.privacy")}</a>

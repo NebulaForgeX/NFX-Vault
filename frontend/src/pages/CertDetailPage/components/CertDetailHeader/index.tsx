@@ -22,7 +22,7 @@ const CertDetailHeader = memo(({ certDetail }: CertDetailHeaderProps) => {
     <div className={styles.header}>
       <BackButton
         label={t("back") || "Back"}
-        onClick={() => routerEventEmitter.navigate({ to: buildCertCheckPath(certDetail.store) })}
+        onClick={() => routerEventEmitter.navigate({ to: buildCertCheckPath() })}
         className={styles.backButton}
       />
       <div className={styles.titleSection}>

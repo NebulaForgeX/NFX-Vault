@@ -1,15 +1,11 @@
 /**
- * 证书领域类型 — 与 NFX-Vault Backend 证书 API 视图对齐（列表 / 详情 / 搜索 / 导出）。
- * Certificate domain types aligned with Vault backend API (Pqttec-style module + list/detail split).
+ * 证书领域类型 — 与 NFX-Vault Backend 对齐（无 store / source 列）
  */
-
-import { CertificateSource, CertificateStatus } from "../enums";
+import type { CertificateStatus } from "../enums";
 
 export interface CertificateInfo {
   id: string;
   domain: string;
-  store: string;
-  source: CertificateSource;
   status?: CertificateStatus;
   email?: string;
   folderName?: string;
@@ -28,18 +24,9 @@ export interface CertificateListResponse {
   total: number;
 }
 
-export interface RefreshResponse {
-  success: boolean;
-  message: string;
-  error?: string;
-  processed?: number;
-}
-
 export interface CertificateDetailResponse {
   id: string;
   domain: string;
-  store: string;
-  source: CertificateSource;
   status?: CertificateStatus;
   email?: string;
   folderName?: string;
@@ -60,21 +47,34 @@ export interface CertificateResponse {
   message: string;
   status?: CertificateStatus;
   error?: string;
-  /** 异步签发时用于轮询详情（axios-case-converter 转为 camelCase） */
   certificateId?: string;
+  rateLimit?: boolean;
+  retryAfter?: string;
 }
 
 export interface SearchCertificateResponse {
-  success: boolean;
-  message: string;
+  success?: boolean;
+  message?: string;
   items: CertificateInfo[];
   total: number;
 }
 
+export interface ParseCertificatePreviewResponse {
+  success: boolean;
+  message: string;
+  domain?: string;
+  sans?: string[];
+  issuer?: string;
+  notBefore?: string;
+  notAfter?: string;
+  isValid?: boolean;
+  daysRemaining?: number;
+}
+
 export interface ExportCertificateItem {
   domain: string;
-  store?: string;
-  source?: CertificateSource;
+  folderName?: string;
+  status?: string;
   certificate: string;
   privateKey: string;
   sans?: string[];

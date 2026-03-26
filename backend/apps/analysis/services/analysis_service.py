@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Optional
 
-from utils.pem import extract_cert_info_from_pem_sync
+from utils import extract_cert_info_from_pem_sync
 
 logger = logging.getLogger(__name__)
 

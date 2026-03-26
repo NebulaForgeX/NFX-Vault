@@ -9,9 +9,6 @@ class CertConfig:
     CERT_MAX_WAIT_TIME: int
     READ_ON_STARTUP: bool
     SCHEDULE_ENABLED: bool
-    SCHEDULE_WEEKLY_DAY: str
-    SCHEDULE_WEEKLY_HOUR: int
-    SCHEDULE_WEEKLY_MINUTE: int
 
 
 @dataclass

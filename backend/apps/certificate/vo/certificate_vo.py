@@ -12,3 +12,5 @@ class CertificateVo(BaseModel):
     certificate_id: Optional[str] = None
     status: Optional[str] = None
     error: Optional[str] = None
+    rate_limit: Optional[bool] = None
+    retry_after: Optional[str] = None

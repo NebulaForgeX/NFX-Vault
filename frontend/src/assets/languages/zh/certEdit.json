@@ -1,9 +1,9 @@
 {
   "title": "编辑证书",
-  "subtitle": "更新证书信息",
+  "subtitle": "可修改文件夹、邮箱、SAN 等；证书 PEM 与私钥不在此页修改（请在详情页查看）。",
   "form": {
     "editTitle": "编辑证书",
-    "editSubtitle": "更新证书信息",
+    "editSubtitle": "可修改文件夹、邮箱、SAN；证书与私钥请在详情页查看。",
     "readOnly": "（只读）",
     "autoNotEditable": "自动发现的证书无法手动编辑，请通过刷新文件夹来更新",
     "manualApplyEditable": "手动申请的证书只能编辑文件夹名称",
@@ -14,8 +14,6 @@
     "folderName": "文件夹名称",
     "folderNamePlaceholder": "例如: api_lucaslyu_com",
     "folderNameHelp": "唯一标识符，只能包含字母、数字、下划线和连字符",
-    "certificate": "证书内容",
-    "privateKey": "私钥内容",
     "update": "更新证书",
     "updating": "更新中..."
   },

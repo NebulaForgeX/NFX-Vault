@@ -1,41 +1,49 @@
 import type { FieldErrors } from "react-hook-form";
-import type { CertificateFormValues } from "../controllers/certificateSchema";
+import type { CertificateFormValues } from "../schemas/certificateSchema";
 
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import { routerEventEmitter } from "@/events/router";
-import { useCreateCertificate } from "@/hooks";
+import { useApplyCertificate } from "@/hooks";
 import { ROUTES } from "@/navigations";
 import { showError, showSuccess } from "@/stores/modalStore";
 
 export const useSubmitCertificate = () => {
   const { t } = useTranslation("common");
-  const { mutateAsync, isPending } = useCreateCertificate();
+  const { mutateAsync, isPending } = useApplyCertificate();
 
   const onSubmit = useCallback(
     async (values: CertificateFormValues) => {
       try {
+        const email = values.email?.trim();
+        if (!email) {
+          showError(t("validation.emailRequired"));
+          return;
+        }
         const result = await mutateAsync({
-          store: values.store,
           domain: values.domain.trim(),
-          certificate: values.certificate.trim(),
-          privateKey: values.privateKey.trim(),
+          email,
           sans: values.sans && values.sans.length > 0 ? values.sans : undefined,
-          folderName: values.folderName?.trim() || undefined, // axios-case-converter 会将 folderName 转换为 folder_name
-          email: values.email?.trim() || undefined,
-          issuer: values.issuer?.trim() || undefined,
+          folderName: values.folderName?.trim() || undefined,
+          webroot: values.webroot?.trim() || undefined,
+          forceRenewal: values.forceRenewal,
         });
 
         if (result.success) {
-          showSuccess(result.message || t("messages.certificateCreateSuccess"));
+          showSuccess(result.message || t("messages.certificateApplySuccess"));
           routerEventEmitter.navigate({ to: ROUTES.CHECK });
         } else {
-          showError(result.message || t("messages.certificateCreateFailed"));
+          let msg = result.message || t("messages.certificateApplyFailed");
+          if (result.rateLimit && result.retryAfter) {
+            msg = `${msg} (retry after ${result.retryAfter})`;
+          }
+          showError(msg);
         }
-      } catch (error: any) {
-        console.error("Submit certificate error:", error);
-        showError(error?.message || t("messages.certificateCreateFailed"));
+      } catch (error: unknown) {
+        console.error("Apply certificate error:", error);
+        const msg = error instanceof Error ? error.message : t("messages.certificateApplyFailed");
+        showError(msg);
       }
     },
     [mutateAsync, t],
@@ -58,4 +66,3 @@ export const useSubmitCertificate = () => {
 };
 
 export default useSubmitCertificate;
-

@@ -4,7 +4,7 @@ import { Button } from "nfx-ui/components";
 import type { CertificateInfo } from "@/types";
 import { CertificateStatus } from "@/types";
 import { Edit, Eye, Trash2, Loader2, AlertTriangle } from "@/assets/icons/lucide";
-import { useCertificateListAccent, useCertificateTime, useCertificateSource } from "@/hooks";
+import { useCertificateListAccent, useCertificateTime } from "@/hooks";
 import { useActionCertificateItem } from "../../hooks";
 import { showTooltipModal } from "@/stores/modalStore";
 import styles from "./styles.module.css";
@@ -17,7 +17,6 @@ const CertCard = memo(({ cert }: CertCardProps) => {
   const { t } = useTranslation("certCheck");
   const accentColor = useCertificateListAccent(cert);
   const timeInfo = useCertificateTime(cert);
-  const sourceInfo = useCertificateSource(cert.source);
   const { handleEdit, handleView, handleDelete } = useActionCertificateItem();
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -57,14 +56,6 @@ const CertCard = memo(({ cert }: CertCardProps) => {
         <header className={styles.topRow}>
           <div className={styles.titleBlock}>
             <h3 className={styles.certDomain}>{cert.domain}</h3>
-            {cert.source && (
-              <span
-                className={styles.sourceChip}
-                style={{ backgroundColor: sourceInfo.bgColor, color: sourceInfo.textColor }}
-              >
-                {sourceInfo.label}
-              </span>
-            )}
           </div>
           <div
             className={styles.statusPill}

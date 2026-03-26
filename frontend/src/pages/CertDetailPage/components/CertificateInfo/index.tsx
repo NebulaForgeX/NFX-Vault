@@ -2,7 +2,6 @@ import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertCircle } from "@/assets/icons/lucide";
 import type { CertificateDetailResponse } from "@/types";
-import { useCertificateSource } from "@/hooks";
 import styles from "./styles.module.css";
 
 interface CertificateInfoProps {
@@ -11,7 +10,6 @@ interface CertificateInfoProps {
 
 const CertificateInfo = memo(({ certDetail }: CertificateInfoProps) => {
   const { t } = useTranslation("certDetail");
-  const sourceInfo = useCertificateSource(certDetail.source);
 
   return (
     <div className={styles.section}>
@@ -21,27 +19,16 @@ const CertificateInfo = memo(({ certDetail }: CertificateInfoProps) => {
           <label>{t("certificate.domain") || "Domain"}</label>
           <span>{certDetail.domain}</span>
         </div>
-        {certDetail.store && (
-          <div className={styles.infoItem}>
-            <label>{t("certificate.store") || "Certificate Type"}</label>
-            <span>{certDetail.store}</span>
-          </div>
-        )}
         {certDetail.folderName && (
           <div className={styles.infoItem}>
             <label>{t("certificate.folderName") || "Folder Name"}</label>
             <span>{certDetail.folderName}</span>
           </div>
         )}
-        {certDetail.source && (
+        {certDetail.status && (
           <div className={styles.infoItem}>
-            <label>{t("certificate.source") || "Source"}</label>
-            <span
-              className={styles.sourceBadge}
-              style={{ backgroundColor: sourceInfo.bgColor, color: sourceInfo.textColor }}
-            >
-              {sourceInfo.label}
-            </span>
+            <label>{t("certificate.status") || "Status"}</label>
+            <span>{certDetail.status}</span>
           </div>
         )}
         <div className={styles.infoItem}>
@@ -65,7 +52,9 @@ const CertificateInfo = memo(({ certDetail }: CertificateInfoProps) => {
             <label>{t("certificate.sans") || "Subject Alternative Names (SANs)"}</label>
             <div className={styles.sansList}>
               {certDetail.sans.map((san, idx) => (
-                <span key={idx} className={styles.sanTag}>{san}</span>
+                <span key={idx} className={styles.sanTag}>
+                  {san}
+                </span>
               ))}
             </div>
           </div>
@@ -94,4 +83,3 @@ const CertificateInfo = memo(({ certDetail }: CertificateInfoProps) => {
 CertificateInfo.displayName = "CertificateInfo";
 
 export default CertificateInfo;
-

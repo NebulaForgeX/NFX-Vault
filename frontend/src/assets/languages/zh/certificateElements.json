@@ -32,7 +32,21 @@
     "forceRenewal": "启用强制申请",
     "forceRenewalHelp": "开启后将强制重新申请证书（即使未过期），不开启则使用缓存证书",
     "rateLimitTitle": "速率限制说明",
-    "rateLimitInfo": "Let's Encrypt 限制：同一个域名集合在 168 小时（7 天）内最多只能申请 5 个证书。如果开启强制申请，即使证书未过期也会重新申请，可能触发速率限制。"
+    "rateLimitInfo": "Let's Encrypt 限制：同一个域名集合在 168 小时（7 天）内最多只能申请 5 个证书。如果开启强制申请，即使证书未过期也会重新申请，可能触发速率限制。",
+    "editTitle": "编辑证书",
+    "sectionImport": "从文件导入（仅解析，不提交 PEM）",
+    "sectionImportHint": "可选：上传已有 PEM 仅解析域名、SAN、颁发者并回填；不会把该证书发到服务器。点击下方按钮将通过 Let's Encrypt 申请新证书并入库。",
+    "applySubmit": "申请证书",
+    "applySubmitting": "申请中..."
+  },
+  "upload": {
+    "certPem": "上传证书 PEM（解析并回填）",
+    "certPemParseOnly": "上传 PEM（仅解析域名与 SAN）",
+    "privateKeyFile": "上传私钥文件",
+    "parsing": "解析中…",
+    "parseOk": "已根据证书解析并回填",
+    "parseFailed": "证书解析失败",
+    "keyReadFailed": "读取私钥文件失败"
   },
   "apply": {
     "title": "申请证书",

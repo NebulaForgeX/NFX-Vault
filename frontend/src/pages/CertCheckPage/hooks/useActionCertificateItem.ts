@@ -47,7 +47,7 @@ export const useActionCertificateItem = () => {
           onConfirm: async () => {
             try {
               const result = await deleteMutation.mutateAsync({
-                certificate_id: cert.id,
+                certificateId: cert.id,
               });
 
               if (result.success) {

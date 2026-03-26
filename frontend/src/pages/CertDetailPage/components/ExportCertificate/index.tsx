@@ -24,7 +24,7 @@ const ExportCertificate = memo(({
     privateKey,
     domain,
   });
-  const { exportToApiFolder, exportToWebsitesFolder } = useExportToFolder({
+  const { exportToWebsitesFolder } = useExportToFolder({
     certificateId,
   });
 
@@ -43,9 +43,6 @@ const ExportCertificate = memo(({
         </IconButton>
       </div>
       <div className={styles.buttonGroup}>
-        <IconButton onClick={exportToApiFolder} variant="secondary" icon={<Folder size={16} />}>
-          {t("export.toApiFolder") || "Export to APIs Folder"}
-        </IconButton>
         <IconButton onClick={exportToWebsitesFolder} variant="secondary" icon={<Folder size={16} />}>
           {t("export.toWebsitesFolder") || "Export to Websites Folder"}
         </IconButton>

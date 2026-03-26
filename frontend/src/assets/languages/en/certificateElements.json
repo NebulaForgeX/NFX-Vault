@@ -32,7 +32,21 @@
     "forceRenewal": "Enable Force Renewal",
     "forceRenewalHelp": "When enabled, will force re-apply certificate (even if not expired). When disabled, will use cached certificate if available.",
     "rateLimitTitle": "Rate Limit Information",
-    "rateLimitInfo": "Let's Encrypt limit: A maximum of 5 certificates can be issued for the same set of identifiers within 168 hours (7 days). If force renewal is enabled, the certificate will be re-applied even if not expired, which may trigger rate limits."
+    "rateLimitInfo": "Let's Encrypt limit: A maximum of 5 certificates can be issued for the same set of identifiers within 168 hours (7 days). If force renewal is enabled, the certificate will be re-applied even if not expired, which may trigger rate limits.",
+    "editTitle": "Edit certificate",
+    "sectionImport": "Import from file (parse only — PEM is not submitted)",
+    "sectionImportHint": "Optional: upload an existing PEM to pre-fill domain, SANs, and issuer. That PEM is not sent to the server. Submitting runs Let's Encrypt issuance and stores the new cert in the vault.",
+    "applySubmit": "Apply for certificate",
+    "applySubmitting": "Applying..."
+  },
+  "upload": {
+    "certPem": "Upload certificate PEM (parse & fill)",
+    "certPemParseOnly": "Upload PEM (parse domain & SANs only)",
+    "privateKeyFile": "Upload private key file",
+    "parsing": "Parsing…",
+    "parseOk": "Form filled from certificate",
+    "parseFailed": "Could not parse certificate",
+    "keyReadFailed": "Could not read private key file"
   },
   "apply": {
     "title": "Apply Certificate",

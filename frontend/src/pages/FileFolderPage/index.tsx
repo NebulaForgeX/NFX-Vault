@@ -1,8 +1,9 @@
 import { memo, useState, useEffect } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 import { BackButton } from "@/components";
 import { routerEventEmitter } from "@/events/router";
+import { ROUTES } from "@/navigations";
 
 import { ListDirectory, downloadFile, DeleteFileOrFolder } from "@/apis/file.api";
 import type { FileItem } from "@/types";
@@ -11,17 +12,11 @@ import { FolderItem, FileItem as FileItemComponent } from "./components";
 import styles from "./styles.module.css";
 import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
 
+const STORE = "websites" as const;
+
 const FileFolderPage = memo(() => {
-  const location = useLocation();
   const [searchParams] = useSearchParams();
   const pathParam = searchParams.get("path") || "";
-
-  // 从路径中提取 store（更准确的方法）
-  const store = location.pathname.startsWith("/filefolder/apis")
-    ? "apis"
-    : location.pathname.startsWith("/filefolder/websites")
-    ? "websites"
-    : null;
 
   const [items, setItems] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,19 +24,13 @@ const FileFolderPage = memo(() => {
   const [currentPath, setCurrentPath] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!store || (store !== "apis" && store !== "websites")) {
-      routerEventEmitter.navigateBack();
-      return;
-    }
-
     const loadDirectory = async () => {
       setLoading(true);
       setError(null);
       try {
-        const result = await ListDirectory(store, pathParam || undefined);
+        const result = await ListDirectory(pathParam || undefined);
         if (result && result.success) {
           setItems(Array.isArray(result.items) ? result.items : []);
-          // 构建路径面包屑
           if (result.path) {
             setCurrentPath(result.path.split("/").filter(Boolean));
           } else {
@@ -51,9 +40,10 @@ const FileFolderPage = memo(() => {
           const errorMsg = result?.message || "Failed to load directory";
           setError(errorMsg);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Failed to load directory:", err);
-        const errorMsg = err?.response?.data?.detail || err?.response?.data?.message || err?.message || "Failed to load directory";
+        const e = err as { response?: { data?: { detail?: string; message?: string } }; message?: string };
+        const errorMsg = e?.response?.data?.detail || e?.response?.data?.message || e?.message || "Failed to load directory";
         setError(errorMsg);
       } finally {
         setLoading(false);
@@ -61,12 +51,14 @@ const FileFolderPage = memo(() => {
     };
 
     loadDirectory();
-  }, [store, pathParam]);
+  }, [pathParam]);
 
   const handleBack = () => {
     if (currentPath.length > 0) {
       const newPath = currentPath.slice(0, -1).join("/");
-      routerEventEmitter.navigate({ to: `/filefolder/${store}${newPath ? `?path=${encodeURIComponent(newPath)}` : ""}` });
+      routerEventEmitter.navigate({
+        to: `${ROUTES.FILE_FOLDER}${newPath ? `?path=${encodeURIComponent(newPath)}` : ""}`,
+      });
     } else {
       routerEventEmitter.navigateBack();
     }
@@ -74,12 +66,11 @@ const FileFolderPage = memo(() => {
 
   const handleItemClick = (item: FileItem) => {
     if (item.type === "directory") {
-      routerEventEmitter.navigate({ to: `/filefolder/${store}?path=${encodeURIComponent(item.path)}` });
+      routerEventEmitter.navigate({ to: `${ROUTES.FILE_FOLDER}?path=${encodeURIComponent(item.path)}` });
     } else if (item.type === "file") {
-      // 文件内容打开 modal
       ModalStore.getState().showFileModal({
         isOpen: true,
-        store: store!,
+        store: STORE,
         filePath: item.path,
         fileName: item.name,
         folderName: item.path.split("/").slice(0, -1).pop() || "",
@@ -89,26 +80,24 @@ const FileFolderPage = memo(() => {
 
   const handleDownload = async (item: FileItem, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (item.type !== "file" || !store) return;
+    if (item.type !== "file") return;
     try {
-      // 提取所有文件夹层级并拼接
       const pathParts = item.path.split("/").filter(Boolean);
-      pathParts.pop(); // 移除最后一个部分（文件名）
-      const folderLevels = pathParts.join("_"); // 所有父级文件夹用下划线拼接
+      pathParts.pop();
+      const folderLevels = pathParts.join("_");
       const downloadFolderName = folderLevels || "";
-      await downloadFile(store, item.path, downloadFolderName);
-    } catch (err: any) {
+      await downloadFile(item.path, downloadFolderName);
+    } catch (err) {
       console.error("Failed to download file:", err);
     }
   };
 
   const handleDelete = async (item: FileItem, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!store) return;
-    
+
     const itemType = item.type === "directory" ? "folder" : "file";
     const itemName = itemType === "folder" ? "folder" : "file";
-    
+
     showConfirm({
       title: `Delete ${itemName.charAt(0).toUpperCase() + itemName.slice(1)}`,
       message: `Are you sure you want to delete the ${itemName} "${item.name}"?`,
@@ -117,51 +106,51 @@ const FileFolderPage = memo(() => {
       onConfirm: async () => {
         try {
           const result = await DeleteFileOrFolder({
-            store,
+            store: STORE,
             path: item.path,
             item_type: itemType,
           });
-          
+
           if (result.success) {
             showSuccess(result.message || `Successfully deleted ${itemName}`);
-            // 重新加载目录
-            const loadDirectory = async () => {
+            const reload = async () => {
               setLoading(true);
               setError(null);
               try {
-                const result = await ListDirectory(store, pathParam || undefined);
-                if (result && result.success) {
-                  setItems(Array.isArray(result.items) ? result.items : []);
-                  if (result.path) {
-                    setCurrentPath(result.path.split("/").filter(Boolean));
+                const r = await ListDirectory(pathParam || undefined);
+                if (r && r.success) {
+                  setItems(Array.isArray(r.items) ? r.items : []);
+                  if (r.path) {
+                    setCurrentPath(r.path.split("/").filter(Boolean));
                   } else {
                     setCurrentPath([]);
                   }
                 }
-              } catch (err: any) {
-                console.error("Failed to reload directory:", err);
-                const errorMsg = err?.response?.data?.detail || err?.response?.data?.message || err?.message || "Failed to reload directory";
-                setError(errorMsg);
+              } catch (err: unknown) {
+                const ex = err as { message?: string };
+                setError(ex?.message || "Failed to reload directory");
               } finally {
                 setLoading(false);
               }
             };
-            loadDirectory();
+            await reload();
           } else {
             showError(result.message || `Failed to delete ${itemName}`);
           }
-        } catch (error: any) {
-          console.error(`Failed to delete ${itemName}:`, error);
-          showError(error?.response?.data?.detail || error?.response?.data?.message || error?.message || `Failed to delete ${itemName}`);
+        } catch (error: unknown) {
+          const ex = error as { response?: { data?: { detail?: string; message?: string } }; message?: string };
+          showError(
+            ex?.response?.data?.detail ||
+              ex?.response?.data?.message ||
+              ex?.message ||
+              `Failed to delete ${itemName}`,
+          );
         }
       },
     });
   };
 
-
-  if (!store) return null;
-
-  const storeName = store === "apis" ? "Apis" : "Websites";
+  const storeName = "Websites";
 
   return (
     <div className={styles.page}>
@@ -169,11 +158,7 @@ const FileFolderPage = memo(() => {
         <BackButton onClick={handleBack} className={styles.backBtn} />
         <div>
           <h1 className={styles.title}>{storeName}</h1>
-          {currentPath.length > 0 && (
-            <p className={styles.subtitle}>
-              {currentPath.join(" / ")}
-            </p>
-          )}
+          {currentPath.length > 0 && <p className={styles.subtitle}>{currentPath.join(" / ")}</p>}
         </div>
       </div>
 
@@ -189,24 +174,18 @@ const FileFolderPage = memo(() => {
             {items.map((item) => {
               if (item.type === "directory") {
                 return (
-                  <FolderItem
-                    key={item.path}
-                    item={item}
-                    onClick={handleItemClick}
-                    onDelete={handleDelete}
-                  />
-                );
-              } else {
-                return (
-                  <FileItemComponent
-                    key={item.path}
-                    item={item}
-                    onClick={handleItemClick}
-                    onDownload={handleDownload}
-                    onDelete={handleDelete}
-                  />
+                  <FolderItem key={item.path} item={item} onClick={handleItemClick} onDelete={handleDelete} />
                 );
               }
+              return (
+                <FileItemComponent
+                  key={item.path}
+                  item={item}
+                  onClick={handleItemClick}
+                  onDownload={handleDownload}
+                  onDelete={handleDelete}
+                />
+              );
             })}
           </div>
         )}
@@ -218,4 +197,3 @@ const FileFolderPage = memo(() => {
 FileFolderPage.displayName = "FileFolderPage";
 
 export default FileFolderPage;
-
