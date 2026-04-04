@@ -6,6 +6,12 @@
   "certificate.source.manual_add": "Manual Add",
   "certificate": {
     "info": "Certificate Information",
+    "domain": "Domain",
+    "folderName": "Folder name",
+    "status": "Status",
+    "issuer": "Issuer",
+    "unknown": "Unknown",
+    "email": "Contact email",
     "validFrom": "Valid From",
     "expiryDate": "Expiry Date",
     "sans": "Subject Alternative Names (SANs)",
@@ -37,7 +43,12 @@
   },
   "reapply": {
     "title": "Re-apply Certificate",
-    "confirm": "Are you sure you want to re-apply certificate for \"{{domain}}\"?",
+    "confirm": "Re-apply certificate for \"{{domain}}\"?",
+    "confirmDetail": "Uses the saved domain, contact email, and SANs. Without force renewal, the server may use a cached certificate when available.",
+    "confirmSubmit": "Apply",
+    "forceRenewal": "Force renewal (ignore cache; re-issue even if not expired — may hit CA rate limits)",
+    "emailRequired": "This certificate has no contact email. Add one on the edit page or use Add Certificate.",
+    "notLoaded": "Certificate is still loading. Please try again.",
     "applying": "Re-applying..."
   },
   "loading": "Loading...",

@@ -20,7 +20,24 @@ const CertificateContent = memo(({ certificate, onCopy }: CertificateContentProp
           {t("copy.certificate") || "Copy Certificate"}
         </IconButton>
       </div>
-      <textarea className={styles.textArea} value={certificate} readOnly rows={10} />
+      <div className={styles.terminal}>
+        <div className={styles.terminalChrome} aria-hidden>
+          <span className={styles.terminalDots}>
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+          </span>
+          <span className={styles.terminalLabel}>PEM · X.509</span>
+        </div>
+        <textarea
+          className={styles.textArea}
+          value={certificate}
+          readOnly
+          spellCheck={false}
+          rows={14}
+          aria-label={t("certificate.content") || "Certificate PEM"}
+        />
+      </div>
     </div>
   );
 });

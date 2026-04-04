@@ -27,6 +27,7 @@
   },
   "certificate": {
     "domain": "域名",
+    "email": "联系邮箱",
     "issuer": "颁发者",
     "expiryDate": "到期时间",
     "unknown": "未知",

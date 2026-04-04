@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useCallback } from "react";
+import { memo, useEffect, useRef, useCallback, useState } from "react";
 
 import { Button } from "nfx-ui/components";
 import { AlertCircle } from "@/assets/icons/lucide";
@@ -6,7 +6,6 @@ import { AlertCircle } from "@/assets/icons/lucide";
 import ModalStore, { useModalStore } from "@/stores/modalStore";
 
 import styles from "./Modal.module.css";
-
 
 const ConfirmModal = memo(() => {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -16,9 +15,11 @@ const ConfirmModal = memo(() => {
   const message = useModalStore((state) => state.confirmModal.message);
   const confirmText = useModalStore((state) => state.confirmModal.confirmText);
   const cancelText = useModalStore((state) => state.confirmModal.cancelText);
+  const forceRenewalOption = useModalStore((state) => state.confirmModal.forceRenewalOption);
   const hideModal = ModalStore.getState().hideModal;
-  const onConfirm = ModalStore.getState().confirmModal.onConfirm;
   const onCancel = ModalStore.getState().confirmModal.onCancel;
+
+  const [forceRenewalChecked, setForceRenewalChecked] = useState(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -30,14 +31,25 @@ const ConfirmModal = memo(() => {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      setForceRenewalChecked(forceRenewalOption?.defaultChecked ?? false);
+    }
+  }, [isOpen, forceRenewalOption?.defaultChecked, forceRenewalOption?.label]);
+
   const handleClose = useCallback(() => {
     hideModal("confirm");
   }, [hideModal]);
 
   const handleConfirm = useCallback(() => {
-    if (onConfirm) onConfirm();
+    const { onConfirm, forceRenewalOption: frOpt } = ModalStore.getState().confirmModal;
+    if (frOpt) {
+      onConfirm?.({ forceRenewal: forceRenewalChecked });
+    } else {
+      onConfirm?.();
+    }
     hideModal("confirm");
-  }, [onConfirm, hideModal]);
+  }, [forceRenewalChecked, hideModal]);
 
   const handleCancel = useCallback(() => {
     if (onCancel) onCancel();
@@ -47,17 +59,29 @@ const ConfirmModal = memo(() => {
   return (
     <dialog ref={dialogRef} className={styles.modal} onClose={handleClose}>
       <div className={`${styles.content} ${styles[type]}`}>
-        <div className={styles.icon}><AlertCircle size={32} /></div>
+        <div className={styles.icon}>
+          <AlertCircle size={32} />
+        </div>
         {title && <h3 className={styles.title}>{title}</h3>}
         <p className={styles.message}>{message || "No message"}</p>
-          <div className={styles.buttonGroup}>
-            <Button type="button" variant="outline" onClick={handleCancel}>
-              {cancelText || "Cancel"}
-            </Button>
-            <Button type="button" variant="primary" onClick={handleConfirm}>
-              {confirmText || "Confirm"}
-            </Button>
-          </div>
+        {forceRenewalOption ? (
+          <label className={styles.checkboxRow}>
+            <input
+              type="checkbox"
+              checked={forceRenewalChecked}
+              onChange={(e) => setForceRenewalChecked(e.target.checked)}
+            />
+            <span>{forceRenewalOption.label}</span>
+          </label>
+        ) : null}
+        <div className={styles.buttonGroup}>
+          <Button type="button" variant="outline" onClick={handleCancel}>
+            {cancelText || "Cancel"}
+          </Button>
+          <Button type="button" variant="primary" onClick={handleConfirm}>
+            {confirmText || "Confirm"}
+          </Button>
+        </div>
       </div>
     </dialog>
   );

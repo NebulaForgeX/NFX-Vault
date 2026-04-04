@@ -11,14 +11,21 @@ interface BaseModalProps {
   onClick?: () => void;
 }
 
+/** 确认框内「强制重新申请」等可选勾选 */
+export interface ConfirmModalForceRenewalOption {
+  label: string;
+  defaultChecked?: boolean;
+}
+
 interface ConfirmModalProps {
   isOpen: boolean;
   message?: string;
   title?: string;
-  onConfirm?: () => void;
+  onConfirm?: (opts?: { forceRenewal: boolean }) => void;
   onCancel?: () => void;
   confirmText?: string;
   cancelText?: string;
+  forceRenewalOption?: ConfirmModalForceRenewalOption;
 }
 
 interface SearchModalProps {
@@ -88,6 +95,7 @@ const defaultConfirmModalProps: ConfirmModalProps = {
   onCancel: undefined,
   confirmText: "Confirm",
   cancelText: "Cancel",
+  forceRenewalOption: undefined,
 };
 const defaultSearchModalProps: SearchModalProps = {
   isOpen: false,
@@ -301,11 +309,13 @@ export const showError = (message: string, title?: string) => {
 
 export interface ShowConfirmProps {
   message: string;
-  onConfirm: () => void;
+  onConfirm: (opts?: { forceRenewal: boolean }) => void;
   onCancel?: () => void;
   title?: string;
   confirmText?: string;
   cancelText?: string;
+  /** 展示「强制申请」勾选；确认时 `onConfirm({ forceRenewal })` */
+  forceRenewalOption?: ConfirmModalForceRenewalOption;
 }
 
 export const showConfirm = (props: ShowConfirmProps) => {
@@ -317,6 +327,7 @@ export const showConfirm = (props: ShowConfirmProps) => {
     onCancel: props.onCancel,
     confirmText: props.confirmText,
     cancelText: props.cancelText,
+    forceRenewalOption: props.forceRenewalOption,
   });
 };
 

@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { Edit, Trash2 } from "@/assets/icons/lucide";
+import { Edit, RefreshCw, Trash2 } from "@/assets/icons/lucide";
 import { IconButton } from "@/components";
 import { useOperationCertificate } from "../../hooks";
 import styles from "./styles.module.css";
@@ -11,7 +11,7 @@ interface CertificateOperationsProps {
 
 const CertificateOperations = memo(({ certificateId }: CertificateOperationsProps) => {
   const { t } = useTranslation("certDetail");
-  const { handleEdit, handleDelete, isDeleting } = useOperationCertificate(certificateId);
+  const { handleEdit, handleReapply, handleDelete, isDeleting, isReapplying } = useOperationCertificate(certificateId);
 
   return (
     <div className={styles.section}>
@@ -19,6 +19,14 @@ const CertificateOperations = memo(({ certificateId }: CertificateOperationsProp
       <div className={styles.buttonGroup}>
         <IconButton onClick={handleEdit} variant="secondary" icon={<Edit size={16} />}>
           {t("actions.update") || "Update"}
+        </IconButton>
+        <IconButton
+          onClick={handleReapply}
+          variant="secondary"
+          icon={<RefreshCw size={16} />}
+          disabled={isReapplying}
+        >
+          {isReapplying ? t("reapply.applying") : t("actions.reapply")}
         </IconButton>
         <IconButton
           onClick={handleDelete}

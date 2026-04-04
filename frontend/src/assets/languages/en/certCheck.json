@@ -27,6 +27,7 @@
   },
   "certificate": {
     "domain": "Domain",
+    "email": "Contact email",
     "issuer": "Issuer",
     "expiryDate": "Expiry Date",
     "unknown": "Unknown",

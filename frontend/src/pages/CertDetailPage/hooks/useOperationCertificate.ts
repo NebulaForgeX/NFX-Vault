@@ -4,12 +4,14 @@ import { useTranslation } from "react-i18next";
 import { routerEventEmitter } from "@/events/router";
 import { ROUTES } from "@/navigations";
 import { buildCertCheckPath } from "@/utils/certCheckUrl";
-import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
-import { useDeleteCertificate, useCertificateDetailById } from "@/hooks";
+import { hideLoading, showConfirm, showError, showLoading, showSuccess } from "@/stores/modalStore";
+import { useApplyCertificate, useCertificateDetailById, useDeleteCertificate } from "@/hooks";
 
 export const useOperationCertificate = (certificateId: string) => {
   const { t } = useTranslation("certDetail");
+  const { t: tc } = useTranslation("common");
   const deleteMutation = useDeleteCertificate();
+  const applyMutation = useApplyCertificate();
   const { data: certificate } = useCertificateDetailById(certificateId);
 
   const handleEdit = useCallback(() => {
@@ -19,6 +21,61 @@ export const useOperationCertificate = (certificateId: string) => {
     }
     routerEventEmitter.navigate({ to: ROUTES.CERT_EDIT.replace(":certificateId", encodeURIComponent(certificateId)) });
   }, [certificateId]);
+
+  const handleReapply = useCallback(() => {
+    if (!certificate) {
+      showError(t("reapply.notLoaded"));
+      return;
+    }
+    const email = certificate.email?.trim();
+    if (!email) {
+      showError(t("reapply.emailRequired"));
+      return;
+    }
+    const domain = certificate.domain;
+    const line1 = t("reapply.confirm").replace("{{domain}}", domain);
+    const message = `${line1}\n\n${t("reapply.confirmDetail")}`;
+
+    showConfirm({
+      title: t("reapply.title"),
+      message,
+      confirmText: t("reapply.confirmSubmit"),
+      cancelText: t("delete.confirm.cancel"),
+      forceRenewalOption: {
+        label: t("reapply.forceRenewal"),
+        defaultChecked: false,
+      },
+      onConfirm: (opts) => {
+        const forceRenewal = opts?.forceRenewal ?? false;
+        void (async () => {
+          showLoading({ message: t("reapply.applying") });
+          try {
+            const result = await applyMutation.mutateAsync({
+              domain: domain.trim(),
+              email,
+              sans: certificate.sans && certificate.sans.length > 0 ? certificate.sans : undefined,
+              folderName: certificate.folderName?.trim() || undefined,
+              forceRenewal,
+            });
+            if (result.success) {
+              showSuccess(result.message || tc("messages.certificateApplySuccess"));
+              routerEventEmitter.navigate({ to: ROUTES.CHECK });
+            } else {
+              let msg = result.message || tc("messages.certificateApplyFailed");
+              if (result.rateLimit && result.retryAfter) {
+                msg = `${msg} (retry after ${result.retryAfter})`;
+              }
+              showError(msg);
+            }
+          } catch {
+            // useApplyCertificate onError 已弹窗
+          } finally {
+            hideLoading();
+          }
+        })();
+      },
+    });
+  }, [applyMutation, certificate, t, tc]);
 
   const handleDelete = useCallback(() => {
     if (!certificate) {
@@ -57,8 +114,10 @@ export const useOperationCertificate = (certificateId: string) => {
 
   return {
     handleEdit,
+    handleReapply,
     handleDelete,
     isDeleting: deleteMutation.isPending,
+    isReapplying: applyMutation.isPending,
   };
 };
 

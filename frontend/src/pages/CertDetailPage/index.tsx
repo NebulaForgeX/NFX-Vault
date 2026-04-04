@@ -40,8 +40,10 @@ const CertDetailContent = memo(() => {
 
       <div className={styles.content}>
         <CertificateInfo certDetail={certDetail} />
-        <CertificateContent certificate={certDetail.certificate} onCopy={handleCopyCertificate} />
-        <PrivateKeyContent privateKey={certDetail.privateKey} onCopy={handleCopyPrivateKey} />
+        <div className={styles.pemPair}>
+          <CertificateContent certificate={certDetail.certificate} onCopy={handleCopyCertificate} />
+          <PrivateKeyContent privateKey={certDetail.privateKey} onCopy={handleCopyPrivateKey} />
+        </div>
         <ExportCertificate
           certificate={certDetail.certificate}
           privateKey={certDetail.privateKey}

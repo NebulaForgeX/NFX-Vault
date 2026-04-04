@@ -32,6 +32,18 @@
   gap: 2rem;
 }
 
+.pemPair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+@media (max-width: 960px) {
+  .pemPair {
+    grid-template-columns: 1fr;
+  }
+}
 
 @media (max-width: 768px) {
   .container {

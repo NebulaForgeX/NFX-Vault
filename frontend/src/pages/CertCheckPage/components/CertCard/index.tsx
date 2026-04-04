@@ -68,6 +68,10 @@ const CertCard = memo(({ cert }: CertCardProps) => {
 
         <dl className={styles.metaGrid}>
           <div className={styles.metaCell}>
+            <dt>{t("certificate.email")}</dt>
+            <dd>{cert.email?.trim() ? cert.email : "—"}</dd>
+          </div>
+          <div className={styles.metaCell}>
             <dt>{t("certificate.issuer")}</dt>
             <dd>{cert.issuer || t("certificate.unknown")}</dd>
           </div>

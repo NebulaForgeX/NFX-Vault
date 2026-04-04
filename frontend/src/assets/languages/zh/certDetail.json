@@ -6,6 +6,12 @@
   "certificate.source.manual_add": "手动添加",
   "certificate": {
     "info": "证书信息",
+    "domain": "域名",
+    "folderName": "文件夹",
+    "status": "状态",
+    "issuer": "颁发者",
+    "unknown": "未知",
+    "email": "联系邮箱",
     "validFrom": "有效期从",
     "expiryDate": "到期日期",
     "sans": "主题备用名称 (SANs)",
@@ -38,6 +44,11 @@
   "reapply": {
     "title": "重新申请证书",
     "confirm": "确定要重新申请证书 \"{{domain}}\" 吗？",
+    "confirmDetail": "将使用当前记录中的域名、邮箱与 SAN 向 CA 发起申请。未勾选「强制申请」时，若服务端有可用缓存将优先使用。",
+    "confirmSubmit": "开始申请",
+    "forceRenewal": "强制申请（忽略缓存；未过期也会重新签发，可能触发 CA 速率限制）",
+    "emailRequired": "该证书没有保存联系邮箱，无法自动申请。请先到编辑页填写邮箱，或使用「添加证书」页。",
+    "notLoaded": "证书尚未加载完成，请稍后重试。",
     "applying": "重新申请中..."
   },
   "loading": "加载中...",

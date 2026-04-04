@@ -6,6 +6,12 @@
   "certificate.source.manual_add": "Ajout manuel",
   "certificate": {
     "info": "Informations sur le certificat",
+    "domain": "Domaine",
+    "folderName": "Dossier",
+    "status": "Statut",
+    "issuer": "Émetteur",
+    "unknown": "Inconnu",
+    "email": "E-mail de contact",
     "validFrom": "Valide à partir du",
     "expiryDate": "Date d'expiration",
     "sans": "Noms alternatifs du sujet (SANs)",
@@ -37,7 +43,12 @@
   },
   "reapply": {
     "title": "Redemander le certificat",
-    "confirm": "Êtes-vous sûr de vouloir redemander le certificat pour \"{{domain}}\" ?",
+    "confirm": "Redemander le certificat pour \"{{domain}}\" ?",
+    "confirmDetail": "Utilise le domaine, l'e-mail et les SAN enregistrés. Sans renouvellement forcé, le serveur peut utiliser un certificat en cache.",
+    "confirmSubmit": "Demander",
+    "forceRenewal": "Forcer la redemande (ignorer le cache ; réémettre même si non expiré — risque de limites CA)",
+    "emailRequired": "Aucun e-mail de contact. Ajoutez-le sur la page d'édition ou utilisez Ajouter un certificat.",
+    "notLoaded": "Certificat en cours de chargement. Réessayez.",
     "applying": "Redemande en cours..."
   },
   "loading": "Chargement...",

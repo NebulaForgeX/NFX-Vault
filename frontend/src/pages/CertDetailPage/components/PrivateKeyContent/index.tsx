@@ -20,7 +20,24 @@ const PrivateKeyContent = memo(({ privateKey, onCopy }: PrivateKeyContentProps) 
           {t("copy.privateKey") || "Copy Private Key"}
         </IconButton>
       </div>
-      <textarea className={styles.textArea} value={privateKey} readOnly rows={10} />
+      <div className={`${styles.terminal} ${styles.terminalKey}`}>
+        <div className={styles.terminalChrome} aria-hidden>
+          <span className={styles.terminalDots}>
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+          </span>
+          <span className={styles.terminalLabel}>PEM · PRIVATE</span>
+        </div>
+        <textarea
+          className={styles.textArea}
+          value={privateKey}
+          readOnly
+          spellCheck={false}
+          rows={14}
+          aria-label={t("certificate.privateKey") || "Private key PEM"}
+        />
+      </div>
     </div>
   );
 });

@@ -38,11 +38,14 @@
   color: var(--color-fg-text);
 }
 
+.sansBlock {
+  margin: 0;
+}
+
 .sansList {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 0.25rem;
 }
 
 .sanTag {
