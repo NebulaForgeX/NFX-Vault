@@ -12,8 +12,10 @@ COPY frontend/ ./
 # 与浏览器同域，由 nginx 转发到 `backend-api:8000`；若 API 独立域名可改为完整 URL
 ARG VITE_API_URL=/vault
 ENV VITE_API_URL=${VITE_API_URL}
+# 与 Pqttec-Admin 一致：避免 rollup-plugin-visualizer 在 CI/Docker 里尝试打开浏览器
+ENV DOCKER_BUILD=1
 
-RUN npm run build
+RUN npm run build && test -d dist && test -f dist/index.html
 
 FROM nginx:1.27-alpine
 COPY --from=build /app/dist /usr/share/nginx/html

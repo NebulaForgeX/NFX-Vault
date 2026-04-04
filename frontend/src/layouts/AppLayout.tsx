@@ -10,7 +10,7 @@ import { useLocation } from "react-router-dom";
 
 import { Footer, LayoutFrame } from "nfx-ui/layouts";
 
-import { Home, Shield, FileSearch, Folder, List, FilePlus, Scan, Globe } from "@/assets/icons/lucide";
+import { Home, Shield, FileSearch, Folder, List, FilePlus, Scan, Globe, User } from "@/assets/icons/lucide";
 import { routerEventEmitter } from "@/events/router";
 import { ROUTES } from "@/navigations";
 
@@ -28,6 +28,11 @@ function useSidebarItems(): SidebarMenuItem[] {
         label: t("home"),
         path: ROUTES.HOME,
         icon: <Home size={size20} />,
+      },
+      {
+        label: t("account"),
+        path: ROUTES.ACCOUNT,
+        icon: <User size={size20} />,
       },
       {
         label: t("certManagement"),

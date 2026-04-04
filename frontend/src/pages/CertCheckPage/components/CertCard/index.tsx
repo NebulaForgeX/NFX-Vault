@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "nfx-ui/components";
+import { safeMaybe } from "nfx-ui/utils";
 import type { CertificateInfo } from "@/types";
 import { CertificateStatus } from "@/types";
 import { Edit, Eye, Trash2, Loader2, AlertTriangle } from "@/assets/icons/lucide";
@@ -29,7 +30,7 @@ const CertCard = memo(({ cert }: CertCardProps) => {
     if (cert.lastErrorMessage) {
       showTooltipModal({
         message: cert.lastErrorMessage,
-        errorTime: cert.lastErrorTime ?? undefined,
+        errorTime: safeMaybe(cert.lastErrorTime),
         position: {
           x: window.innerWidth / 2 - 175,
           y: window.innerHeight / 2 - 120,

@@ -8,7 +8,7 @@ import logging
 from dataclasses import dataclass
 from typing import Optional
 
-from config.types import CertConfig, DatabaseConfig
+from config.types import AuthConfig, CertConfig, DatabaseConfig, VaultDataConfig
 from apps.certificate.models.base import Base
 from apps.certificate.kafka.certificate_pipeline import CertificatePipeline
 from utils import ACMEChallengeStorage, KafkaClient, KafkaEventConsumer, MySQLSession, RedisClient
@@ -21,6 +21,15 @@ from apps.certificate.repos.certificate_repository import CertificateRepository
 from apps.certificate.repos.tls_issue_repository import TlsIssueRepository
 from apps.certificate.services.certificate_service import CertificateService
 from apps.file.services.file_service import FileService
+from apps.user.models.vault_image import VaultImage  # noqa: F401 — 注册 metadata
+from apps.user.models.vault_user import VaultUser  # noqa: F401 — 注册 metadata
+from apps.user.repos.image_repository import ImageRepository
+from apps.user.repos.user_repository import UserRepository
+from apps.user.services.avatar_storage import AvatarStorageService
+from apps.user.services.auth_service import AuthService
+from apps.user.services.jwt_tokens import JwtTokenService
+from apps.user.services.mail_sender import SmtpMailSender
+from apps.user.services.verification_code import VerificationCodeService
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +45,15 @@ class ApplicationStack:
     analysis_service: AnalysisService
     acme_storage: ACMEChallengeStorage
     event_router: Optional[KafkaEventRouter]
+    image_repository: ImageRepository
+    auth_service: AuthService
 
 
 def build_application_stack(
     cert_config: CertConfig,
     db_config: DatabaseConfig,
+    auth_config: AuthConfig,
+    vault_data_config: VaultDataConfig,
 ) -> ApplicationStack:
     mysql = MySQLSession(
         host=db_config.MYSQL_HOST,
@@ -95,6 +108,32 @@ def build_application_stack(
     analysis_service = AnalysisService()
     acme_storage = ACMEChallengeStorage(challenge_dir=cert_config.ACME_CHALLENGE_DIR)
 
+    user_repo = UserRepository(mysql)
+    image_repo = ImageRepository(mysql)
+    verification = VerificationCodeService(redis_client, auth_config.EMAIL_VERIFICATION_CODE_TTL_SECONDS)
+    mailer = SmtpMailSender(
+        auth_config.EMAIL_SMTP_HOST,
+        auth_config.EMAIL_SMTP_PORT,
+        auth_config.EMAIL_SMTP_USER,
+        auth_config.EMAIL_SMTP_PASSWORD,
+    )
+    jwt_tokens = JwtTokenService(
+        auth_config.JWT_SECRET,
+        auth_config.JWT_ACCESS_EXPIRE_MINUTES,
+        auth_config.JWT_REFRESH_EXPIRE_DAYS,
+    )
+    avatar_storage = AvatarStorageService(vault_data_config.DATA_DIR)
+    avatar_storage.ensure_dirs()
+    auth_service = AuthService(
+        auth_config,
+        user_repo,
+        verification,
+        mailer,
+        jwt_tokens,
+        avatar_storage,
+        image_repo,
+    )
+
     kafka_consumer: Optional[KafkaEventConsumer] = None
     event_router = None
     if kafka_client.enable_kafka:
@@ -118,13 +157,17 @@ def build_application_stack(
         analysis_service=analysis_service,
         acme_storage=acme_storage,
         event_router=event_router,
+        image_repository=image_repo,
+        auth_service=auth_service,
     )
 
 
 def build_certificate_stack(
     cert_config: CertConfig,
     db_config: DatabaseConfig,
+    auth_config: AuthConfig,
+    vault_data_config: VaultDataConfig,
 ) -> tuple[MySQLSession, RedisClient, KafkaClient, CertificateService]:
     """兼容旧调用：仅返回证书栈四元组。"""
-    s = build_application_stack(cert_config, db_config)
+    s = build_application_stack(cert_config, db_config, auth_config, vault_data_config)
     return s.mysql, s.redis, s.kafka, s.certificate_service

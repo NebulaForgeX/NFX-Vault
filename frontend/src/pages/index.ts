@@ -1,3 +1,5 @@
+export { default as LoginPage } from "./LoginPage";
+export { default as AccountPage } from "./AccountPage";
 export { default as DashboardPage } from "./DashboardPage";
 export { default as CertCheckPage } from "./CertCheckPage";
 export { default as CertDetailPage } from "./CertDetailPage";

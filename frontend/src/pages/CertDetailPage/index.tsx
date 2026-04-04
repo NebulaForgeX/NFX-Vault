@@ -2,6 +2,7 @@ import { memo } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button, Suspense } from "nfx-ui/components";
+import { safeStringable } from "nfx-ui/utils";
 import { routerEventEmitter } from "@/events/router";
 import { useCertificateDetailById } from "@/hooks";
 import { ROUTES } from "@/navigations";
@@ -20,7 +21,7 @@ import styles from "./styles.module.css";
 const CertDetailContent = memo(() => {
   const { t } = useTranslation("certDetail");
   const { certificateId } = useParams<{ certificateId: string }>();
-  const { data: certDetail } = useCertificateDetailById(certificateId || "");
+  const { data: certDetail } = useCertificateDetailById(safeStringable(certificateId));
 
   // Suspense 模式下，certDetail 一定存在，无需检查
   const handleCopyCertificate = () => {

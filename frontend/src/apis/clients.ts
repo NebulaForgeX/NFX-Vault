@@ -6,6 +6,9 @@ import applyCaseMiddleware from "axios-case-converter";
 
 import type { ApiErrorBody } from "nfx-ui/types";
 import { API_ENDPOINTS } from "@/apis/ip";
+import { routerEventEmitter } from "@/events/router";
+import { ROUTES } from "@/navigations";
+import AuthStore from "@/stores/authStore";
 
 // 让 config._retry 有类型
 declare module "axios" {
@@ -29,10 +32,18 @@ export const publicClient = applyCaseMiddleware(
   }),
 );
 
-// 2) 请求拦截器（不需要认证，所以 protectedClient 和 publicClient 使用相同的配置）
+// 2) 请求拦截器：multipart 勿覆盖 Content-Type（头像上传等）
+protectedClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
+  return config;
+});
+
 protectedClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // 这里不需要添加 token，因为不需要认证
+    const accessToken = AuthStore.getState().accessToken;
+    if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
   },
   (error) => Promise.reject(error),
@@ -99,8 +110,32 @@ function logRexApiError(error: AxiosError<ApiErrorBody>): void {
 
 protectedClient.interceptors.response.use(
   (response) => response,
-  (error: unknown) => {
-    if (error instanceof AxiosError) logRexApiError(error);
+  async (error: unknown) => {
+    if (!(error instanceof AxiosError)) {
+      return Promise.reject(error);
+    }
+    logRexApiError(error);
+
+    if (error.response?.status === 401 && error.config && !error.config._retry) {
+      error.config._retry = true;
+      const refreshToken = AuthStore.getState().refreshToken;
+      if (!refreshToken) {
+        AuthStore.getState().clearAuth();
+        routerEventEmitter.navigateReplace(ROUTES.LOGIN);
+        return Promise.reject(error);
+      }
+      try {
+        const { RefreshTokens } = await import("@/apis/auth.api");
+        const tokens = await RefreshTokens(refreshToken);
+        AuthStore.getState().setTokens(tokens);
+        return protectedClient.request(error.config);
+      } catch {
+        AuthStore.getState().clearAuth();
+        routerEventEmitter.navigateReplace(ROUTES.LOGIN);
+        return Promise.reject(error);
+      }
+    }
+
     return Promise.reject(error);
   },
 );

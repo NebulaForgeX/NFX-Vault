@@ -34,6 +34,51 @@
     align-items: center;
 }
 
+.userBlock {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 10rem;
+}
+
+.avatarRing {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-fg) 12%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatarImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatarInitials {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-fg);
+    opacity: 0.92;
+    line-height: 1;
+}
+
+.userLabel {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    opacity: 0.9;
+    padding: 0 0.25rem 0 0;
+}
+
 .separator {
     width: 2px;
     background-color: var(--color-separator);

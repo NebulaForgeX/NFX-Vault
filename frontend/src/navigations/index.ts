@@ -4,6 +4,8 @@ import { createRouter, defineRouter } from "nfx-ui/navigations";
 
 const routeMap = defineRouter({
   HOME: "/",
+  LOGIN: "/login",
+  ACCOUNT: "/account",
   CHECK: "/check",
   CERT_ADD: "/cert/add",
   CERT_EDIT: "/cert/edit/:certificateId",

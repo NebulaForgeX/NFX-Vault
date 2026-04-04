@@ -7,6 +7,8 @@ import type { Resolver } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
+import { safeArray, safeStringable } from "nfx-ui/utils";
+
 import { createEditCertificateFormSchema } from "../schemas/certificateSchema";
 
 export default function useInitCertificateForm(certificate?: CertificateDetailResponse | null) {
@@ -19,10 +21,10 @@ export default function useInitCertificateForm(certificate?: CertificateDetailRe
     defaultValues: certificate
       ? {
           domain: certificate.domain,
-          sans: certificate.sans || [],
-          folderName: certificate.folderName || "",
-          email: certificate.email || "",
-          issuer: certificate.issuer || "",
+          sans: safeArray(certificate.sans),
+          folderName: safeStringable(certificate.folderName),
+          email: safeStringable(certificate.email),
+          issuer: safeStringable(certificate.issuer),
           webroot: "",
           forceRenewal: false,
         }
@@ -41,10 +43,10 @@ export default function useInitCertificateForm(certificate?: CertificateDetailRe
     if (certificate) {
       form.reset({
         domain: certificate.domain,
-        folderName: certificate.folderName || "",
-        email: certificate.email || "",
-        issuer: certificate.issuer || "",
-        sans: certificate.sans || [],
+        folderName: safeStringable(certificate.folderName),
+        email: safeStringable(certificate.email),
+        issuer: safeStringable(certificate.issuer),
+        sans: safeArray(certificate.sans),
         webroot: "",
         forceRenewal: false,
       });

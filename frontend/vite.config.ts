@@ -11,12 +11,12 @@ export default defineConfig(({ mode }) => {
   // - npm run preview → mode = "production"
   // - vite --mode staging → mode = "staging" (手动指定)
   
-  // 加载项目根目录的 .env 文件
-  // loadEnv 会根据 mode 加载对应的 .env 文件：
-  // - development: .env.development > .env.local > .env
-  // - production: .env.production > .env.local > .env
-  // 构建时如果文件不存在，loadEnv 会返回空对象，不会报错
-  const envDir = path.resolve(__dirname, "../../");
+  // 本地开发：从仓库根加载 .env（frontend 的上一级再上一级 = NFX-Vault 根）
+  // Docker 构建：COPY 只有 /app 下前端文件，envDir 若用 ../../ 会变成文件系统根目录，可能导致构建异常且无 dist
+  const envDir =
+    process.env.DOCKER_BUILD === "1"
+      ? path.resolve(__dirname)
+      : path.resolve(__dirname, "../../");
   const env = loadEnv(mode, envDir, "");
 
   // 从环境变量读取后端配置，提供默认值
@@ -33,11 +33,12 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+  root: path.resolve(__dirname),
   plugins: [
     react(),
     visualizer({
-      filename: "./dist/stats.html",
-      open: true,
+      filename: path.resolve(__dirname, "dist/stats.html"),
+      open: process.env.DOCKER_BUILD !== "1",
       gzipSize: true,
       brotliSize: true,
     }),
@@ -48,6 +49,13 @@ export default defineConfig(({ mode }) => {
       "@": path.resolve(__dirname, "./src"),
       "lucide-react/icons": path.resolve(__dirname, "./node_modules/lucide-react/dist/esm/icons"),
     },
+    dedupe: [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@tanstack/react-query",
+      "@tanstack/react-query-devtools",
+    ],
   },
   css: {
     modules: {
@@ -68,7 +76,7 @@ export default defineConfig(({ mode }) => {
     },
   },
   build: {
-    outDir: "dist",
+    outDir: path.resolve(__dirname, "dist"),
     sourcemap: true,
     chunkSizeWarningLimit: 300,
   },

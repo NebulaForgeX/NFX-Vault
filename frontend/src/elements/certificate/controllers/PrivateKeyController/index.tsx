@@ -3,6 +3,7 @@ import type { CertificateFormValues } from "../../schemas/certificateSchema";
 import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { safeStringable } from "nfx-ui/utils";
 import { Upload } from "@/assets/icons/lucide";
 
 import styles from "./styles.module.css";
@@ -54,7 +55,7 @@ const PrivateKeyController = memo(() => {
         placeholder={t("form.privateKeyPlaceholder")}
         className={`${styles.textarea} ${errors.privateKey ? styles.inputError : ""}`}
         rows={10}
-        value={privateKeyValue || ""}
+        value={safeStringable(privateKeyValue)}
       />
       {errors.privateKey && <p className={styles.errorMessage}>{errors.privateKey.message}</p>}
     </div>

@@ -1,5 +1,6 @@
 import { memo, useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { safeOr, safeStringable } from "nfx-ui/utils";
 
 import { BackButton } from "@/components";
 import { routerEventEmitter } from "@/events/router";
@@ -16,7 +17,7 @@ const STORE = "websites" as const;
 
 const FileFolderPage = memo(() => {
   const [searchParams] = useSearchParams();
-  const pathParam = searchParams.get("path") || "";
+  const pathParam = safeStringable(searchParams.get("path"));
 
   const [items, setItems] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +74,7 @@ const FileFolderPage = memo(() => {
         store: STORE,
         filePath: item.path,
         fileName: item.name,
-        folderName: item.path.split("/").slice(0, -1).pop() || "",
+        folderName: safeOr(item.path.split("/").slice(0, -1).pop(), ""),
       });
     }
   };

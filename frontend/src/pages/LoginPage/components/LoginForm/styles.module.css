@@ -1,0 +1,44 @@
+/* 与 Pqttec-Admin LoginForm/styles.module.css 一致 */
+.formWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 50%;
+  padding: 1rem 1rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 2.5rem 2.5rem;
+  width: 100%;
+  min-height: 28rem;
+  background-color: var(--color-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+
+.title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.875rem;
+  color: var(--color-fg-heading);
+  margin-bottom: 2rem;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+@media (max-width: 480px) {
+  .form {
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+    min-height: 26rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}

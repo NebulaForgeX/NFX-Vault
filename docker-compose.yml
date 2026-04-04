@@ -15,6 +15,8 @@ services:
       - ${CERTS_DIR}:${CERTS_DIR}:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${ACME_CHALLENGE_DIR}:${ACME_CHALLENGE_DIR}:rw
+      # 宿主机路径来自 .env；容器内必须为绝对路径（勿与宿主机共用同一相对路径，否则会变成非法挂载 `.../data:data`）
+      - ${VAULT_DATA_DIR:-./data}:/vault-data:rw
     environment:
       - PYTHONUNBUFFERED=1
       - MYSQL_HOST=${MYSQL_HOST}
@@ -36,6 +38,15 @@ services:
       - CERTS_DIR=${CERTS_DIR}
       - READ_ON_STARTUP=${READ_ON_STARTUP}
       - SCHEDULE_ENABLED=${SCHEDULE_ENABLED}
+      - EMAIL_SMTP_HOST=${EMAIL_SMTP_HOST}
+      - EMAIL_SMTP_PORT=${EMAIL_SMTP_PORT}
+      - EMAIL_SMTP_USER=${EMAIL_SMTP_USER}
+      - EMAIL_SMTP_PASSWORD=${EMAIL_SMTP_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ACCESS_EXPIRE_MINUTES=${JWT_ACCESS_EXPIRE_MINUTES:-30}
+      - JWT_REFRESH_EXPIRE_DAYS=${JWT_REFRESH_EXPIRE_DAYS:-7}
+      - EMAIL_VERIFICATION_CODE_TTL_SECONDS=${EMAIL_VERIFICATION_CODE_TTL_SECONDS:-600}
+      - VAULT_DATA_DIR=/vault-data
     labels:
       - traefik.enable=true
     networks:

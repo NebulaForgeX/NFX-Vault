@@ -1,0 +1,110 @@
+/* 与 Pqttec-Admin LoginEmailController/styles.module.css 一致 */
+.formControl {
+  width: 100%;
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.formControl:has(.errorText) {
+  margin-bottom: 2.5rem;
+}
+
+.inputWrapper {
+  width: 100%;
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  background-color: var(--color-bg-2);
+  border: 1px solid var(--color-border-4);
+  outline: none;
+  color: var(--color-fg-text);
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  height: 2.75rem;
+  box-sizing: border-box;
+}
+
+.input:hover:not(:disabled) {
+  border-color: var(--color-border-3);
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+  background-color: var(--color-bg);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.input:disabled {
+  background-color: var(--color-bg-3);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.input.error {
+  border-color: var(--color-danger);
+}
+
+.input.error:focus {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.label {
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  transform: translateY(-50%);
+  font-size: 0.875rem;
+  color: var(--color-fg);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  background-color: var(--color-bg-2);
+  padding: 0 0.25rem;
+  z-index: 1;
+}
+
+.inputWrapper:has(.input:focus) .label,
+.inputWrapper:has(.input:not(:placeholder-shown)) .label {
+  top: 0;
+  left: 1rem;
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  background-color: var(--color-bg);
+  font-weight: 500;
+}
+
+.inputWrapper:has(.input.error:focus) .label,
+.inputWrapper:has(.input.error:not(:placeholder-shown)) .label {
+  color: var(--color-danger);
+}
+
+.textWrapper {
+  width: 100%;
+  position: absolute;
+  bottom: -1.5rem;
+  left: 0;
+  display: none;
+}
+
+.textWrapper:has(.errorText) {
+  display: block;
+}
+
+.innerTextWrapper {
+  width: 100%;
+  position: relative;
+}
+
+.errorText {
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+  line-height: 1.5;
+  font-weight: 400;
+}

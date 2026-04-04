@@ -3,6 +3,7 @@ import type { CertificateFormValues } from "../../schemas/certificateSchema";
 import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { safeStringable } from "nfx-ui/utils";
 import { Upload } from "@/assets/icons/lucide";
 
 import styles from "./styles.module.css";
@@ -54,7 +55,7 @@ const CertificateController = memo(() => {
         placeholder={t("form.certificatePlaceholder")}
         className={`${styles.textarea} ${errors.certificate ? styles.inputError : ""}`}
         rows={10}
-        value={certificateValue || ""}
+        value={safeStringable(certificateValue)}
       />
       {errors.certificate && <p className={styles.errorMessage}>{errors.certificate.message}</p>}
     </div>

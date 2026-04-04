@@ -2,10 +2,12 @@
  * API path tree: base paths + dynamic segments via path()（与 nfx-ui/apis、Pqttec-Admin 一致）
  */
 import { path } from "nfx-ui/apis";
+import { safeOr } from "nfx-ui/utils";
 
-const HTTP_BASE_URL = import.meta.env.VITE_API_URL ?? "/vault";
-const WS_BASE_URL = import.meta.env.VITE_WS_URL ?? "";
-const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_URL ?? "";
+/** Vite `import.meta.env` 为 `unknown`，与 `safeOr` 组合后需收窄为 `string` */
+const HTTP_BASE_URL: string = safeOr(import.meta.env.VITE_API_URL as string | undefined | null, "/vault");
+const WS_BASE_URL: string = safeOr(import.meta.env.VITE_WS_URL as string | undefined | null, "");
+const IMAGE_BASE_URL: string = safeOr(import.meta.env.VITE_IMAGE_URL as string | undefined | null, "");
 
 export const URL_PATHS = {
   TLS: path("/tls", {
@@ -31,6 +33,16 @@ export const URL_PATHS = {
 
   ANALYSIS: path("/analysis", {
     tls: "/tls",
+  }),
+
+  AUTH: path("/auth", {
+    signupSendCode: "/signup/send-code",
+    signup: "/signup",
+    loginEmail: "/login/email",
+    refresh: "/refresh",
+    me: "/me",
+    mePassword: "/me/password",
+    avatarUpload: "/avatar/upload",
   }),
 } as const;
 

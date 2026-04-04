@@ -1,0 +1,52 @@
+/* 与 Pqttec-Admin LoginPage/styles.module.css 一致 */
+.loginPage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-2);
+  padding: 2rem;
+  position: relative;
+}
+
+.topControls {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  z-index: 10;
+}
+
+.container {
+  width: 400px;
+  max-width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.registerToggle {
+  display: none;
+}
+
+.slider {
+  width: 200%;
+  position: relative;
+  transition: transform ease-out 0.4s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.registerToggle:checked + .slider {
+  transform: translateX(-50%);
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 100%;
+  }
+}

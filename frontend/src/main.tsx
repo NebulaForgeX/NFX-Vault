@@ -14,10 +14,7 @@ import App from "./App.tsx";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryProvider>
-      <LanguageProvider
-        bundles={{ RESOURCES, NAME_SPACES_MAP, NAME_SPACES }}
-        fallbackLng={LanguageEnum.ZH}
-      >
+      <LanguageProvider bundles={{ RESOURCES, NAME_SPACES_MAP, NAME_SPACES }} fallbackLng={LanguageEnum.ZH}>
         <ThemeProvider defaultTheme={ThemeEnum.DEFAULT}>
           <LayoutProvider>
             <BrowserRouterProvider>

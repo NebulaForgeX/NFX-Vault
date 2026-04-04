@@ -39,7 +39,13 @@ class MySQLSession:
                     max_overflow=20,
                     echo=False,
                 )
-                self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+                # 避免 commit 后 ORM 实例过期：仓库在 with 外仍读取 password_hash 等字段（登录否则会 500）
+                self.SessionLocal = sessionmaker(
+                    autocommit=False,
+                    autoflush=False,
+                    bind=self.engine,
+                    expire_on_commit=False,
+                )
                 logger.info("MySQL 已连接 %s:%s/%s", self.host, self.port, self.database)
             except Exception as e:  # noqa: BLE001
                 logger.error("MySQL 初始化失败: %s", e)

@@ -1,4 +1,3 @@
-/* 加载状态容器 */
 .loadingContainer {
   min-height: 100vh;
   display: flex;
@@ -13,4 +12,3 @@
   color: var(--color-fg-text);
   font-size: 0.9rem;
 }
-

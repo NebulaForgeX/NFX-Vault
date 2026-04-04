@@ -6,6 +6,7 @@ import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "nfx-ui/components";
+import { safeArray, safeStringable } from "nfx-ui/utils";
 
 import {
   DomainController,
@@ -46,10 +47,11 @@ const CertificateApplyForm = memo(({ onSubmit, onSubmitError, isPending }: Certi
           return;
         }
         if (r.domain) methods.setValue("domain", r.domain, { shouldValidate: true });
-        if (r.sans?.length) {
-          const primary = (r.domain || "").trim().toLowerCase();
-          const filtered = r.sans.map((s) => s.trim()).filter(Boolean);
-          const dedup = primary ? filtered.filter((s) => s.toLowerCase() !== primary) : filtered;
+        const sansList = safeArray<string>(r.sans);
+        if (sansList.length) {
+          const primary = safeStringable(r.domain).trim().toLowerCase();
+          const filtered = sansList.map((s: string) => s.trim()).filter(Boolean);
+          const dedup = primary ? filtered.filter((s: string) => s.toLowerCase() !== primary) : filtered;
           methods.setValue("sans", dedup, { shouldValidate: true });
         }
         if (r.issuer) methods.setValue("issuer", r.issuer, { shouldValidate: true });
