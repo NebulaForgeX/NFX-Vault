@@ -10,6 +10,7 @@ import { showSuccess } from "@/stores/modalStore";
 import {
   CertDetailHeader,
   CertificateInfo,
+  CertificateSansSection,
   CertificateContent,
   PrivateKeyContent,
   CertificateOperations,
@@ -40,6 +41,7 @@ const CertDetailContent = memo(() => {
 
       <div className={styles.content}>
         <CertificateInfo certDetail={certDetail} />
+        <CertificateSansSection sans={certDetail.sans} />
         <div className={styles.pemPair}>
           <CertificateContent certificate={certDetail.certificate} onCopy={handleCopyCertificate} />
           <PrivateKeyContent privateKey={certDetail.privateKey} onCopy={handleCopyPrivateKey} />

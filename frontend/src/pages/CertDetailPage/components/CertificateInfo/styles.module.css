@@ -38,27 +38,6 @@
   color: var(--color-fg-text);
 }
 
-.sansBlock {
-  margin: 0;
-}
-
-.sansList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.sanTag {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  background-color: var(--color-bg-3);
-  border: 1px solid var(--color-border-3);
-  border-radius: var(--radius-input, 0.375rem);
-  font-size: 0.875rem;
-  color: var(--color-fg-text);
-  font-family: monospace;
-}
-
 .sourceBadge {
   display: inline-block;
   padding: 0.375rem 0.75rem;

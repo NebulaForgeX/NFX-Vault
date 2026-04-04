@@ -15,6 +15,8 @@
     "validFrom": "Valid From",
     "expiryDate": "Expiry Date",
     "sans": "Subject Alternative Names (SANs)",
+    "sansSectionSubtitle": "Every hostname this certificate is valid for in TLS (primary name and aliases).",
+    "sansCountTitle": "{{count}} SAN(s) total",
     "content": "Certificate Content",
     "privateKey": "Private Key",
     "lastError": "Latest Error",

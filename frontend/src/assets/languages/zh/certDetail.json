@@ -15,6 +15,8 @@
     "validFrom": "有效期从",
     "expiryDate": "到期日期",
     "sans": "主题备用名称 (SANs)",
+    "sansSectionSubtitle": "此证书在 TLS 握手中可作为有效主机名使用的全部标识（含主域名与别名）。",
+    "sansCountTitle": "共 {{count}} 个 SAN",
     "content": "证书内容",
     "privateKey": "私钥内容",
     "lastError": "最新错误",
