@@ -22,7 +22,7 @@ export const useEditCertificate = (certificateId: string) => {
         }
         const result = await mutateAsync({
           certificateId,
-          sans: values.sans && values.sans.length > 0 ? values.sans : undefined,
+          sans: values.sans ?? [],
           folderName: values.folderName?.trim() || undefined,
           email: values.email?.trim() || undefined,
         });

@@ -43,10 +43,13 @@
     "notImplemented": "Fonctionnalité de mise à jour à venir",
     "autoNotEditable": "Les certificats de source automatique ne peuvent pas être modifiés manuellement. Veuillez les redemander à la place."
   },
+  "sansChanged": {
+    "banner": "La liste SAN a été modifiée : le PEM peut encore correspondre à l’ancien ensemble de noms. Utilisez « Redemander » pour que l’AC émette selon l’enregistrement actuel ; enregistrer les SAN seuls ne change pas le certificat émis."
+  },
   "reapply": {
     "title": "Redemander le certificat",
     "confirm": "Redemander le certificat pour \"{{domain}}\" ?",
-    "confirmDetail": "Utilise le domaine, l'e-mail et les SAN enregistrés. Sans renouvellement forcé, le serveur peut utiliser un certificat en cache.",
+    "confirmDetail": "Le serveur lit le domaine, l’e-mail et les SAN dans la base. Seul le choix « forcer » ci-dessous décide d’ignorer le cache et de redemander à l’AC.",
     "confirmSubmit": "Demander",
     "forceRenewal": "Forcer la redemande (ignorer le cache ; réémettre même si non expiré — risque de limites CA)",
     "emailRequired": "Aucun e-mail de contact. Ajoutez-le sur la page d'édition ou utilisez Ajouter un certificat.",

@@ -33,7 +33,10 @@
     "unknown": "Inconnu",
     "list": "Liste des certificats",
     "total": "total",
-    "empty": "Aucun certificat trouvé"
+    "empty": "Aucun certificat trouvé",
+    "sans": "SAN",
+    "lastError": "Dernière erreur",
+    "sansChangedHint": "La liste SAN a été modifiée ; redemandez le certificat pour l’aligner sur l’émission"
   },
   "export": {
     "success": "Exportation réussie",

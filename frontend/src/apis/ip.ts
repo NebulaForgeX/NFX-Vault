@@ -14,6 +14,7 @@ export const URL_PATHS = {
     check: "/check",
     detailById: (certificateId: string) => `/detail-by-id/${certificateId}`,
     apply: "/apply",
+    reapply: "/reapply",
     create: "/create",
     updateManualAdd: "/update/manual-add",
     delete: "/delete",

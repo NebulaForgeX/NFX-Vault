@@ -11,6 +11,11 @@ export interface ApplyCertificateRequest {
   forceRenewal?: boolean;
 }
 
+export interface ReapplyCertificateRequest {
+  certificateId: string;
+  forceRenewal?: boolean;
+}
+
 export interface CreateCertificateRequest {
   domain: string;
   certificate: string;

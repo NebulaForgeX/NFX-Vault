@@ -5,13 +5,13 @@ import { routerEventEmitter } from "@/events/router";
 import { ROUTES } from "@/navigations";
 import { buildCertCheckPath } from "@/utils/certCheckUrl";
 import { hideLoading, showConfirm, showError, showLoading, showSuccess } from "@/stores/modalStore";
-import { useApplyCertificate, useCertificateDetailById, useDeleteCertificate } from "@/hooks";
+import { useCertificateDetailById, useDeleteCertificate, useReapplyCertificate } from "@/hooks";
 
 export const useOperationCertificate = (certificateId: string) => {
   const { t } = useTranslation("certDetail");
   const { t: tc } = useTranslation("common");
   const deleteMutation = useDeleteCertificate();
-  const applyMutation = useApplyCertificate();
+  const reapplyMutation = useReapplyCertificate();
   const { data: certificate } = useCertificateDetailById(certificateId);
 
   const handleEdit = useCallback(() => {
@@ -25,11 +25,6 @@ export const useOperationCertificate = (certificateId: string) => {
   const handleReapply = useCallback(() => {
     if (!certificate) {
       showError(t("reapply.notLoaded"));
-      return;
-    }
-    const email = certificate.email?.trim();
-    if (!email) {
-      showError(t("reapply.emailRequired"));
       return;
     }
     const domain = certificate.domain;
@@ -50,11 +45,8 @@ export const useOperationCertificate = (certificateId: string) => {
         void (async () => {
           showLoading({ message: t("reapply.applying") });
           try {
-            const result = await applyMutation.mutateAsync({
-              domain: domain.trim(),
-              email,
-              sans: certificate.sans && certificate.sans.length > 0 ? certificate.sans : undefined,
-              folderName: certificate.folderName?.trim() || undefined,
+            const result = await reapplyMutation.mutateAsync({
+              certificateId,
               forceRenewal,
             });
             if (result.success) {
@@ -68,14 +60,14 @@ export const useOperationCertificate = (certificateId: string) => {
               showError(msg);
             }
           } catch {
-            // useApplyCertificate onError 已弹窗
+            // useReapplyCertificate onError 已弹窗
           } finally {
             hideLoading();
           }
         })();
       },
     });
-  }, [applyMutation, certificate, t, tc]);
+  }, [reapplyMutation, certificate, certificateId, t, tc]);
 
   const handleDelete = useCallback(() => {
     if (!certificate) {
@@ -117,7 +109,7 @@ export const useOperationCertificate = (certificateId: string) => {
     handleReapply,
     handleDelete,
     isDeleting: deleteMutation.isPending,
-    isReapplying: applyMutation.isPending,
+    isReapplying: reapplyMutation.isPending,
   };
 };
 

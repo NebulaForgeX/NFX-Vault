@@ -15,6 +15,8 @@ export interface CertificateInfo {
   notAfter?: string;
   isValid?: boolean;
   daysRemaining?: number;
+  /** 编辑页改过 SAN 列表，需重新申请与已签发证书对齐 */
+  sansChanged?: boolean;
   lastErrorMessage?: string;
   lastErrorTime?: string;
 }
@@ -38,6 +40,7 @@ export interface CertificateDetailResponse {
   certificate: string;
   privateKey: string;
   sans?: string[];
+  sansChanged?: boolean;
   lastErrorMessage?: string;
   lastErrorTime?: string;
 }

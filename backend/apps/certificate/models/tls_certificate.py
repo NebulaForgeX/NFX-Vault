@@ -28,6 +28,7 @@ class TLSCertificate(Base):
     not_after = Column(DateTime, nullable=True)
     is_valid = Column(Boolean, nullable=True, default=True)
     days_remaining = Column(Integer, nullable=True)
+    sans_changed = Column(Boolean, nullable=False, default=False)
     last_error_message = Column(Text, nullable=True)
     last_error_time = Column(DateTime, nullable=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
@@ -51,6 +52,7 @@ class TLSCertificate(Base):
             "not_after": self.not_after.isoformat() if self.not_after else None,
             "is_valid": self.is_valid,
             "days_remaining": self.days_remaining,
+            "sans_changed": bool(self.sans_changed),
             "last_error_message": self.last_error_message,
             "last_error_time": self.last_error_time.isoformat() if self.last_error_time else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,

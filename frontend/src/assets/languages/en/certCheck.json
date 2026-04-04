@@ -33,7 +33,10 @@
     "unknown": "Unknown",
     "list": "Certificate List",
     "total": "total",
-    "empty": "No certificates found"
+    "empty": "No certificates found",
+    "sans": "SANs",
+    "lastError": "Last error",
+    "sansChangedHint": "SAN list was edited; re-apply the certificate to match what the CA issued"
   },
   "export": {
     "success": "Export successful",

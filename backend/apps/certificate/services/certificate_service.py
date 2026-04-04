@@ -16,6 +16,17 @@ from apps.certificate.kafka.certificate_pipeline import CertificatePipeline
 logger = logging.getLogger(__name__)
 
 
+def _normalized_sans_set(sans: Any) -> frozenset[str]:
+    if not sans or not isinstance(sans, list):
+        return frozenset()
+    out: set[str] = set()
+    for x in sans:
+        s = str(x).strip().lower()
+        if s:
+            out.add(s)
+    return frozenset(out)
+
+
 class CertificateService:
     def __init__(
         self,
@@ -65,6 +76,7 @@ class CertificateService:
                     else d.get("not_after"),
                     "is_valid": d.get("is_valid"),
                     "days_remaining": d.get("days_remaining"),
+                    "sans_changed": bool(d.get("sans_changed")),
                     "last_error_message": d.get("last_error_message"),
                     "last_error_time": d.get("last_error_time"),
                 }
@@ -105,6 +117,7 @@ class CertificateService:
             "days_remaining": cert_dict.get("days_remaining"),
             "last_error_message": cert_dict.get("last_error_message"),
             "last_error_time": cert_dict.get("last_error_time"),
+            "sans_changed": bool(cert_dict.get("sans_changed")),
         }
         if use_cache and domain:
             self.cache_repo.set_certificate_detail(str(domain), result, ttl=60)
@@ -125,7 +138,7 @@ class CertificateService:
         webroot: Optional[str] = None,
         force_renewal: bool = False,
     ) -> dict[str, Any]:
-        """通过 Certbot 申请新证书并入库（/vault/tls/apply）。"""
+        """通过 Certbot 申请新证书并入库（仅新建；已存在域名会拒绝）。"""
         if not self.tls_repo:
             return {"success": False, "message": "TLS 签发未配置或未启用"}
         domain_clean = (domain or "").strip()
@@ -138,6 +151,64 @@ class CertificateService:
                 "success": False,
                 "message": f"域名已存在，无法重复申请: {domain_clean}",
             }
+        return self._run_tls_apply_and_persist(
+            domain_clean=domain_clean,
+            email_clean=email_clean,
+            sans=sans,
+            folder_name=folder_name,
+            webroot=webroot,
+            force_renewal=force_renewal,
+            renew_certificate_id=None,
+        )
+
+    def reapply_certificate(
+        self,
+        certificate_id: str,
+        force_renewal: bool = False,
+    ) -> dict[str, Any]:
+        """从数据库读取域名、邮箱、SAN 等后重新签发并更新同一条记录；请求体只需 id 与 force。"""
+        if not self.tls_repo:
+            return {"success": False, "message": "TLS 签发未配置或未启用"}
+        cid = (certificate_id or "").strip()
+        if not cid:
+            return {"success": False, "message": "certificate_id 无效"}
+        row = self.database_repo.get_certificate_by_id(cid)
+        if not row:
+            return {"success": False, "message": "证书不存在"}
+        domain_clean = (row.get("domain") or "").strip()
+        email_clean = (row.get("email") or "").strip()
+        if not domain_clean:
+            return {"success": False, "message": "记录中缺少域名"}
+        if not email_clean:
+            return {"success": False, "message": "请先补全联系邮箱后再重新申请"}
+        raw_sans = row.get("sans")
+        sans_list: Optional[list[str]] = None
+        if isinstance(raw_sans, list) and raw_sans:
+            sans_list = [str(x).strip() for x in raw_sans if str(x).strip()]
+        folder_name = row.get("folder_name")
+        folder_name_s = folder_name.strip() if isinstance(folder_name, str) else None
+        return self._run_tls_apply_and_persist(
+            domain_clean=domain_clean,
+            email_clean=email_clean,
+            sans=sans_list,
+            folder_name=folder_name_s,
+            webroot=None,
+            force_renewal=force_renewal,
+            renew_certificate_id=cid,
+        )
+
+    def _run_tls_apply_and_persist(
+        self,
+        *,
+        domain_clean: str,
+        email_clean: str,
+        sans: Optional[list[str]],
+        folder_name: Optional[str],
+        webroot: Optional[str],
+        force_renewal: bool,
+        renew_certificate_id: Optional[str],
+    ) -> dict[str, Any]:
+        assert self.tls_repo
         r = self.tls_repo.apply_certificate(
             domain=domain_clean,
             email=email_clean,
@@ -174,6 +245,33 @@ class CertificateService:
             if s and s not in all_domains:
                 all_domains.append(s)
         final_issuer = info.get("issuer") or "Let's Encrypt"
+        if renew_certificate_id:
+            updated = self.database_repo.update_certificate_by_id(
+                renew_certificate_id,
+                certificate=certificate,
+                private_key=private_key,
+                sans=all_domains if all_domains else None,
+                issuer=final_issuer,
+                not_before=info.get("not_before"),
+                not_after=info.get("not_after"),
+                is_valid=info.get("is_valid", True),
+                days_remaining=info.get("days_remaining"),
+                folder_name=folder_name,
+                email=email_clean,
+                status=CertificateStatus.PROCESS.value,
+                sans_changed=False,
+            )
+            if updated:
+                if self.pipeline_repo:
+                    self.pipeline_repo.send_parse_certificate_event(str(renew_certificate_id))
+                self.invalidate_cache(trigger="update")
+                return {
+                    "success": True,
+                    "message": r.get("message") or "证书已重新申请并更新",
+                    "certificate_id": str(renew_certificate_id),
+                    "status": r.get("status"),
+                }
+            return {"success": False, "message": "更新失败"}
         cert_obj = self.database_repo.create_certificate(
             domain=domain_clean,
             certificate=certificate,
@@ -249,11 +347,15 @@ class CertificateService:
         cur = self.database_repo.get_certificate_by_id(certificate_id)
         if not cur:
             return {"success": False, "message": "Not found"}
+        sans_changed_update: Optional[bool] = None
+        if sans is not None:
+            sans_changed_update = _normalized_sans_set(sans) != _normalized_sans_set(cur.get("sans"))
         self.database_repo.update_certificate_by_id(
             certificate_id,
             sans=sans,
             folder_name=folder_name,
             email=email,
+            sans_changed=sans_changed_update,
         )
         self.invalidate_cache(trigger="update")
         return {"success": True, "message": "Updated"}
@@ -340,5 +442,6 @@ class CertificateService:
             not_after=info.get("not_after"),
             is_valid=info.get("is_valid"),
             days_remaining=info.get("days_remaining"),
+            sans_changed=False,
         )
         return {"success": True, "message": "Parsed"}

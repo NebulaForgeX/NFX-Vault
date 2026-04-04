@@ -15,6 +15,7 @@ import {
   PrivateKeyContent,
   CertificateOperations,
   ExportCertificate,
+  SansChangedBanner,
 } from "./components";
 import styles from "./styles.module.css";
 
@@ -38,6 +39,8 @@ const CertDetailContent = memo(() => {
   return (
     <div className={styles.container}>
       <CertDetailHeader certDetail={certDetail} />
+
+      <SansChangedBanner visible={Boolean(certDetail.sansChanged)} />
 
       <div className={styles.content}>
         <CertificateInfo certDetail={certDetail} />

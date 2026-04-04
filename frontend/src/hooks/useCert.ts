@@ -3,6 +3,7 @@
  */
 import type {
   ApplyCertificateRequest,
+  ReapplyCertificateRequest,
   CreateCertificateRequest,
   UpdateManualAddCertificateRequest,
   DeleteCertificateRequest,
@@ -72,13 +73,34 @@ export const useInvalidateCache = () => {
   });
 };
 
+async function invalidateServerCertCacheAfterIssueSuccess(data: { success?: boolean }) {
+  if (!data.success) return;
+  try {
+    await certApi.InvalidateCache();
+  } catch {
+    /* 后端可能已清缓存；仍发前端刷新事件 */
+  }
+}
+
 export const useApplyCertificate = () => {
   return useMutation({
     mutationFn: (request: ApplyCertificateRequest) => certApi.ApplyCertificate(request),
-    onSuccess: () => {
+    onSuccess: async (data) => {
+      await invalidateServerCertCacheAfterIssueSuccess(data);
       cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES);
     },
     onError: (error: AxiosError) => showError(getApiErrorMessage(error, "[useApplyCertificate]")),
+  });
+};
+
+export const useReapplyCertificate = () => {
+  return useMutation({
+    mutationFn: (request: ReapplyCertificateRequest) => certApi.ReapplyCertificate(request),
+    onSuccess: async (data) => {
+      await invalidateServerCertCacheAfterIssueSuccess(data);
+      cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES);
+    },
+    onError: (error: AxiosError) => showError(getApiErrorMessage(error, "[useReapplyCertificate]")),
   });
 };
 

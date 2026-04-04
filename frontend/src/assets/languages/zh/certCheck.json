@@ -33,7 +33,10 @@
     "unknown": "未知",
     "list": "证书列表",
     "total": "总计",
-    "empty": "暂无证书数据"
+    "empty": "暂无证书数据",
+    "sans": "SANs",
+    "lastError": "最新错误",
+    "sansChangedHint": "已在编辑中修改 SAN 列表，需重新申请证书后才会与签发结果一致"
   },
   "export": {
     "success": "导出成功",

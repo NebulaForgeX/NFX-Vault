@@ -40,6 +40,7 @@ class CertificateRepository:
                             "not_after": cert.not_after,
                             "is_valid": cert.is_valid,
                             "days_remaining": cert.days_remaining,
+                            "sans_changed": bool(getattr(cert, "sans_changed", False)),
                             "last_error_message": cert.last_error_message,
                             "last_error_time": cert.last_error_time.isoformat()
                             if cert.last_error_time
@@ -94,6 +95,7 @@ class CertificateRepository:
                     "not_after": cert.not_after,
                     "is_valid": cert.is_valid,
                     "days_remaining": cert.days_remaining,
+                    "sans_changed": bool(getattr(cert, "sans_changed", False)),
                     "last_error_message": cert.last_error_message,
                     "last_error_time": cert.last_error_time.isoformat()
                     if cert.last_error_time
@@ -154,6 +156,7 @@ class CertificateRepository:
                             "not_after": cert.not_after.isoformat() if cert.not_after else None,
                             "is_valid": cert.is_valid,
                             "days_remaining": cert.days_remaining,
+                            "sans_changed": bool(getattr(cert, "sans_changed", False)),
                             "created_at": cert.created_at.isoformat() if cert.created_at else None,
                             "updated_at": cert.updated_at.isoformat() if cert.updated_at else None,
                         }
@@ -174,6 +177,7 @@ class CertificateRepository:
         not_after: Optional[datetime] = None,
         is_valid: Optional[bool] = None,
         days_remaining: Optional[int] = None,
+        sans_changed: Optional[bool] = None,
     ) -> bool:
         if not self.db_session.enable_mysql:
             return False
@@ -202,6 +206,8 @@ class CertificateRepository:
                     cert.is_valid = is_valid
                 if days_remaining is not None:
                     cert.days_remaining = days_remaining
+                if sans_changed is not None:
+                    cert.sans_changed = sans_changed
                 cert.updated_at = datetime.now()
                 return True
         except Exception:  # noqa: BLE001
@@ -225,6 +231,7 @@ class CertificateRepository:
         status: Optional[str] = None,
         last_error_message: Optional[str] = None,
         last_error_time: Optional[datetime] = None,
+        sans_changed: Optional[bool] = None,
     ) -> Optional[TLSCertificate]:
         if not self.db_session.enable_mysql:
             return None
@@ -265,6 +272,8 @@ class CertificateRepository:
                     cert.last_error_message = last_error_message
                 if last_error_time is not None:
                     cert.last_error_time = last_error_time
+                if sans_changed is not None:
+                    cert.sans_changed = sans_changed
                 cert.updated_at = datetime.now()
                 cid = cert.id
             with self.db_session.get_session() as session:

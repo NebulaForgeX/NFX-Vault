@@ -4,7 +4,7 @@ import { Button } from "nfx-ui/components";
 import { safeMaybe } from "nfx-ui/utils";
 import type { CertificateInfo } from "@/types";
 import { CertificateStatus } from "@/types";
-import { Edit, Eye, Trash2, Loader2, AlertTriangle } from "@/assets/icons/lucide";
+import { AlertCircle, Edit, Eye, Trash2, Loader2, AlertTriangle } from "@/assets/icons/lucide";
 import { useCertificateListAccent, useCertificateTime } from "@/hooks";
 import { useActionCertificateItem } from "../../hooks";
 import { showTooltipModal } from "@/stores/modalStore";
@@ -101,6 +101,19 @@ const CertCard = memo(({ cert }: CertCardProps) => {
               title={t("actions.view") || "View"}
               aria-label={t("actions.view") || "View"}
               className={styles.toolBtn}
+            />
+          )}
+          {cert.sansChanged && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="small"
+              iconOnly
+              leftIcon={<AlertCircle size={17} />}
+              onClick={(e) => e.stopPropagation()}
+              title={t("certificate.sansChangedHint") || ""}
+              aria-label={t("certificate.sansChangedHint") || ""}
+              className={`${styles.toolBtn} ${styles.toolBtnSans}`}
             />
           )}
           {cert.lastErrorMessage && (

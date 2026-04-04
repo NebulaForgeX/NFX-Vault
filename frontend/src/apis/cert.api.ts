@@ -2,6 +2,7 @@ import type {
   CertificateListResponse,
   CertificateDetailResponse,
   ApplyCertificateRequest,
+  ReapplyCertificateRequest,
   CreateCertificateRequest,
   UpdateManualAddCertificateRequest,
   DeleteCertificateRequest,
@@ -14,6 +15,9 @@ import type {
 
 import { protectedClient } from "@/apis/clients";
 import { URL_PATHS } from "./ip";
+
+/** 与后端 Certbot 最长等待（如 300s）对齐，并留余量，避免 nginx/浏览器先断连 */
+export const TLS_ISSUE_HTTP_TIMEOUT_MS = 420_000;
 
 export interface GetCertificateListParams {
   offset?: number;
@@ -39,7 +43,16 @@ export const GetCertificateDetailById = async (
 };
 
 export const ApplyCertificate = async (request: ApplyCertificateRequest): Promise<CertificateResponse> => {
-  const { data } = await protectedClient.post<CertificateResponse>(URL_PATHS.TLS.apply, request);
+  const { data } = await protectedClient.post<CertificateResponse>(URL_PATHS.TLS.apply, request, {
+    timeout: TLS_ISSUE_HTTP_TIMEOUT_MS,
+  });
+  return data;
+};
+
+export const ReapplyCertificate = async (request: ReapplyCertificateRequest): Promise<CertificateResponse> => {
+  const { data } = await protectedClient.post<CertificateResponse>(URL_PATHS.TLS.reapply, request, {
+    timeout: TLS_ISSUE_HTTP_TIMEOUT_MS,
+  });
   return data;
 };
 

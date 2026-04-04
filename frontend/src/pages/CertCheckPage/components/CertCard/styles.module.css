@@ -167,6 +167,16 @@
   background: var(--color-danger-light) !important;
 }
 
+.toolBtnSans {
+  color: #c2410c !important;
+  cursor: default !important;
+}
+
+.toolBtnSans:hover:not(:disabled) {
+  color: #c2410c !important;
+  background: color-mix(in srgb, #c2410c 12%, transparent) !important;
+}
+
 .rotating {
   animation: rotate 2s linear infinite;
 }

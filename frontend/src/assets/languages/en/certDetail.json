@@ -43,10 +43,13 @@
     "notImplemented": "Update functionality coming soon",
     "autoNotEditable": "Auto source certificates cannot be manually updated. Please re-apply instead."
   },
+  "sansChanged": {
+    "banner": "SAN list was edited: the PEM on file may still match the old hostname set. Use Re-apply so the CA issues against the current record; saving SANs alone does not change the issued certificate."
+  },
   "reapply": {
     "title": "Re-apply Certificate",
     "confirm": "Re-apply certificate for \"{{domain}}\"?",
-    "confirmDetail": "Uses the saved domain, contact email, and SANs. Without force renewal, the server may use a cached certificate when available.",
+    "confirmDetail": "The server loads domain, contact email, and SANs from the database. Only “force renewal” below controls whether cached certs are skipped and the CA is asked to re-issue.",
     "confirmSubmit": "Apply",
     "forceRenewal": "Force renewal (ignore cache; re-issue even if not expired — may hit CA rate limits)",
     "emailRequired": "This certificate has no contact email. Add one on the edit page or use Add Certificate.",
