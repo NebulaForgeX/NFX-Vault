@@ -32,7 +32,7 @@ class PostgresSession:
             try:
                 pwd = quote_plus(self.password)
                 url = (
-                    f"postgresql+psycopg2://{self.user}:{pwd}"
+                    f"postgresql+psycopg://{self.user}:{pwd}"
                     f"@{self.host}:{self.port}/{self.database}"
                 )
                 self.engine = create_engine(
@@ -64,7 +64,7 @@ class PostgresSession:
         try:
             pwd = quote_plus(self.password)
             url_without_db = (
-                f"postgresql+psycopg2://{self.user}:{pwd}@{self.host}:{self.port}/postgres"
+                f"postgresql+psycopg://{self.user}:{pwd}@{self.host}:{self.port}/postgres"
             )
             temp_engine = create_engine(url_without_db, isolation_level="AUTOCOMMIT")
             with temp_engine.connect() as conn:

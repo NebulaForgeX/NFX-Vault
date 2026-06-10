@@ -1,5 +1,5 @@
 # NFX-Vault API: FastAPI + uvicorn（与 docker-compose `backend-api` / traefik 对齐）
-FROM python:3.12-slim-bookworm
+FROM python:3.14-slim-bookworm
 
 WORKDIR /app
 

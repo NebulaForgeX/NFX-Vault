@@ -62,7 +62,7 @@ POSTGRES_PASSWORD=your_password       # PostgreSQL 密码
 
 **连接字符串格式：**
 ```
-postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}
+postgresql+psycopg://{username}:{password}@{host}:{port}/{database}
 ```
 
 ---

@@ -1,14 +1,24 @@
 # shellcheck shell=bash
 # 由 dev-api.sh source。前置条件：已设置 BACKEND_ROOT（仓库根下的 backend/）
 #
-# .venv 位于 backend/.venv。创建时使用 --without-pip，避免部分 NAS / AppCentral Python
-# 在 ensurepip 阶段卡住；pip 通过 get-pip 或 ensurepip 补全。
+# .venv 位于 backend/.venv，使用系统最新 python3（默认 3.14+）。
+# 创建时使用 --without-pip，避免部分 NAS / AppCentral Python 在 ensurepip 阶段卡住。
 
 cd "$BACKEND_ROOT" || exit 1
 
 REQ="$BACKEND_ROOT/requirements.txt"
 SYNC_STAMP="$BACKEND_ROOT/.venv/.nfx-requirements-sync"
+PYTHON_BIN="${NFX_VAULT_PYTHON:-python3}"
 NEW_VENV=0
+
+if ! command -v "$PYTHON_BIN" >/dev/null 2>&1; then
+  echo "[NFX-Vault] 错误: 未找到 $PYTHON_BIN，请安装 Python 3.14+ 或设置 NFX_VAULT_PYTHON" >&2
+  exit 1
+fi
+
+_nfx_python_short_version() {
+  "$1" -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")'
+}
 
 _nfx_venv_bootstrap_pip() {
   local py="$1"
@@ -33,17 +43,27 @@ _nfx_venv_ok() {
   return 0
 }
 
-if [[ -d .venv ]] && ! _nfx_venv_ok; then
-  echo "[NFX-Vault] 检测到不完整 backend/.venv（例如创建时被 Ctrl-C 中断），正在删除并重试…" >&2
-  rm -rf .venv
+HOST_PY_VER="$(_nfx_python_short_version "$PYTHON_BIN")"
+
+if [[ -d .venv ]]; then
+  if ! _nfx_venv_ok; then
+    echo "[NFX-Vault] 检测到不完整 backend/.venv，正在删除并重试…" >&2
+    rm -rf .venv
+  else
+    VENV_PY_VER="$(_nfx_python_short_version "$BACKEND_ROOT/.venv/bin/python3")"
+    if [[ "$VENV_PY_VER" != "$HOST_PY_VER" ]]; then
+      echo "[NFX-Vault] Python 版本变更（$VENV_PY_VER → $HOST_PY_VER），重建 venv …" >&2
+      rm -rf .venv
+    else
+      echo "[NFX-Vault] 使用已有虚拟环境: $BACKEND_ROOT/.venv" >&2
+    fi
+  fi
 fi
 
 if [[ ! -d .venv ]]; then
-  echo "[NFX-Vault] 创建 backend/.venv（--without-pip，避免 ensurepip 卡死）…" >&2
-  python3 -m venv .venv --without-pip
+  echo "[NFX-Vault] 创建 backend/.venv（Python $HOST_PY_VER，--without-pip）…" >&2
+  "$PYTHON_BIN" -m venv .venv --without-pip
   NEW_VENV=1
-else
-  echo "[NFX-Vault] 使用已有虚拟环境: $BACKEND_ROOT/.venv" >&2
 fi
 
 VENV_PY="$BACKEND_ROOT/.venv/bin/python3"

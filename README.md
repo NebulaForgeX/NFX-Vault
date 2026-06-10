@@ -166,7 +166,7 @@ docker compose logs -f frontend
 
 ### 本地开发启动后端（不经过 Docker）
 
-适用于只改 Python 代码、本机已安装 **Python 3.11+**（`python3 --version`；**推荐 3.11** 与 Docker 一致，3.12 亦可）且 PostgreSQL / Redis / Kafka 可按 `.env` 访问的场景。
+适用于只改 Python 代码、本机已安装 **Python 3.14+**（`python3 --version`，与 Docker 镜像一致）且 PostgreSQL / Redis / Kafka 可按 `.env` 访问的场景。
 
 1. 配置 `.env`：`cp .example.env .env` 并编辑（与 Docker 用同一份即可）。
 2. 在 **仓库根目录** 执行：`dev-api.sh` 使用 **`backend/.venv`**（代码目录为 `backend/`）。依赖在 **新建 venv** 或 **`backend/requirements.txt` 有更新** 时执行 `pip install`。

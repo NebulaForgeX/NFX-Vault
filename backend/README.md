@@ -28,7 +28,7 @@
 
 ## 依赖
 
-见 `requirements.txt`（含 `psycopg2-binary`、`kafka-python-ng`、`apscheduler`）。需配置环境变量（`POSTGRES_*`、`REDIS_*`、`KAFKA_*`、`CERTS_DIR`、`ACME_CHALLENGE_DIR` 等）。
+见 `requirements.txt`（Python 3.14+，含 `psycopg[binary]`、`kafka-python-ng`、`apscheduler`）。需配置环境变量（`POSTGRES_*`、`REDIS_*`、`KAFKA_*`、`CERTS_DIR`、`ACME_CHALLENGE_DIR` 等）。
 
 ## 运行
 
