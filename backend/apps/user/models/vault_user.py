@@ -4,24 +4,20 @@ from __future__ import annotations
 
 import uuid
 
-from sqlalchemy import Boolean, Column, DateTime, Index, String, Text, func
-from sqlalchemy.dialects.mysql import CHAR
+from sqlalchemy import Boolean, Column, DateTime, Index, String, func
 
 from apps.certificate.models.base import Base
 
 
 class VaultUser(Base):
     __tablename__ = "vault_users"
-    __table_args__ = (
-        Index("idx_vault_users_email", "email"),
-        {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
-    )
+    __table_args__ = (Index("idx_vault_users_email", "email"),)
 
-    id = Column(CHAR(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     email = Column(String(255), nullable=False, unique=True)
     password_hash = Column(String(255), nullable=False)
     display_name = Column(String(255), nullable=False)
-    avatar_image_id = Column(CHAR(36), nullable=True)
+    avatar_image_id = Column(String(36), nullable=True)
     is_active = Column(Boolean, nullable=False, default=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)

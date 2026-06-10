@@ -132,7 +132,7 @@ async def lifespan(app: FastAPI):
             {
                 "task": "startup",
                 "event": "lifespan_deps",
-                "mysql": getattr(_stack.mysql, "enable_mysql", False),
+                "postgres": getattr(_stack.db, "enable_db", False),
                 "redis": getattr(_stack.redis, "enable_redis", False),
                 "kafka": getattr(_stack.kafka, "enable_kafka", False),
             },
@@ -151,8 +151,8 @@ async def lifespan(app: FastAPI):
         _stack.kafka.close()
     if _stack.redis:
         _stack.redis.close()
-    if _stack.mysql:
-        _stack.mysql.close()
+    if _stack.db:
+        _stack.db.close()
 
 
 app = FastAPI(title="NFX-Vault API", version="1.0.0", lifespan=lifespan)
@@ -235,7 +235,7 @@ async def health() -> dict:
         "status": "healthy",
         "service": "backend",
         "database": "connected"
-        if _stack and getattr(_stack.mysql, "enable_mysql", False)
+        if _stack and getattr(_stack.db, "enable_db", False)
         else "disconnected",
         "redis": "connected"
         if _stack and getattr(_stack.redis, "enable_redis", False)

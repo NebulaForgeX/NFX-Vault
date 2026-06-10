@@ -25,11 +25,11 @@ def load_database_config() -> DatabaseConfig:
             sys.exit(1)
 
     return DatabaseConfig(
-        MYSQL_HOST=require_env("MYSQL_HOST"),
-        MYSQL_PORT=get_int_env("MYSQL_DATABASE_PORT"),
-        MYSQL_DATABASE=require_env("MYSQL_DATABASE"),
-        MYSQL_USER=require_env("MYSQL_ROOT_USERNAME"),
-        MYSQL_PASSWORD=require_env("MYSQL_ROOT_PASSWORD"),
+        POSTGRES_HOST=require_env("POSTGRES_HOST"),
+        POSTGRES_PORT=get_int_env("POSTGRES_DATABASE_PORT"),
+        POSTGRES_DATABASE=require_env("POSTGRES_DATABASE"),
+        POSTGRES_USER=require_env("POSTGRES_USERNAME"),
+        POSTGRES_PASSWORD=require_env("POSTGRES_PASSWORD"),
         REDIS_HOST=require_env("REDIS_HOST"),
         REDIS_PORT=get_int_env("REDIS_DATABASE_PORT"),
         REDIS_DB=get_int_env("REDIS_DB"),

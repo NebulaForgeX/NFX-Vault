@@ -10,7 +10,7 @@
 # 若未配置免密 sudo，请改用:
 #   sudo ./start.sh
 #
-# 启动前请确认项目根目录存在 .env，且已包含 MySQL / Redis / Kafka、CERTS_DIR、
+# 启动前请确认项目根目录存在 .env，且已包含 PostgreSQL / Redis / Kafka、CERTS_DIR、
 # ACME_CHALLENGE_DIR、EMAIL_SMTP_*、JWT_SECRET 等（见 .example.env）。
 # =============================================================================
 

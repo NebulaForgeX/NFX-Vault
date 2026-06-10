@@ -22,13 +22,13 @@
 - `apps/certificate/` — TLS；`kafka/` 含 Consumer 路由、`certificate_pipeline`（发 Kafka）  
 - `apps/file/` — 文件与导出  
 - `apps/analysis/` — TLS 分析  
-- `utils/kafka/`、`utils/mysql/`、`utils/redis/`、`utils/acme/`、`utils/certbot/` — 外设客户端  
+- `utils/kafka/`、`utils/postgres/`、`utils/redis/`、`utils/acme/`、`utils/certbot/` — 外设客户端  
 - `utils/pem/` — PEM/openssl 解析（`parse.py`，无业务）  
 - `tasks/` — 定时任务  
 
 ## 依赖
 
-见 `requirements.txt`（含 `kafka-python-ng`、`apscheduler`）。需配置与原 `backend_old` 一致的环境变量（`MYSQL_*`、`REDIS_*`、`KAFKA_*`、`CERTS_DIR`、`ACME_CHALLENGE_DIR` 等）。
+见 `requirements.txt`（含 `psycopg2-binary`、`kafka-python-ng`、`apscheduler`）。需配置环境变量（`POSTGRES_*`、`REDIS_*`、`KAFKA_*`、`CERTS_DIR`、`ACME_CHALLENGE_DIR` 等）。
 
 ## 运行
 

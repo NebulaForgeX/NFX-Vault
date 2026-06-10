@@ -4,7 +4,7 @@
 from .acme.challenge_storage import ACMEChallengeStorage
 from .kafka.client import KafkaClient
 from .kafka.consumer import KafkaConsumerThread, KafkaEventConsumer
-from .mysql.session import MySQLSession
+from .postgres.session import PostgresSession
 from .pem.parse import extract_cert_info_from_pem_sync
 from .redis.client import RedisClient
 from .response.api_response import (
@@ -22,7 +22,7 @@ __all__ = [
     "KafkaClient",
     "KafkaConsumerThread",
     "KafkaEventConsumer",
-    "MySQLSession",
+    "PostgresSession",
     "RedisClient",
     "bad_request",
     "created",

@@ -37,21 +37,21 @@ FRONTEND_PORT=10199                # 前端 Web 端口
 
 ---
 
-### MySQL 数据库配置
+### PostgreSQL 数据库配置
 
 ```bash
-# MySQL 服务器主机
-MYSQL_HOST=192.168.1.64            # MySQL 服务器 IP 或主机名
+# PostgreSQL 服务器主机
+POSTGRES_HOST=192.168.1.64            # PostgreSQL 服务器 IP 或主机名
 
-# MySQL 端口
-MYSQL_DATABASE_PORT=3306            # 默认 MySQL 端口
+# PostgreSQL 端口
+POSTGRES_DATABASE_PORT=5432            # 默认 PostgreSQL 端口
 
 # 数据库名称
-MYSQL_DATABASE=nfxvault            # 数据库名称
+POSTGRES_DATABASE=nfxvault            # 数据库名称
 
 # 数据库凭据
-MYSQL_ROOT_USERNAME=root            # MySQL 用户名
-MYSQL_ROOT_PASSWORD=your_password   # MySQL 密码
+POSTGRES_USERNAME=postgres            # PostgreSQL 用户名
+POSTGRES_PASSWORD=your_password       # PostgreSQL 密码
 ```
 
 **安全建议：**
@@ -62,7 +62,7 @@ MYSQL_ROOT_PASSWORD=your_password   # MySQL 密码
 
 **连接字符串格式：**
 ```
-mysql+pymysql://{username}:{password}@{host}:{port}/{database}
+postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}
 ```
 
 ---

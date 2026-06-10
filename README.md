@@ -51,7 +51,7 @@ NFX-Vault 是一个现代化的 SSL 证书管理和监控系统，提供统一�
    sudo apt-get install jq
    ```
 
-3. **MySQL** 数据库（用于存储证书元数据）
+3. **PostgreSQL** 数据库（用于存储证书元数据）
 4. **Redis** 缓存服务（用于提升性能）
 5. **Kafka** 消息队列（用于异步任务处理）
 
@@ -102,12 +102,12 @@ BACKEND_PORT=10151
 FRONTEND_HOST=192.168.1.64
 FRONTEND_PORT=10152
 
-# MySQL 数据库配置
-MYSQL_HOST=192.168.1.64
-MYSQL_DATABASE_PORT=3306
-MYSQL_DATABASE=nfxvault
-MYSQL_ROOT_USERNAME=root
-MYSQL_ROOT_PASSWORD=your_mysql_password
+# PostgreSQL 数据库配置
+POSTGRES_HOST=192.168.1.64
+POSTGRES_DATABASE_PORT=5432
+POSTGRES_DATABASE=nfxvault
+POSTGRES_USERNAME=postgres
+POSTGRES_PASSWORD=your_postgres_password
 
 # Redis 缓存配置
 REDIS_HOST=192.168.1.64
@@ -166,7 +166,7 @@ docker compose logs -f frontend
 
 ### 本地开发启动后端（不经过 Docker）
 
-适用于只改 Python 代码、本机已安装 **Python 3.11+**（`python3 --version`；**推荐 3.11** 与 Docker 一致，3.12 亦可）且 MySQL / Redis / Kafka 可按 `.env` 访问的场景。
+适用于只改 Python 代码、本机已安装 **Python 3.11+**（`python3 --version`；**推荐 3.11** 与 Docker 一致，3.12 亦可）且 PostgreSQL / Redis / Kafka 可按 `.env` 访问的场景。
 
 1. 配置 `.env`：`cp .example.env .env` 并编辑（与 Docker 用同一份即可）。
 2. 在 **仓库根目录** 执行：`dev-api.sh` 使用 **`backend/.venv`**（代码目录为 `backend/`）。依赖在 **新建 venv** 或 **`backend/requirements.txt` 有更新** 时执行 `pip install`。
@@ -261,7 +261,7 @@ curl -X POST http://192.168.1.64:10151/vault/tls/refresh/websites
 所有配置项都在 `.env` 文件中，主要分为以下几类：
 
 1. **服务端口配置** - 前端和后端的访问端口
-2. **数据库配置** - MySQL 连接信息
+2. **数据库配置** - PostgreSQL 连接信息
 3. **缓存配置** - Redis 连接信息
 4. **消息队列配置** - Kafka 连接信息
 5. **证书管理配置** - 证书存储路径和 ACME 挑战目录
@@ -287,7 +287,7 @@ curl -X POST http://192.168.1.64:10151/vault/tls/refresh/websites
 - 检查 `.env` 文件配置是否正确
 - 检查端口是否被占用：`netstat -tuln | grep 10152`
 - 查看容器日志：`docker compose logs backend-api`
-- 确保 MySQL、Redis、Kafka 服务正常运行
+- 确保 PostgreSQL、Redis、Kafka 服务正常运行
 
 ### 2. 无法访问 Web 界面
 
@@ -309,13 +309,13 @@ curl -X POST http://192.168.1.64:10151/vault/tls/refresh/websites
 
 ### 4. 数据库连接失败
 
-**问题**：后端无法连接 MySQL
+**问题**：后端无法连接 PostgreSQL
 
 **解决方案**：
-- 检查 MySQL 服务是否运行
-- 验证数据库用户名和密码
-- 确认 MySQL 允许远程连接
-- 检查网络连接：`ping $MYSQL_HOST`
+- 检查 PostgreSQL 服务是否运行
+- 验证 `.env` 中的 `POSTGRES_*` 配置
+- 确认 PostgreSQL 允许远程连接
+- 检查网络连接：`ping $POSTGRES_HOST`
 
 ---
 

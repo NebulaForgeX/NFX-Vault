@@ -3,7 +3,7 @@ uvicorn[standard]==0.32.0
 pydantic==2.9.2
 python-multipart==0.0.12
 sqlalchemy==2.0.36
-pymysql==1.1.1
+psycopg2-binary==2.9.10
 cryptography==43.0.3
 redis==5.2.0
 hiredis==2.3.2

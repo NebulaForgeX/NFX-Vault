@@ -1,4 +1,4 @@
-"""TLS 证书 MySQL 仓储。"""
+"""TLS 证书 PostgreSQL 仓储。"""
 from __future__ import annotations
 
 import logging
@@ -6,20 +6,20 @@ from datetime import datetime
 from typing import Any, Optional
 
 from enums import CertificateStatus
-from utils import MySQLSession
+from utils import PostgresSession
 from apps.certificate.models import TLSCertificate
 
 logger = logging.getLogger(__name__)
 
 
 class CertificateRepository:
-    def __init__(self, db_session: MySQLSession) -> None:
+    def __init__(self, db_session: PostgresSession) -> None:
         self.db_session = db_session
 
     def get_certificate_list(
         self, offset: int = 0, limit: int = 20
     ) -> tuple[list[dict[str, Any]], int]:
-        if not self.db_session.enable_mysql:
+        if not self.db_session.enable_db:
             return [], 0
         try:
             with self.db_session.get_session() as session:
@@ -53,7 +53,7 @@ class CertificateRepository:
             return [], 0
 
     def get_certificate_by_id(self, certificate_id: str) -> Optional[dict[str, Any]]:
-        if not self.db_session.enable_mysql:
+        if not self.db_session.enable_db:
             return None
         try:
             with self.db_session.get_session() as session:
@@ -70,7 +70,7 @@ class CertificateRepository:
             return None
 
     def get_certificate_by_domain(self, domain: str) -> Optional[dict[str, Any]]:
-        if not self.db_session.enable_mysql:
+        if not self.db_session.enable_db:
             return None
         try:
             with self.db_session.get_session() as session:
@@ -106,7 +106,7 @@ class CertificateRepository:
             return None
 
     def delete_certificate_by_id(self, certificate_id: str) -> bool:
-        if not self.db_session.enable_mysql:
+        if not self.db_session.enable_db:
             return False
         try:
             with self.db_session.get_session() as session:
@@ -126,7 +126,7 @@ class CertificateRepository:
         offset: int = 0,
         limit: int = 20,
     ) -> tuple[list[dict[str, Any]], int]:
-        if not self.db_session.enable_mysql:
+        if not self.db_session.enable_db:
             return [], 0
         try:
             with self.db_session.get_session() as session:
@@ -179,7 +179,7 @@ class CertificateRepository:
         days_remaining: Optional[int] = None,
         sans_changed: Optional[bool] = None,
     ) -> bool:
-        if not self.db_session.enable_mysql:
+        if not self.db_session.enable_db:
             return False
         try:
             with self.db_session.get_session() as session:
@@ -233,7 +233,7 @@ class CertificateRepository:
         last_error_time: Optional[datetime] = None,
         sans_changed: Optional[bool] = None,
     ) -> Optional[TLSCertificate]:
-        if not self.db_session.enable_mysql:
+        if not self.db_session.enable_db:
             return None
         try:
             with self.db_session.get_session() as session:
@@ -299,7 +299,7 @@ class CertificateRepository:
         folder_name: Optional[str] = None,
         email: Optional[str] = None,
     ) -> Optional[TLSCertificate]:
-        if not self.db_session.enable_mysql:
+        if not self.db_session.enable_db:
             return None
         cert_id: Optional[str] = None
         try:
@@ -334,7 +334,7 @@ class CertificateRepository:
         return None
 
     def update_all_days_remaining(self) -> tuple[int, int, list[dict[str, Any]]]:
-        if not self.db_session.enable_mysql:
+        if not self.db_session.enable_db:
             return (0, 0, [])
         try:
             with self.db_session.get_session() as session:

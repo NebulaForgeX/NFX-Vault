@@ -1,7 +1,6 @@
 import uuid
 
 from sqlalchemy import Boolean, Column, DateTime, Enum, Index, Integer, JSON, String, Text, UniqueConstraint, func
-from sqlalchemy.dialects.mysql import CHAR
 
 from enums import CertificateStatus
 from apps.certificate.models.base import Base
@@ -12,13 +11,16 @@ class TLSCertificate(Base):
     __table_args__ = (
         UniqueConstraint("domain", name="uq_tls_certificates_domain"),
         Index("idx_tls_certificates_domain", "domain"),
-        {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
     )
 
-    id = Column(CHAR(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     domain = Column(String(255), nullable=False)
     folder_name = Column(String(255), nullable=True)
-    status = Column(Enum(CertificateStatus), nullable=True, default=CertificateStatus.PROCESS)
+    status = Column(
+        Enum(CertificateStatus, values_callable=lambda x: [e.value for e in x], native_enum=False),
+        nullable=True,
+        default=CertificateStatus.PROCESS,
+    )
     email = Column(String(255), nullable=True)
     certificate = Column(Text, nullable=True)
     private_key = Column(Text, nullable=True)

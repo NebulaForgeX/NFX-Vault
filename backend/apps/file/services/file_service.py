@@ -59,7 +59,7 @@ class FileService:
 
     async def read_folders_and_store_certificates(self, store: str = WEBSITES_STORE) -> dict[str, Any]:
         """读取磁盘证书目录写入 DB（启动时仅调用 websites）。"""
-        if not self.database_repo.db_session.enable_mysql:
+        if not self.database_repo.db_session.enable_db:
             return {"success": False, "message": "Database repository not initialized", "processed": 0}
         base_dir = self.base_dir
         store_dir = os.path.join(base_dir, store.capitalize())
@@ -312,7 +312,7 @@ class FileService:
                 f.write(certificate)
             with open(os.path.join(folder_path, "key.key"), "w", encoding="utf-8") as f:
                 f.write(private_key)
-            if self.database_repo.db_session.enable_mysql:
+            if self.database_repo.db_session.enable_db:
                 try:
                     cert_info = extract_cert_info_from_pem_sync(certificate)
                     parsed_sans = cert_info.get("sans", [])

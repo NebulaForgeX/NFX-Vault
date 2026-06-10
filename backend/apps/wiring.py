@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-依赖组装：MySQL / Redis / Kafka(Producer+Consumer) / Repos / Services / Kafka 路由。
+依赖组装：PostgreSQL / Redis / Kafka(Producer+Consumer) / Repos / Services / Kafka 路由。
 """
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from typing import Optional
 from config.types import AuthConfig, CertConfig, DatabaseConfig, VaultDataConfig
 from apps.certificate.models.base import Base
 from apps.certificate.kafka.certificate_pipeline import CertificatePipeline
-from utils import ACMEChallengeStorage, KafkaClient, KafkaEventConsumer, MySQLSession, RedisClient
+from utils import ACMEChallengeStorage, KafkaClient, KafkaEventConsumer, PostgresSession, RedisClient
 
 from apps.analysis.services.analysis_service import AnalysisService
 from apps.certificate.kafka.certificate_kafka_handler import CertificateKafkaHandler
@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ApplicationStack:
-    mysql: MySQLSession
+    db: PostgresSession
     redis: RedisClient
     kafka: KafkaClient
     kafka_consumer: Optional[KafkaEventConsumer]
@@ -55,17 +55,17 @@ def build_application_stack(
     auth_config: AuthConfig,
     vault_data_config: VaultDataConfig,
 ) -> ApplicationStack:
-    mysql = MySQLSession(
-        host=db_config.MYSQL_HOST,
-        port=db_config.MYSQL_PORT,
-        database=db_config.MYSQL_DATABASE,
-        user=db_config.MYSQL_USER,
-        password=db_config.MYSQL_PASSWORD,
-        enable_mysql=True,
+    db = PostgresSession(
+        host=db_config.POSTGRES_HOST,
+        port=db_config.POSTGRES_PORT,
+        database=db_config.POSTGRES_DATABASE,
+        user=db_config.POSTGRES_USER,
+        password=db_config.POSTGRES_PASSWORD,
+        enable_db=True,
     )
     try:
-        mysql.create_database()
-        mysql.create_tables(Base)
+        db.create_database()
+        db.create_tables(Base)
     except Exception:  # noqa: BLE001
         logger.exception("create_tables")
 
@@ -84,7 +84,7 @@ def build_application_stack(
     if kafka_client.enable_kafka:
         kafka_client.ensure_topic_exists(db_config.KAFKA_EVENT_TOPIC)
 
-    db_repo = CertificateRepository(mysql)
+    db_repo = CertificateRepository(db)
     cache_repo = CertificateCacheRepo(redis_client)
     pipeline = CertificatePipeline(db_config=db_config, kafka_client=kafka_client)
     tls_repo = TlsIssueRepository(cert_config)
@@ -108,8 +108,8 @@ def build_application_stack(
     analysis_service = AnalysisService()
     acme_storage = ACMEChallengeStorage(challenge_dir=cert_config.ACME_CHALLENGE_DIR)
 
-    user_repo = UserRepository(mysql)
-    image_repo = ImageRepository(mysql)
+    user_repo = UserRepository(db)
+    image_repo = ImageRepository(db)
     verification = VerificationCodeService(redis_client, auth_config.EMAIL_VERIFICATION_CODE_TTL_SECONDS)
     mailer = SmtpMailSender(
         auth_config.EMAIL_SMTP_HOST,
@@ -148,7 +148,7 @@ def build_application_stack(
             kafka_consumer.register_handler(et, fn)
 
     return ApplicationStack(
-        mysql=mysql,
+        db=db,
         redis=redis_client,
         kafka=kafka_client,
         kafka_consumer=kafka_consumer,
@@ -167,7 +167,7 @@ def build_certificate_stack(
     db_config: DatabaseConfig,
     auth_config: AuthConfig,
     vault_data_config: VaultDataConfig,
-) -> tuple[MySQLSession, RedisClient, KafkaClient, CertificateService]:
+) -> tuple[PostgresSession, RedisClient, KafkaClient, CertificateService]:
     """兼容旧调用：仅返回证书栈四元组。"""
     s = build_application_stack(cert_config, db_config, auth_config, vault_data_config)
-    return s.mysql, s.redis, s.kafka, s.certificate_service
+    return s.db, s.redis, s.kafka, s.certificate_service

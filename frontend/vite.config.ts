@@ -1,5 +1,8 @@
-import path from "path";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig, loadEnv } from "vite";
 
@@ -78,7 +81,7 @@ export default defineConfig(({ mode }) => {
   build: {
     outDir: path.resolve(__dirname, "dist"),
     sourcemap: true,
-    chunkSizeWarningLimit: 300,
+    chunkSizeWarningLimit: 400,
   },
   preview: {
     port: 5173,
