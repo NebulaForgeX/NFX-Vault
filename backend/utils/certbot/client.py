@@ -170,6 +170,20 @@ class CertbotClient:
         logger.info("certbot cmd: %s", _shell_join(cmd))
         try:
             r = subprocess.run(cmd, capture_output=True, text=True, timeout=self.max_wait_time)
+        except FileNotFoundError:
+            msg = (
+                "certbot 未安装或不在 PATH（开发机请 apt install certbot；"
+                "生产环境见 docker/backend/Dockerfile）"
+            )
+            logger.error("certbot executable missing: %s", msg)
+            return {
+                "success": False,
+                "message": msg,
+                "certificate": None,
+                "private_key": None,
+                "status": CertificateStatus.FAIL.value,
+                "error": msg,
+            }
         except subprocess.TimeoutExpired:
             logger.error(
                 "certbot timeout after %ss cert_name=%s cmd=%s",

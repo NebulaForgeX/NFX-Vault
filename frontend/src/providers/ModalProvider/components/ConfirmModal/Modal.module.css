@@ -3,7 +3,7 @@
     border: none;
     border-radius: 12px;
     padding: 0;
-    max-width: 400px;
+    max-width: 480px;
     width: 90%;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     animation: slideIn 0.2s ease-out;
@@ -76,19 +76,22 @@
 .checkboxRow {
     display: flex;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.625rem;
     margin: -0.5rem 0 1.25rem 0;
     text-align: left;
     font-size: 0.875rem;
     line-height: 1.45;
-    color: var(--color-fg-text);
+    color: var(--color-fg-muted);
     cursor: pointer;
 }
 
+.checkboxRow span {
+    flex: 1;
+    min-width: 0;
+}
+
 .checkboxRow input {
-    margin-top: 0.2rem;
-    flex-shrink: 0;
-    cursor: pointer;
+    margin-top: 0.15rem;
 }
 
 /* ===== 确认对话框按钮组 ===== */

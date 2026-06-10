@@ -347,6 +347,16 @@ const AccountPage = memo(() => {
           </div>
 
           <form className={styles.formStack} onSubmit={onSubmitPassword}>
+            <input
+              type="text"
+              name="username"
+              value={email === "—" ? "" : email}
+              autoComplete="username"
+              readOnly
+              tabIndex={-1}
+              aria-hidden="true"
+              className={styles.hiddenFile}
+            />
             <div className={styles.pwGrid}>
               <div className={`${styles.field} ${styles.pwSpan2}`}>
                 <label htmlFor="acc-old-pw">{t("oldPassword")}</label>
