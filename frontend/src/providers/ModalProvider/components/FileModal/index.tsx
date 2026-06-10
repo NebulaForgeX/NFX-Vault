@@ -1,5 +1,6 @@
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "nfx-ui/components";
+import { getApiErrorMessage } from "nfx-ui/utils";
 
 import { X, Download } from "@/assets/icons/lucide";
 
@@ -18,24 +19,7 @@ const FileModal = memo(() => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (isOpen && !dialog.open) {
-      dialog.showModal();
-      // 只加载文件内容
-      if (filePath) {
-        loadFileContent();
-      }
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
-      // 重置状态
-      setFileContent("");
-      setError(null);
-    }
-  }, [isOpen, filePath]);
-
-  const loadFileContent = async () => {
+  const loadFileContent = useCallback(async () => {
     if (!filePath) return;
     setLoading(true);
     setError(null);
@@ -46,13 +30,28 @@ const FileModal = memo(() => {
       } else {
         setError(result.message || "Failed to load file content");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to load file content:", err);
-      setError(err?.response?.data?.detail || err?.message || "Failed to load file content");
+      setError(getApiErrorMessage(err as never, "Failed to load file content"));
     } finally {
       setLoading(false);
     }
-  };
+  }, [filePath]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (isOpen && !dialog.open) {
+      dialog.showModal();
+      if (filePath) {
+        void loadFileContent();
+      }
+    } else if (!isOpen && dialog.open) {
+      dialog.close();
+      setFileContent("");
+      setError(null);
+    }
+  }, [isOpen, filePath, loadFileContent]);
 
   const handleClose = () => {
     hideModal("file");
@@ -66,7 +65,7 @@ const FileModal = memo(() => {
       const folderLevels = pathParts.join("_");
       const downloadFolderName = folderLevels || "";
       await downloadFile(filePath, downloadFolderName);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to download file:", err);
     }
   };

@@ -55,8 +55,12 @@ export const useActionCertificateItem = () => {
               } else {
                 showError(result.message || t("delete.error") || "Failed to delete certificate");
               }
-            } catch (error: any) {
-              showError(error?.message || t("delete.error") || "Failed to delete certificate");
+            } catch (error: unknown) {
+              showError(
+                error instanceof Error
+                  ? error.message
+                  : t("delete.error") || "Failed to delete certificate",
+              );
             }
           },
         });

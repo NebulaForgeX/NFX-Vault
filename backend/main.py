@@ -6,7 +6,6 @@ NFX-Vault Backend（MVC，自包含于 `backend/`）。
 """
 from __future__ import annotations
 
-import json
 import logging
 import os
 import signal
@@ -23,7 +22,7 @@ from starlette.responses import JSONResponse
 from apps.wiring import ApplicationStack, build_application_stack
 from config import load_config, load_repo_dotenv
 from config.vault_data_config import load_vault_data_config
-from utils import KafkaConsumerThread
+from utils import KafkaConsumerThread, format_log_json
 from routers.urls import api_router
 from tasks.scheduler import setup_scheduler, shutdown_scheduler
 
@@ -63,40 +62,33 @@ async def lifespan(app: FastAPI):
     if _stack.kafka_consumer and _stack.kafka_consumer.start():
         _consumer_thread = KafkaConsumerThread(_stack.kafka_consumer)
         _consumer_thread.start()
-        logger.info(
-            json.dumps(
-                {"task": "kafka_consumer", "event": "thread_started"},
-                ensure_ascii=False,
-            )
-        )
+        logger.info(format_log_json({"task": "kafka_consumer", "event": "thread_started"}))
     else:
         logger.info(
-            json.dumps(
+            format_log_json(
                 {
                     "task": "kafka_consumer",
                     "event": "not_started",
                     "reason": "kafka_unavailable_or_unconfigured",
-                },
-                ensure_ascii=False,
+                }
             )
         )
 
     if cert_cfg.READ_ON_STARTUP:
         logger.info(
-            json.dumps(
+            format_log_json(
                 {
                     "task": "disk_cert_import",
                     "event": "startup_begin",
                     "store": "websites",
                     "message": "READ_ON_STARTUP",
-                },
-                ensure_ascii=False,
+                }
             )
         )
         try:
             r = await _stack.file_service.read_folders_and_store_certificates("websites")
             logger.info(
-                json.dumps(
+                format_log_json(
                     {
                         "task": "disk_cert_import",
                         "event": "startup_api_summary",
@@ -107,20 +99,17 @@ async def lifespan(app: FastAPI):
                         "skipped_no_domain": r.get("skipped_no_domain", 0),
                         "failed": r.get("failed", 0),
                         "message": r.get("message", ""),
-                    },
-                    ensure_ascii=False,
-                    default=str,
+                    }
                 )
             )
         except Exception as e:  # noqa: BLE001
             logger.error(
-                json.dumps(
+                format_log_json(
                     {
                         "task": "disk_cert_import",
                         "event": "startup_failed",
                         "error": str(e),
-                    },
-                    ensure_ascii=False,
+                    }
                 ),
                 exc_info=True,
             )
@@ -128,15 +117,14 @@ async def lifespan(app: FastAPI):
     _scheduler = setup_scheduler(cert_cfg, _stack.certificate_service)
 
     logger.info(
-        json.dumps(
+        format_log_json(
             {
                 "task": "startup",
                 "event": "lifespan_deps",
                 "postgres": getattr(_stack.db, "enable_db", False),
                 "redis": getattr(_stack.redis, "enable_redis", False),
                 "kafka": getattr(_stack.kafka, "enable_kafka", False),
-            },
-            ensure_ascii=False,
+            }
         )
     )
 

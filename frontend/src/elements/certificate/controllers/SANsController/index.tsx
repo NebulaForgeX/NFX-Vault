@@ -1,7 +1,7 @@
 import type { CertificateFormSharedValues } from "../../schemas/certificateSchema";
 
 import { memo, useState, useEffect, useRef } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext, type ControllerRenderProps } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { X } from "@/assets/icons/lucide";
 
@@ -41,7 +41,10 @@ const SANsController = memo(({ disabled = false, readOnly = false }: SANsControl
     return currentItems.filter((_, i) => i !== index);
   };
 
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: any) => {
+  const handleInputKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    field: ControllerRenderProps<CertificateFormSharedValues, "sans">,
+  ) => {
     if (e.key === "Enter") {
       e.preventDefault();
       const trimmedValue = inputValue.trim();

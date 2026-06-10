@@ -14,7 +14,7 @@ from apps.certificate.models import TLSCertificate
 from apps.certificate.repos.certificate_repository import CertificateRepository
 from config.types import DatabaseConfig
 from enums import CertificateStatus
-from utils import extract_cert_info_from_pem_sync
+from utils import extract_cert_info_from_pem_sync, format_log_json
 
 logger = logging.getLogger(__name__)
 
@@ -26,14 +26,14 @@ _TASK = "disk_cert_import"
 def _log_disk_import(record: dict[str, Any]) -> None:
     payload = dict(record)
     payload.setdefault("task", _TASK)
-    logger.info(json.dumps(payload, ensure_ascii=False, default=str))
+    logger.info(format_log_json(payload))
 
 
 def _log_disk_import_error(record: dict[str, Any], exc: BaseException) -> None:
     payload = dict(record)
     payload.setdefault("task", _TASK)
     payload["error"] = str(exc)
-    logger.error(json.dumps(payload, ensure_ascii=False, default=str), exc_info=True)
+    logger.error(format_log_json(payload), exc_info=True)
 
 
 def _fmt_dt(value: Any) -> Optional[str]:

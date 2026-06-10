@@ -2,6 +2,7 @@ import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button, Textarea } from "nfx-ui/components";
+import { getApiErrorMessage } from "nfx-ui/utils";
 
 import { BackButton } from "@/components";
 import { FileSearch, Upload } from "@/assets/icons/lucide";
@@ -63,8 +64,8 @@ const TLSAnalysisPage = memo(() => {
       setResult(response);
       if (!response.success)  setError(response.message);
       
-    } catch (err: any) {
-      setError(err?.response?.data?.message || err?.message || "Failed to analyze certificate");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err as never, "Failed to analyze certificate"));
     } finally {
       setIsLoading(false);
     }

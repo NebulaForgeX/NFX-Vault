@@ -2,7 +2,6 @@
 """APScheduler：每日更新证书剩余天数（仅 DB，不读磁盘目录）。"""
 from __future__ import annotations
 
-import json
 import logging
 from typing import Optional
 
@@ -12,6 +11,7 @@ from apscheduler.triggers.cron import CronTrigger
 from apps.certificate.services.certificate_service import CertificateService
 from config.types import CertConfig
 from tasks.update_days_remaining_task import update_days_remaining_job
+from utils.log_json import format_log_json
 
 logger = logging.getLogger(__name__)
 
@@ -22,13 +22,12 @@ def setup_scheduler(
 ) -> Optional[BackgroundScheduler]:
     if not cert_config.SCHEDULE_ENABLED:
         logger.info(
-            json.dumps(
+            format_log_json(
                 {
                     "task": "scheduler",
                     "event": "disabled",
                     "reason": "SCHEDULE_ENABLED=0",
-                },
-                ensure_ascii=False,
+                }
             )
         )
         return None
@@ -43,15 +42,14 @@ def setup_scheduler(
     )
     scheduler.start()
     logger.info(
-        json.dumps(
+        format_log_json(
             {
                 "task": "scheduler",
                 "event": "started",
                 "job_id": job_id,
                 "cron": {"hour": 1, "minute": 0},
                 "description": "update days_remaining from not_after",
-            },
-            ensure_ascii=False,
+            }
         )
     )
     return scheduler
@@ -60,6 +58,4 @@ def setup_scheduler(
 def shutdown_scheduler(scheduler: Optional[BackgroundScheduler]) -> None:
     if scheduler:
         scheduler.shutdown()
-        logger.info(
-            json.dumps({"task": "scheduler", "event": "shutdown"}, ensure_ascii=False)
-        )
+        logger.info(format_log_json({"task": "scheduler", "event": "shutdown"}))
