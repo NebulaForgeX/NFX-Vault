@@ -39,12 +39,16 @@ export default defineConfig(({ mode }) => {
   root: path.resolve(__dirname),
   plugins: [
     react(),
-    visualizer({
-      filename: path.resolve(__dirname, "dist/stats.html"),
-      open: process.env.DOCKER_BUILD !== "1",
-      gzipSize: true,
-      brotliSize: true,
-    }),
+    ...(process.env.DOCKER_BUILD === "1"
+      ? []
+      : [
+          visualizer({
+            filename: path.resolve(__dirname, "dist/stats.html"),
+            open: true,
+            gzipSize: true,
+            brotliSize: true,
+          }),
+        ]),
   ],
   base: "/",
   resolve: {
@@ -79,7 +83,8 @@ export default defineConfig(({ mode }) => {
     },
   },
   build: {
-    outDir: path.resolve(__dirname, "dist"),
+    outDir: "dist",
+    emptyOutDir: true,
     sourcemap: true,
     chunkSizeWarningLimit: 400,
   },

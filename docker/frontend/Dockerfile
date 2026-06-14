@@ -15,7 +15,7 @@ ENV VITE_API_URL=${VITE_API_URL}
 # 与 Pqttec-Admin 一致：避免 rollup-plugin-visualizer 在 CI/Docker 里尝试打开浏览器
 ENV DOCKER_BUILD=1
 
-RUN npm run build && test -d dist && test -f dist/index.html
+RUN npm run build && ls -la /app/dist && test -f /app/dist/index.html
 
 FROM nginx:1.27-alpine
 COPY --from=build /app/dist /usr/share/nginx/html
