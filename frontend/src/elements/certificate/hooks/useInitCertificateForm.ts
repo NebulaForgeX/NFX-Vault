@@ -39,19 +39,20 @@ export default function useInitCertificateForm(certificate?: CertificateDetailRe
         },
   });
 
+  // 仅在 certificateId 变化时灌表（含首次加载）；避免详情 refetch 冲掉用户正在编辑的 folderName
+  const certificateId = certificate?.id;
   useEffect(() => {
-    if (certificate) {
-      form.reset({
-        domain: certificate.domain,
-        folderName: safeStringable(certificate.folderName),
-        email: safeStringable(certificate.email),
-        issuer: safeStringable(certificate.issuer),
-        sans: safeArray(certificate.sans),
-        webroot: "",
-        forceRenewal: false,
-      });
-    }
-  }, [certificate, form]);
+    if (!certificate || !certificateId) return;
+    form.reset({
+      domain: certificate.domain,
+      folderName: safeStringable(certificate.folderName),
+      email: safeStringable(certificate.email),
+      issuer: safeStringable(certificate.issuer),
+      sans: safeArray(certificate.sans),
+      webroot: "",
+      forceRenewal: false,
+    });
+  }, [certificateId, form]);
 
   return form;
 }

@@ -20,11 +20,13 @@ export const useEditCertificate = (certificateId: string) => {
           showError(t("messages.certificateIdMissing"));
           return;
         }
+        const folderName = values.folderName?.trim() ?? "";
+        const email = values.email?.trim() ?? "";
         const result = await mutateAsync({
           certificateId,
           sans: values.sans ?? [],
-          folderName: values.folderName?.trim() || undefined,
-          email: values.email?.trim() || undefined,
+          folderName,
+          email: email || undefined,
         });
 
         if (result.success) {

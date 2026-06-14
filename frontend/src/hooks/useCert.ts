@@ -12,7 +12,7 @@ import type {
 import type { CertificateDetailResponse, CertificateInfo } from "@/types";
 import type { SuspenseInfiniteQueryOptions, SuspenseUnifiedQueryOptions, UnifiedQueryParams } from "nfx-ui/hooks";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { makeUnifiedInfiniteQuery, makeUnifiedQuery } from "nfx-ui/hooks";
 import { getApiErrorMessage } from "nfx-ui/utils";
@@ -115,9 +115,17 @@ export const useCreateCertificate = () => {
 };
 
 export const useUpdateManualAddCertificate = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (request: UpdateManualAddCertificateRequest) => certApi.UpdateManualAddCertificate(request),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: CERT_LIST.getPrefix, exact: false });
+      if (variables.certificateId) {
+        queryClient.invalidateQueries({
+          queryKey: CERT_DETAIL(variables.certificateId),
+          exact: true,
+        });
+      }
       cacheEventEmitter.emit(cacheEvents.REFRESH_CERTIFICATES);
     },
     onError: (error: AxiosError) => showError(getApiErrorMessage(error, "[useUpdateManualAddCertificate]")),

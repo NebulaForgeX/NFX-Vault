@@ -350,13 +350,34 @@ class CertificateService:
         sans_changed_update: Optional[bool] = None
         if sans is not None:
             sans_changed_update = _normalized_sans_set(sans) != _normalized_sans_set(cur.get("sans"))
-        self.database_repo.update_certificate_by_id(
+        folder_name_s = folder_name.strip() if isinstance(folder_name, str) else None
+        email_s = email.strip() if isinstance(email, str) else None
+        logger.info(
+            "update_manual_add_certificate id=%s folder_name=%r email=%r sans_count=%s",
+            certificate_id,
+            folder_name_s,
+            email_s,
+            len(sans) if sans is not None else None,
+        )
+        updated = self.database_repo.update_certificate_by_id(
             certificate_id,
             sans=sans,
-            folder_name=folder_name,
-            email=email,
+            folder_name=folder_name_s,
+            email=email_s,
             sans_changed=sans_changed_update,
         )
+        if not updated:
+            logger.error("update_manual_add_certificate failed id=%s", certificate_id)
+            return {"success": False, "message": "Failed to update certificate"}
+        refreshed = self.database_repo.get_certificate_by_id(certificate_id)
+        if folder_name_s is not None and (refreshed or {}).get("folder_name") != folder_name_s:
+            logger.error(
+                "update_manual_add_certificate folder_name mismatch id=%s want=%r got=%r",
+                certificate_id,
+                folder_name_s,
+                (refreshed or {}).get("folder_name"),
+            )
+            return {"success": False, "message": "folder_name was not saved"}
         self.invalidate_cache(trigger="update")
         return {"success": True, "message": "Updated"}
 
