@@ -9,6 +9,10 @@ import (
 	resourceApp "nfxvault/modules/file/application/resource"
 	systemapp "nfxvault/modules/file/application/system"
 	"nfxvault/modules/file/config"
+	fsstore "nfxvault/modules/file/infrastructure/fs"
+	systemstateQuery "nfxvault/modules/file/infrastructure/query/systemstate"
+	systemstateRepo "nfxvault/modules/file/infrastructure/repository/systemstate"
+	certQuery "nfxvault/modules/tls/infrastructure/query/certificate"
 	authconn "nfxvault/connections/auth"
 	"nfxvault/pkgs/cachex"
 	"nfxvault/pkgs/health"
@@ -86,11 +90,8 @@ func NewDeps(ctx context.Context, cfg *config.Config) (*Dependencies, error) {
 		userTokenVerifier: userTokenVerifier, serverTokenVerifier: serverTokenVerifier, errorsLangsPath: errorsLangsPath,
 		identityAuth: identityClient,
 	}
-	d.appSvc = systemapp.NewService(postgres.DB())
-	d.fileSvc = fileapp.NewService(postgres.DB(), busPublisher, baseDir)
-	if cfg.File.ReadOnStartup {
-		_ = d.fileSvc.ImportFromDisk(ctx)
-	}
+	d.appSvc = systemapp.NewService(systemstateRepo.NewRepo(postgres.DB()), systemstateQuery.NewQuery(postgres.DB()))
+	d.fileSvc = fileapp.NewService(certQuery.NewQuery(postgres.DB()), fsstore.New(baseDir), busPublisher)
 	return d, nil
 }
 

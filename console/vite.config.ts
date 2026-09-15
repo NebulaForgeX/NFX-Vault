@@ -55,6 +55,8 @@ export default defineConfig(({ mode }) => {
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "lucide-react/icons": path.resolve(__dirname, "./node_modules/lucide-react/dist/esm/icons"),
+      react: path.resolve(__dirname, "./node_modules/react"),
+      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
     },
     dedupe: [
       "react",

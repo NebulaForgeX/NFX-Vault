@@ -1,4 +1,4 @@
-package tlsapp
+package pemx
 
 import (
 	"crypto/x509"
@@ -10,18 +10,22 @@ import (
 )
 
 type CertInfo struct {
-	CommonName     string         `json:"common_name"`
-	Subject        map[string]any `json:"subject"`
-	Issuer         string         `json:"issuer"`
-	SANs           []string       `json:"sans"`
-	AllDomains     []string       `json:"all_domains"`
-	NotBefore      *time.Time     `json:"not_before"`
-	NotAfter       *time.Time     `json:"not_after"`
-	IsValid        bool           `json:"is_valid"`
-	DaysRemaining  int            `json:"days_remaining"`
+	CommonName    string    `json:"common_name"`
+	Subject       Subject   `json:"subject"`
+	Issuer        string    `json:"issuer"`
+	SANs          []string  `json:"sans"`
+	AllDomains    []string  `json:"all_domains"`
+	NotBefore     *time.Time `json:"not_before"`
+	NotAfter      *time.Time `json:"not_after"`
+	IsValid       bool      `json:"is_valid"`
+	DaysRemaining int       `json:"days_remaining"`
 }
 
-func ParsePEM(raw string) (*CertInfo, error) {
+type Subject struct {
+	CN string `json:"CN"`
+}
+
+func Parse(raw string) (*CertInfo, error) {
 	block, _ := pem.Decode([]byte(strings.TrimSpace(raw)))
 	if block == nil {
 		return nil, errPEM
@@ -48,16 +52,19 @@ func ParsePEM(raw string) (*CertInfo, error) {
 		issuer = cert.Issuer.Organization[0]
 	}
 	return &CertInfo{
-		CommonName:    cn,
-		Subject:       map[string]any{"CN": cn},
-		Issuer:        issuer,
-		SANs:          sans,
-		AllDomains:    all,
-		NotBefore:     &nb,
-		NotAfter:      &na,
-		IsValid:       time.Now().Before(na) && time.Now().After(nb.Add(-time.Minute)),
+		CommonName: cn, Subject: Subject{CN: cn}, Issuer: issuer, SANs: sans, AllDomains: all,
+		NotBefore: &nb, NotAfter: &na,
+		IsValid: time.Now().Before(na) && time.Now().After(nb.Add(-time.Minute)),
 		DaysRemaining: days,
 	}, nil
+}
+
+func SansJSON(sans []string) []byte {
+	if sans == nil {
+		sans = []string{}
+	}
+	b, _ := json.Marshal(sans)
+	return b
 }
 
 func contains(xs []string, v string) bool {
@@ -67,14 +74,6 @@ func contains(xs []string, v string) bool {
 		}
 	}
 	return false
-}
-
-func sansJSON(sans []string) []byte {
-	if sans == nil {
-		sans = []string{}
-	}
-	b, _ := json.Marshal(sans)
-	return b
 }
 
 var errPEM = errString("invalid PEM certificate")

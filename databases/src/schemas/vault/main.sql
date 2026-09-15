@@ -1,2 +1,3 @@
 -- atlas:import schema.sql
 -- atlas:import tables/tls_certificates.sql
+-- atlas:import views/tls_certificates_active_view.sql

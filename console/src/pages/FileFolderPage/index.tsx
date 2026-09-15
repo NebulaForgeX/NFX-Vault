@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Button, Flex, Text } from "@radix-ui/themes";
+import { Button, Flex } from "@radix-ui/themes";
 import { Folder } from "lucide-react";
 import { PageFrame } from "nfx-ui/layouts";
 import { EmptyState, PageHeader } from "nfx-ui/components";
@@ -115,9 +115,9 @@ const FileFolderPage = memo(() => {
         }
       />
       {isLoading ? (
-        <Text color="gray">Loading...</Text>
+        <EmptyState icon={Folder} title="Loading..." />
       ) : error ? (
-        <Text color="red">{error}</Text>
+        <EmptyState icon={Folder} title={error} />
       ) : items.length === 0 ? (
         <EmptyState icon={Folder} title="Directory is empty" />
       ) : (

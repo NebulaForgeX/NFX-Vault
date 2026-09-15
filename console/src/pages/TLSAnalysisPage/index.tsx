@@ -1,8 +1,8 @@
 import { memo, useState } from "react";
-import { Button, Card, Flex, Heading, Text, TextArea } from "@radix-ui/themes";
-import { ArrowLeft, FileSearch, Shield } from "lucide-react";
+import { Button, Card, Flex, Text, TextArea } from "@radix-ui/themes";
+import { ArrowLeft, FileSearch, KeyRound, Shield } from "lucide-react";
 import { PageFrame } from "nfx-ui/layouts";
-import { PageHeader } from "nfx-ui/components";
+import { CardHeader, EmptyState, PageHeader } from "nfx-ui/components";
 import { useTranslation } from "react-i18next";
 
 import { getApiErrorMessage } from "nfx-ui/utils";
@@ -90,15 +90,15 @@ const TLSAnalysisPage = memo(() => {
       <Flex gap="4" wrap="wrap">
         <Flex direction="column" gap="4" style={{ flex: "1 1 360px" }}>
           <Card size="3">
+            <CardHeader icon={<Shield size={18} />} title="Certificate (PEM)" />
             <Flex direction="column" gap="3">
-              <Heading size="3">Certificate (PEM)</Heading>
               <input type="file" accept=".crt,.pem,.cert" onChange={handleCertificateFileUpload} />
               <TextArea placeholder="Paste certificate content here (PEM format)..." value={certificate} onChange={(e) => setCertificate(e.target.value)} rows={10} />
             </Flex>
           </Card>
           <Card size="3">
+            <CardHeader icon={<KeyRound size={18} />} title="Private Key (PEM) - Optional" />
             <Flex direction="column" gap="3">
-              <Heading size="3">Private Key (PEM) - Optional</Heading>
               <input type="file" accept=".key,.pem" onChange={handlePrivateKeyFileUpload} />
               <TextArea placeholder="Paste private key content here (PEM format)..." value={privateKey} onChange={(e) => setPrivateKey(e.target.value)} rows={10} />
             </Flex>
@@ -117,16 +117,14 @@ const TLSAnalysisPage = memo(() => {
         <Flex direction="column" gap="3" style={{ flex: "1 1 320px" }}>
           {result?.success && result.data ? (
             <Card size="3">
+              <CardHeader icon={<FileSearch size={18} />} title="Analysis Results" />
               <Flex direction="column" gap="3">
-                <Heading size="4">Analysis Results</Heading>
-                <Heading size="3">Summary</Heading>
                 <Text size="2">Valid: {result.data.summary.isValid ? "Yes" : "No"}</Text>
                 <Text size="2">Days Remaining: {result.data.summary.daysRemaining ?? "N/A"}</Text>
                 <Text size="2">Has Private Key: {result.data.summary.hasPrivateKey ? "Yes" : "No"}</Text>
                 {result.data.summary.keyValid !== null ? (
                   <Text size="2">Private Key Valid: {result.data.summary.keyValid ? "Yes" : "No"}</Text>
                 ) : null}
-                <Heading size="3">Certificate Information</Heading>
                 <Text size="2">Domain: {result.data.certificate.domain || "N/A"}</Text>
                 <Text size="2">Issuer: {result.data.certificate.issuer || "N/A"}</Text>
                 <Text size="2">Not Before: {result.data.certificate.notBefore || "N/A"}</Text>
@@ -142,7 +140,9 @@ const TLSAnalysisPage = memo(() => {
                 ) : null}
               </Flex>
             </Card>
-          ) : null}
+          ) : (
+            <EmptyState icon={FileSearch} title={t("emptyResult") || "Paste a certificate to analyze"} />
+          )}
         </Flex>
       </Flex>
     </PageFrame>

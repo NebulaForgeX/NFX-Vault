@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
+	authconn "nfxvault/connections/auth"
 	fileapp "nfxvault/modules/file/application/file"
 	systemapp "nfxvault/modules/file/application/system"
 	"nfxvault/pkgs/fiberx"
@@ -20,6 +21,7 @@ type httpDeps interface {
 	FileSvc() *fileapp.Service
 	UserTokenVerifier() token.Verifier
 	ErrorsLangsPath() string
+	AuthClient() *authconn.Client
 }
 
 func NewHTTPServer(d httpDeps, accessLog httpx.AccessLogConfig) *fiber.App {
@@ -34,6 +36,6 @@ func NewHTTPServer(d httpDeps, accessLog httpx.AccessLogConfig) *fiber.App {
 		AllowCredentials: false, ExposeHeaders: []string{"Content-Length", "Content-Type"}, MaxAge: 3600,
 	}))
 	app.Use(middleware.Logger(), middleware.AccessLog(accessLog), middleware.Recover())
-	NewRouter(app, d.UserTokenVerifier(), NewRegistry(d.AppSvc(), d.FileSvc(), d.ErrorsLangsPath())).RegisterRoutes()
+	NewRouter(app, d.UserTokenVerifier(), NewRegistry(d.AppSvc(), d.FileSvc(), d.ErrorsLangsPath(), d.AuthClient())).RegisterRoutes()
 	return app
 }

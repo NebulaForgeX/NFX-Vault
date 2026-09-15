@@ -39,6 +39,12 @@
     align-items: center;
     gap: 0.5rem;
     max-width: 10rem;
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    min-width: 0;
 }
 
 .avatarRing {

@@ -1,72 +1,46 @@
-import { memo } from "react";
-import { useTranslation } from "react-i18next";
+import { memo, useEffect, useState } from "react";
 
-import { LANGUAGE_VALUES, LanguageEnum } from "nfx-ui/enums";
-import { useSyncPreference } from "nfx-ui/hooks";
-import { getLanguageDisplayName } from "nfx-ui/languages";
-import { AuthStore, clearAuth, useAuthStore, usePreferenceStore } from "nfx-ui/stores";
-import { Select } from "@radix-ui/themes";
-import { Button } from "@/components";
-import { Search } from "@/assets/icons/lucide";
-import { authEventEmitter } from "@/events/auth";
+import { useAssetRepository } from "nfx-ui/apis";
+import { useAuthStore } from "nfx-ui/stores";
+import { safeStringable } from "nfx-ui/utils";
+
+import { useVaultAccount } from "@/hooks/account";
+import { activeAvatarOf, identityProfileOf, primaryEmailOf } from "@/utils/identityProfile";
+import { initialsFrom } from "@/utils/userInitials";
 import { routerEventEmitter } from "@/events/router";
 import { ROUTES } from "@/navigations";
-import { showSearch } from "@/stores/modalStore";
 
 import styles from "./styles.module.css";
 
 const RightContainer = memo(() => {
-  const { t } = useTranslation("LoginPage");
   const accountId = useAuthStore((s) => s.currentAccountId);
-  const languageValue = usePreferenceStore((s) => s.language);
-  const { syncPreference } = useSyncPreference();
+  const asset = useAssetRepository();
+  const { data } = useVaultAccount();
+  const profile = identityProfileOf(data);
+  const avatar = activeAvatarOf(profile);
+  const displayName = safeStringable(profile?.displayName) || accountId?.slice(0, 8) || "";
+  const email = primaryEmailOf(data);
+  const avatarSrc = avatar?.imageId ? asset.FileURL("images", avatar.imageId) : "";
+  const [avatarBroken, setAvatarBroken] = useState(false);
+  const showAvatarImg = Boolean(avatarSrc) && !avatarBroken;
+
+  useEffect(() => {
+    setAvatarBroken(false);
+  }, [avatar?.imageId]);
+
+  if (!accountId) return null;
 
   return (
-    <div className={styles.headerContainer}>
-      <div className={styles.actions}>
-        <Select.Root value={languageValue} onValueChange={(lng) => syncPreference({ language: lng as LanguageEnum })}>
-          <Select.Trigger />
-          <Select.Content>
-            {LANGUAGE_VALUES.map((lng) => (
-              <Select.Item key={lng} value={lng}>
-                {getLanguageDisplayName(lng)}
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Root>
-        <div className={styles.separator} />
-        {accountId ? (
-          <>
-            <span className={styles.userLabel} title={accountId}>
-              {accountId.slice(0, 8)}
-            </span>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => {
-                clearAuth();
-                AuthStore.getState().clearAuth();
-                authEventEmitter.logout();
-                routerEventEmitter.navigateReplace(ROUTES.LOGIN);
-              }}
-              className={`${styles.action} ${styles.controlItem}`}
-            >
-              {t("logout")}
-            </Button>
-            <div className={styles.separator} />
-          </>
-        ) : null}
-        <Button
-          type="button"
-          variant="ghost"
-          iconOnly
-          leftIcon={<Search size={20} />}
-          onClick={() => showSearch()}
-          className={`${styles.action} ${styles.controlItem}`}
-          aria-label="Search"
-        />
+    <button type="button" className={styles.userBlock} title={displayName} onClick={() => routerEventEmitter.navigate({ to: ROUTES.ACCOUNT })}>
+      <div className={styles.avatarRing} aria-hidden>
+        {showAvatarImg ? (
+          <img src={avatarSrc} alt="" className={styles.avatarImg} onError={() => setAvatarBroken(true)} />
+        ) : (
+          <span className={styles.avatarInitials}>{initialsFrom(displayName, email)}</span>
+        )}
       </div>
-    </div>
+      <span className={styles.userLabel}>{displayName}</span>
+    </button>
   );
 });
 

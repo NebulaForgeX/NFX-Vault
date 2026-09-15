@@ -9,6 +9,8 @@ import (
 	resourceApp "nfxvault/modules/analysis/application/resource"
 	systemapp "nfxvault/modules/analysis/application/system"
 	"nfxvault/modules/analysis/config"
+	systemstateQuery "nfxvault/modules/analysis/infrastructure/query/systemstate"
+	systemstateRepo "nfxvault/modules/analysis/infrastructure/repository/systemstate"
 	authconn "nfxvault/connections/auth"
 	"nfxvault/pkgs/cachex"
 	"nfxvault/pkgs/health"
@@ -82,7 +84,7 @@ func NewDeps(ctx context.Context, cfg *config.Config) (*Dependencies, error) {
 		userTokenVerifier: userTokenVerifier, serverTokenVerifier: serverTokenVerifier, errorsLangsPath: errorsLangsPath,
 		identityAuth: identityClient,
 	}
-	d.appSvc = systemapp.NewService(postgres.DB())
+	d.appSvc = systemapp.NewService(systemstateRepo.NewRepo(postgres.DB()), systemstateQuery.NewQuery(postgres.DB()))
 	d.analysisSvc = analysisapp.NewService()
 	return d, nil
 }

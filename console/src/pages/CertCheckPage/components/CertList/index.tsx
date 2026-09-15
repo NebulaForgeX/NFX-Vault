@@ -1,5 +1,7 @@
 import { memo, useMemo } from "react";
+import { FileKey } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { CardHeader, EmptyState } from "nfx-ui/components";
 import { VirtualWindowList } from "@/components";
 import { useCertificateList } from "@/hooks";
 import CertCard from "../CertCard";
@@ -16,7 +18,7 @@ const CertList = memo(() => {
   } = useCertificateList({ staleTime: 1000 * 60 * 5 });
 
   const emptyStateContent = useMemo(() => {
-    return <div className={styles.emptyState}>{t("certificate.empty")}</div>;
+    return <EmptyState icon={FileKey} title={t("certificate.empty")} />;
   }, [t]);
 
   const loadingIndicator = useMemo(() => {
@@ -40,9 +42,7 @@ const CertList = memo(() => {
 
   return (
     <div className={styles.section}>
-      <h2 className={styles.sectionTitle}>
-        {t("certificate.list")} ({certificates.length} {t("certificate.total") || "total"})
-      </h2>
+      <CardHeader icon={<FileKey size={18} />} title={`${t("certificate.list")} (${certificates.length} ${t("certificate.total") || "total"})`} />
       <div className={styles.listContainer}>
         <VirtualWindowList
           data={certificates.filter((cert) => cert && cert.domain)}

@@ -1,16 +1,59 @@
 package events
 
-type CertEvent struct {
+import "nfxvault/pkgs/kafkax/eventbus"
+
+const (
+	EventOperationRefresh     eventbus.EventType = "operation.refresh"
+	EventCacheInvalidate      eventbus.EventType = "cache.invalidate"
+	EventParseCertificate     eventbus.EventType = "certificate.parse"
+	EventDeleteFolder         eventbus.EventType = "folder.delete"
+	EventDeleteFileOrFolder   eventbus.EventType = "file_or_folder.delete"
+	EventExportCertificate    eventbus.EventType = "certificate.export"
+)
+
+type DiskRefreshEvent struct {
 	CertTopic
-	Kind string `json:"kind"`
-	ID   string `json:"id"`
+	Store   string `json:"store,omitempty"`
+	Trigger string `json:"trigger,omitempty"`
 }
 
-type FileEvent struct {
+func (DiskRefreshEvent) EventType() eventbus.EventType { return EventOperationRefresh }
+
+type CacheInvalidateEvent struct {
+	CertTopic
+	ID string `json:"id,omitempty"`
+}
+
+func (CacheInvalidateEvent) EventType() eventbus.EventType { return EventCacheInvalidate }
+
+type ParseCertificateEvent struct {
+	CertTopic
+	ID string `json:"id"`
+}
+
+func (ParseCertificateEvent) EventType() eventbus.EventType { return EventParseCertificate }
+
+type DeleteFolderEvent struct {
 	FileTopic
-	Kind     string `json:"kind"`
+	Store      string `json:"store,omitempty"`
+	FolderName string `json:"folder_name,omitempty"`
+	Path       string `json:"path,omitempty"`
+}
+
+func (DeleteFolderEvent) EventType() eventbus.EventType { return EventDeleteFolder }
+
+type DeleteFileOrFolderEvent struct {
+	FileTopic
 	Store    string `json:"store,omitempty"`
 	Path     string `json:"path,omitempty"`
 	ItemType string `json:"item_type,omitempty"`
-	ID       string `json:"id,omitempty"`
 }
+
+func (DeleteFileOrFolderEvent) EventType() eventbus.EventType { return EventDeleteFileOrFolder }
+
+type ExportCertificateEvent struct {
+	FileTopic
+	ID string `json:"id"`
+}
+
+func (ExportCertificateEvent) EventType() eventbus.EventType { return EventExportCertificate }

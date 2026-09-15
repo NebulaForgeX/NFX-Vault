@@ -8,6 +8,9 @@ import (
 	authconn "nfxvault/connections/auth"
 	tlsapp "nfxvault/modules/tls/application/tls"
 	"nfxvault/modules/tls/config"
+	"nfxvault/modules/tls/infrastructure/certbot"
+	certQuery "nfxvault/modules/tls/infrastructure/query/certificate"
+	repofactory "nfxvault/modules/tls/infrastructure/repository/factory"
 	"nfxvault/pkgs/cachex"
 	"nfxvault/pkgs/health"
 	"nfxvault/pkgs/kafkax"
@@ -16,6 +19,7 @@ import (
 	"nfxvault/pkgs/security/token"
 	"nfxvault/pkgs/security/token/servertoken"
 	"nfxvault/pkgs/tokenx"
+	"nfxvault/pkgs/transaction"
 
 	"google.golang.org/grpc"
 )
@@ -75,7 +79,7 @@ func NewDeps(ctx context.Context, cfg *config.Config) (*Dependencies, error) {
 	if wait <= 0 {
 		wait = 5 * time.Minute
 	}
-	certbot := &tlsapp.CertbotClient{
+	bot := &certbot.Client{
 		ChallengeDir: cfg.Cert.ACMEChallengeDir,
 		CertsDir:     cfg.Cert.BaseDir,
 		MaxWait:      wait,
@@ -85,7 +89,15 @@ func NewDeps(ctx context.Context, cfg *config.Config) (*Dependencies, error) {
 		busPublisher: busPublisher, userTokenVerifier: userTokenVerifier, serverTokenVerifier: serverTokenVerifier,
 		errorsLangsPath: errorsLangsPath, identityAuth: identityClient,
 	}
-	d.appSvc = tlsapp.NewService(postgres.DB(), cacheConn, busPublisher, certbot, cfg.Cert.BaseDir)
+	d.appSvc = tlsapp.NewService(
+		transaction.NewGormTxManager(postgres.DB()),
+		repofactory.NewTxRepoFactory(postgres.DB()),
+		certQuery.NewQuery(postgres.DB()),
+		cacheConn, busPublisher, bot, cfg.Cert.BaseDir,
+	)
+	if cfg.Cert.ReadOnStartup {
+		_ = d.appSvc.ImportFromDisk(ctx)
+	}
 	if cfg.Cert.ScheduleEnabled {
 		go func() {
 			t := time.NewTicker(time.Hour)

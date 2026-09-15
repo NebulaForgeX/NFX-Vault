@@ -1,4 +1,5 @@
 export * from "./auth";
+export * from "./account";
 export * from "./cert";
 export * from "./file";
 export * from "./analysis";
