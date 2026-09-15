@@ -1,0 +1,8 @@
+{
+  "title": "Paramètres",
+  "subtitle": "Thème, langue et préférences d'affichage",
+  "sections": {
+    "theme": "Paramètres du thème",
+    "themeDesc": "Personnalisez les couleurs, la police, le style de l'interface et la langue."
+  }
+}

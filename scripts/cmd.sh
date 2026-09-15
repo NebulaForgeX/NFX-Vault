@@ -2,8 +2,8 @@
 # NFX-Vault — 本地证书目录巡检（交互）
 # 用法: ./cmd.sh
 #
-# 扫描路径与后端一致：$CERTS_DIR/Websites（见 backend config.cert_config、apps/file 仅 websites）。
-# 与 frontend/src/apis（HTTP 客户端源码）无关，不是磁盘上的「Apis」文件夹。
+# 扫描路径与 Go file 模块一致：$CERTS_DIR/Websites。
+# 与 console HTTP 客户端无关，不是磁盘上的「Apis」文件夹。
 #
 # 环境变量：
 #   CERTS_DIR          — 优先已 export；否则尝试 source 仓库 .env

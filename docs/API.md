@@ -525,7 +525,7 @@ API 通过 Swagger UI 和 ReDoc 提供交互式文档：
 
 ## 📚 其他资源
 
-- [FastAPI 文档](https://fastapi.tiangolo.com/)
+- [OpenAPI / Fiber HTTP](API.md)
 - [OpenAPI 规范](https://swagger.io/specification/)
 - [项目结构](STRUCTURE.md) [English](en/STRUCTURE.md)
 - [配置指南](CONFIGURATION.md) [English](en/CONFIGURATION.md)

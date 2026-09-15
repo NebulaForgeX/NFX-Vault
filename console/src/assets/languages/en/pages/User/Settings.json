@@ -1,0 +1,8 @@
+{
+  "title": "Settings",
+  "subtitle": "Theme, language, and display preferences",
+  "sections": {
+    "theme": "Theme settings",
+    "themeDesc": "Customize colors, font, interface style, and display language."
+  }
+}

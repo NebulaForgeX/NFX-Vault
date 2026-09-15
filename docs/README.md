@@ -20,7 +20,7 @@ NFX-Vault 是一个现代化的 SSL 证书管理和监控系统，提供统一�
 - 📊 **实时监控** - 查看证书状态、过期时间和剩余天数
 - 📥 **一键导出** - 快速导出证书文件到指定目录
 - 🌐 **现代化 Web 界面** - 基于 React + TypeScript 的响应式界面
-- 🚀 **RESTful API** - 基于 FastAPI 的高性能后端服务
+- 🚀 **RESTful API** - Go Fiber HTTP（`/vault/tls` `/vault/file` `/vault/analysis`）
 - 🐳 **Docker 部署** - 使用 Docker Compose 一键部署
 - 📝 **命令行工具** - 提供交互式命令行工具作为备选方案
 - ⏰ **自动调度** - 支持定时任务自动检查证书状态
@@ -151,40 +151,28 @@ docker compose ps
 docker compose logs -f
 
 # 查看特定服务日志
-docker compose logs -f backend-api
-docker compose logs -f frontend
+docker compose logs -f tls-api
+docker compose logs -f console
 ```
 
 #### 6. 访问服务
 
-- **前端 Web 界面**：http://192.168.1.64:10199
-- **后端 API**：http://192.168.1.64:10200
-- **API 文档（Swagger）**：http://192.168.1.64:10200/docs
-- **API 文档（ReDoc）**：http://192.168.1.64:10200/redoc
+- **Console**：见 `.env` `CONSOLE_EXTERNAL_PORT`
+- **HTTP**：Traefik `/vault/tls` `/vault/file` `/vault/analysis`
+- **登录**：NFX-Identity，无本地 `/auth`
 
 ---
 
 ## 📁 目录结构
 
 ```
-Certs/
-├── backend/                  # 生产后端（FastAPI + Consumer + 调度）
-├── backend_old/              # 旧版双进程（参考）
-├── frontend/                 # 前端应用（React + TypeScript）
-├── scripts/                  # 本地开发启动脚本（可选）
-├── Websites/                 # 网站证书存储目录
-│   ├── acme.json            # Traefik 证书存储文件
-│   └── exported/            # 导出的证书文件
-├── Apis/                     # API 证书存储目录
-│   ├── acme.json            # Traefik 证书存储文件
-│   └── exported/            # 导出的证书文件
-├── docs/                     # 项目文档
-│   ├── en/                  # 英文文档
-│   └── *.md                 # 中文文档
-├── cmd.sh                    # 命令行工具
-├── docker-compose.yml        # Docker Compose 配置
-├── .example.env              # 环境变量模板
-└── README.md                 # 本文档
+NFX-Vault/
+├── console/
+├── modules/{tls,file,analysis,system}/
+├── inputs/{module}/{api,connection,pipeline,messaging,base}/
+├── databases/
+├── docker-compose.yml
+└── README.md
 ```
 
 详细的项目结构说明请参考 [STRUCTURE.md](STRUCTURE.md) [English](en/STRUCTURE.md)。
@@ -272,7 +260,7 @@ curl -X POST http://192.168.1.64:10200/vault/tls/refresh/websites
 **解决方案**：
 - 检查 `.env` 文件配置是否正确
 - 检查端口是否被占用：`netstat -tuln | grep 10199`
-- 查看容器日志：`docker compose logs backend-api`
+- 查看容器日志：`docker compose logs tls-api`
 - 确保 MySQL、Redis、Kafka 服务正常运行
 
 ### 2. 无法访问 Web 界面

@@ -1,5 +1,7 @@
 # NFX-Vault Configuration Guide
 
+> Runtime is Go modules + `console/`. Canonical config is repo-root `.example.env` and `inputs/*/configuration/*.toml`. Ignore leftover Python / FastAPI / MySQL / `backend-api` names in this file.
+
 This document provides detailed explanations of all configuration options in NFX-Vault.
 
 ## 📋 Table of Contents

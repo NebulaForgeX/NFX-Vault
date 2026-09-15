@@ -1,77 +1,452 @@
 name: nfx-vault
 
 services:
-  # 统一后端（HTTP + Kafka Consumer + 定时任务），代码目录: backend/
-  backend-api:
+  reverse-proxy:
+    image: traefik:latest
+    container_name: NFX-Vault-Reverse-Proxy
+    command:
+      - --api.insecure=true
+      - --providers.docker
+      - --providers.docker.exposedByDefault=false
+      - --providers.docker.constraints=Label(`traefik.project`, `nfx-vault`)
+      - --entrypoints.web.address=:${TRAEFIK_HTTP_INTERNAL_PORT}
+      - --entrypoints.websecure.address=:${TRAEFIK_HTTPS_INTERNAL_PORT}
+      - --entrypoints.traefik.address=:${TRAEFIK_DASHBOARD_INTERNAL_PORT}
+    ports:
+      - "${TRAEFIK_HTTP_PORT}:${TRAEFIK_HTTP_INTERNAL_PORT}"
+      - "${TRAEFIK_HTTPS_PORT}:${TRAEFIK_HTTPS_INTERNAL_PORT}"
+      - "${TRAEFIK_DASHBOARD_PORT}:${TRAEFIK_DASHBOARD_INTERNAL_PORT}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${TRAEFIK_DYNAMIC_DIR}:/etc/traefik/dynamic:ro
+      - ${CERTS_DIR}:/certs:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+
+
+  tls-api:
+    image: nfx-vault-tls-api:prod
+    container_name: NFX-Vault-Tls-Api
     build:
       context: .
-      dockerfile: docker/backend/Dockerfile
-    container_name: NFX-Vault-Backend
-    restart: always
-    ports:
-      # host:host_port:container_port（两段式只能是 port:port，不能写 IP）
-      - "${BACKEND_HOST}:${BACKEND_PORT}:8000"
+      dockerfile: inputs/tls/api/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    expose:
+      - "${HTTP_PORT}"
+    labels:
+      traefik.enable: "true"
+      traefik.project: "nfx-vault"
+      traefik.http.routers.tls-api.entrypoints: web
+      traefik.http.routers.tls-api.rule: PathPrefix(`/vault/tls`)
+      traefik.http.services.tls-api.loadbalancer.server.port: "${HTTP_PORT}"
+      traefik.http.routers.tls-acme.entrypoints: web
+      traefik.http.routers.tls-acme.rule: PathPrefix(`/.well-known/acme-challenge`)
+      traefik.http.routers.tls-acme.priority: "100"
+      traefik.http.routers.tls-acme.service: tls-api
+
     volumes:
       - ${CERTS_DIR}:${CERTS_DIR}:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${ACME_CHALLENGE_DIR}:${ACME_CHALLENGE_DIR}:rw
-      # 宿主机路径来自 .env；容器内必须为绝对路径（勿与宿主机共用同一相对路径，否则会变成非法挂载 `.../data:data`）
-      - ${VAULT_DATA_DIR:-./data}:/vault-data:rw
-    environment:
-      - PYTHONUNBUFFERED=1
-      - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_DATABASE_PORT=${POSTGRES_DATABASE_PORT}
-      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
-      - POSTGRES_USERNAME=${POSTGRES_USERNAME}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_DATABASE_PORT=${REDIS_DATABASE_PORT}
-      - REDIS_DB=${REDIS_DB}
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - REDIS_CACHE_TTL=${REDIS_CACHE_TTL}
-      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}
-      - KAFKA_EVENT_TOPIC=${KAFKA_EVENT_TOPIC}
-      - KAFKA_EVENT_POISON_TOPIC=${KAFKA_EVENT_POISON_TOPIC}
-      - KAFKA_CONSUMER_GROUP_ID=${KAFKA_CONSUMER_GROUP_ID}
-      - CERT_MAX_WAIT_TIME=${CERT_MAX_WAIT_TIME}
-      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
-      - CERTS_DIR=${CERTS_DIR}
-      - READ_ON_STARTUP=${READ_ON_STARTUP}
-      - SCHEDULE_ENABLED=${SCHEDULE_ENABLED}
-      - EMAIL_SMTP_HOST=${EMAIL_SMTP_HOST}
-      - EMAIL_SMTP_PORT=${EMAIL_SMTP_PORT}
-      - EMAIL_SMTP_USER=${EMAIL_SMTP_USER}
-      - EMAIL_SMTP_PASSWORD=${EMAIL_SMTP_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_ACCESS_EXPIRE_MINUTES=${JWT_ACCESS_EXPIRE_MINUTES:-30}
-      - JWT_REFRESH_EXPIRE_DAYS=${JWT_REFRESH_EXPIRE_DAYS:-7}
-      - EMAIL_VERIFICATION_CODE_TTL_SECONDS=${EMAIL_VERIFICATION_CODE_TTL_SECONDS:-600}
-      - VAULT_DATA_DIR=/vault-data
-    labels:
-      - traefik.enable=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - nfx-vault
-      - nfx-edge
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
 
-  frontend:
+  tls-connection:
+    image: nfx-vault-tls-connection:prod
+    container_name: NFX-Vault-Tls-Connection
     build:
       context: .
-      dockerfile: docker/frontend/Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL:-/vault}
-    container_name: NFX-Vault-Frontend
-    restart: always
+      dockerfile: inputs/tls/connection/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    expose:
+      - "${HTTP_PORT}"
+      - "${GRPC_PORT_TLS}"
     ports:
-      - "${FRONTEND_HOST}:${FRONTEND_PORT}:80"
+      - "${GRPC_PORT_TLS}:${GRPC_PORT_TLS}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - nfx-vault
+    restart: unless-stopped
     depends_on:
-      - backend-api
+      reverse-proxy:
+        condition: service_started
+
+  tls-pipeline:
+    image: nfx-vault-tls-pipeline:prod
+    container_name: NFX-Vault-Tls-Pipeline
+    build:
+      context: .
+      dockerfile: inputs/tls/pipeline/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    expose:
+      - "${HTTP_PORT}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+  tls-messaging:
+    image: nfx-vault-tls-messaging:prod
+    container_name: NFX-Vault-Tls-Messaging
+    build:
+      context: .
+      dockerfile: inputs/tls/messaging/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+    expose:
+      - "${HTTP_PORT}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+
+  file-api:
+    image: nfx-vault-file-api:prod
+    container_name: NFX-Vault-File-Api
+    build:
+      context: .
+      dockerfile: inputs/file/api/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    expose:
+      - "${HTTP_PORT}"
+    labels:
+      traefik.enable: "true"
+      traefik.project: "nfx-vault"
+      traefik.http.routers.file-api.entrypoints: web
+      traefik.http.routers.file-api.rule: PathPrefix(`/vault/file`)
+      traefik.http.services.file-api.loadbalancer.server.port: "${HTTP_PORT}"
+    volumes:
+      - ${CERTS_DIR}:${CERTS_DIR}:rw
+      - ${ACME_CHALLENGE_DIR}:${ACME_CHALLENGE_DIR}:rw
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+  file-connection:
+    image: nfx-vault-file-connection:prod
+    container_name: NFX-Vault-File-Connection
+    build:
+      context: .
+      dockerfile: inputs/file/connection/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    expose:
+      - "${HTTP_PORT}"
+      - "${GRPC_PORT_FILE}"
+    ports:
+      - "${GRPC_PORT_FILE}:${GRPC_PORT_FILE}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+  file-pipeline:
+    image: nfx-vault-file-pipeline:prod
+    container_name: NFX-Vault-File-Pipeline
+    build:
+      context: .
+      dockerfile: inputs/file/pipeline/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    expose:
+      - "${HTTP_PORT}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+  file-messaging:
+    image: nfx-vault-file-messaging:prod
+    container_name: NFX-Vault-File-Messaging
+    build:
+      context: .
+      dockerfile: inputs/file/messaging/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+    expose:
+      - "${HTTP_PORT}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+
+  analysis-api:
+    image: nfx-vault-analysis-api:prod
+    container_name: NFX-Vault-Analysis-Api
+    build:
+      context: .
+      dockerfile: inputs/analysis/api/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    expose:
+      - "${HTTP_PORT}"
+    labels:
+      traefik.enable: "true"
+      traefik.project: "nfx-vault"
+      traefik.http.routers.analysis-api.entrypoints: web
+      traefik.http.routers.analysis-api.rule: PathPrefix(`/vault/analysis`)
+      traefik.http.services.analysis-api.loadbalancer.server.port: "${HTTP_PORT}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+  analysis-connection:
+    image: nfx-vault-analysis-connection:prod
+    container_name: NFX-Vault-Analysis-Connection
+    build:
+      context: .
+      dockerfile: inputs/analysis/connection/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    expose:
+      - "${HTTP_PORT}"
+      - "${GRPC_PORT_ANALYSIS}"
+    ports:
+      - "${GRPC_PORT_ANALYSIS}:${GRPC_PORT_ANALYSIS}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+  analysis-pipeline:
+    image: nfx-vault-analysis-pipeline:prod
+    container_name: NFX-Vault-Analysis-Pipeline
+    build:
+      context: .
+      dockerfile: inputs/analysis/pipeline/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    expose:
+      - "${HTTP_PORT}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+  analysis-messaging:
+    image: nfx-vault-analysis-messaging:prod
+    container_name: NFX-Vault-Analysis-Messaging
+    build:
+      context: .
+      dockerfile: inputs/analysis/messaging/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+    expose:
+      - "${HTTP_PORT}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+
+  system-api:
+    image: nfx-vault-system-api:prod
+    container_name: NFX-Vault-System-Api
+    build:
+      context: .
+      dockerfile: inputs/system/api/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    expose:
+      - "${HTTP_PORT}"
+    labels:
+      traefik.enable: "true"
+      traefik.project: "nfx-vault"
+      traefik.http.routers.system-api.entrypoints: web
+      traefik.http.routers.system-api.rule: PathPrefix(`/system`)
+      traefik.http.services.system-api.loadbalancer.server.port: "${HTTP_PORT}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+  system-connection:
+    image: nfx-vault-system-connection:prod
+    container_name: NFX-Vault-System-Connection
+    build:
+      context: .
+      dockerfile: inputs/system/connection/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    expose:
+      - "${HTTP_PORT}"
+      - "${GRPC_PORT_SYSTEM}"
+    ports:
+      - "${GRPC_PORT_SYSTEM}:${GRPC_PORT_SYSTEM}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+  system-pipeline:
+    image: nfx-vault-system-pipeline:prod
+    container_name: NFX-Vault-System-Pipeline
+    build:
+      context: .
+      dockerfile: inputs/system/pipeline/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    expose:
+      - "${HTTP_PORT}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+  system-messaging:
+    image: nfx-vault-system-messaging:prod
+    container_name: NFX-Vault-System-Messaging
+    build:
+      context: .
+      dockerfile: inputs/system/messaging/Dockerfile
+      target: prod
+    environment:
+      - ENV=prod
+    expose:
+      - "${HTTP_PORT}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
+    depends_on:
+      reverse-proxy:
+        condition: service_started
+
+
+  console:
+    image: nfx-vault-console:prod
+    container_name: NFX-Vault-Console
+    build:
+      context: ./console
+      dockerfile: Dockerfile
+      additional_contexts:
+        nfx-ui: ../NFX-UI
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_IDENTITY_API_URL: ${VITE_IDENTITY_API_URL:-http://127.0.0.1:10166}
+    ports:
+      - "${CONSOLE_EXTERNAL_PORT}:${CONSOLE_PORT}"
+    labels:
+      traefik.enable: "true"
+      traefik.project: "nfx-vault"
+      traefik.http.routers.console.entrypoints: web
+      traefik.http.routers.console.rule: PathPrefix(`/`)
+      traefik.http.routers.console.priority: "1"
+      traefik.http.services.console.loadbalancer.server.port: "${CONSOLE_PORT}"
+    networks:
+      - nfx-vault
+    restart: unless-stopped
 
 networks:
   nfx-vault:
     name: nfx-vault
     driver: bridge
-  nfx-edge:
-    external: true
-    name: nfx-edge

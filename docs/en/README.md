@@ -20,7 +20,7 @@ NFX-Vault is a modern SSL certificate management and monitoring system that prov
 - 📊 **Real-time Monitoring** - View certificate status, expiration time, and remaining days
 - 📥 **One-click Export** - Quickly export certificate files to specified directories
 - 🌐 **Modern Web Interface** - Responsive interface based on React + TypeScript
-- 🚀 **RESTful API** - High-performance backend service based on FastAPI
+- 🚀 **RESTful API** - Go Fiber HTTP (`/vault/tls` `/vault/file` `/vault/analysis`)
 - 🐳 **Docker Deployment** - One-click deployment using Docker Compose
 - 📝 **Command-line Tools** - Interactive command-line tool as an alternative
 - ⏰ **Automatic Scheduling** - Support for scheduled tasks to automatically check certificate status
@@ -151,38 +151,28 @@ View logs:
 docker compose logs -f
 
 # View specific service logs
-docker compose logs -f backend-api
-docker compose logs -f frontend
+docker compose logs -f tls-api
+docker compose logs -f console
 ```
 
 #### 6. Access Services
 
-- **Frontend Web Interface**: http://192.168.1.64:10199
-- **Backend API**: http://192.168.1.64:10200
-- **API Documentation (Swagger)**: http://192.168.1.64:10200/docs
-- **API Documentation (ReDoc)**: http://192.168.1.64:10200/redoc
+- **Console**: see `.env` `CONSOLE_EXTERNAL_PORT`
+- **HTTP**: Traefik `/vault/tls` `/vault/file` `/vault/analysis`
+- **Login**: NFX-Identity; no local `/auth`
 
 ---
 
 ## 📁 Directory Structure
 
 ```
-Certs/
-├── backend/                  # Production backend (FastAPI + consumer + scheduler)
-├── backend_old/              # Legacy dual-process backend (reference)
-├── frontend/                 # Frontend application (React + TypeScript)
-├── scripts/                  # Local dev helper scripts (optional)
-├── Websites/                 # Website certificate storage directory
-│   ├── acme.json            # Traefik certificate storage file
-│   └── exported/            # Exported certificate files
-├── Apis/                     # API certificate storage directory
-│   ├── acme.json            # Traefik certificate storage file
-│   └── exported/            # Exported certificate files
-├── docs/                     # Project documentation (English)
-├── cmd.sh                    # Command-line tool
-├── docker-compose.yml        # Docker Compose configuration
-├── .example.env              # Environment variable template
-└── README.md                 # This document
+NFX-Vault/
+├── console/
+├── modules/{tls,file,analysis,system}/
+├── inputs/{module}/{api,connection,pipeline,messaging,base}/
+├── databases/
+├── docker-compose.yml
+└── README.md
 ```
 
 For detailed project structure, please refer to [STRUCTURE.md](STRUCTURE.md). [中文版](../STRUCTURE.md)
@@ -270,7 +260,7 @@ The project uses independent Docker networks:
 **Solution**:
 - Check if `.env` file configuration is correct
 - Check if ports are occupied: `netstat -tuln | grep 10199`
-- View container logs: `docker compose logs backend-api`
+- View container logs: `docker compose logs tls-api`
 - Ensure MySQL, Redis, Kafka services are running normally
 
 ### 2. Cannot Access Web Interface

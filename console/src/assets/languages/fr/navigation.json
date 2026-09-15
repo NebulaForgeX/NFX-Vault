@@ -1,0 +1,17 @@
+{
+  "account": "Compte",
+  "settings": "Paramètres",
+  "home": "Accueil",
+  "certManagement": "Gestion des certificats",
+  "certList": "Liste des certificats",
+  "searchCert": "Rechercher un certificat",
+  "addCert": "Ajouter un certificat",
+  "applyCert": "Demander un certificat",
+  "analysis": "Analyse",
+  "analyzeTLS": "Analyser TLS",
+  "fileFolder": "Dossier de fichiers",
+  "apis": "Apis",
+  "websites": "Websites",
+  "appName": "NFX-Vault"
+}
+

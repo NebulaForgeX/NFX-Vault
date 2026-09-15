@@ -528,7 +528,7 @@ For production use:
 
 ## 📚 Additional Resources
 
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
+- [OpenAPI / Fiber HTTP](API.md)
 - [OpenAPI Specification](https://swagger.io/specification/)
 - [Project Structure](STRUCTURE.md)
 - [Configuration Guide](CONFIGURATION.md)

@@ -1,5 +1,9 @@
 # NFX-Vault 配置指南
 
+> 运行时是 Go 模块 + `console/`。权威配置是仓库根目录 `.example.env` 与 `inputs/*/configuration/*.toml`。下文若仍出现 Python / FastAPI / MySQL / `backend-api`，以 compose 与 `.env` 为准。
+>
+> Runtime is Go + `console/`. Canonical config is `.example.env` and `inputs/*/configuration/*.toml`. Ignore leftover Python / FastAPI / MySQL / `backend-api` names below.
+
 本文档详细说明 NFX-Vault 中的所有配置选项。
 
 ## 📋 目录

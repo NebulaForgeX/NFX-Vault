@@ -22,7 +22,7 @@ NFX-Vault 是一个现代化的 SSL 证书管理和监控系统，提供统一�
 - 📊 **实时监控** - 查看证书状态、过期时间和剩余天数
 - 📥 **一键导出** - 快速导出证书文件到指定目录
 - 🌐 **现代化 Web 界面** - 基于 React + TypeScript 的响应式界面
-- 🚀 **RESTful API** - 基于 FastAPI 的高性能后端服务
+- 🚀 **RESTful API** - Go Fiber HTTP（`/vault/tls` `/vault/file` `/vault/analysis`）
 - 🐳 **Docker 部署** - 使用 Docker Compose 一键部署
 - 📝 **命令行工具** - 提供交互式命令行工具作为备选方案
 - ⏰ **自动调度** - 支持定时任务自动检查证书状态
@@ -153,52 +153,34 @@ docker compose ps
 docker compose logs -f
 
 # 查看特定服务日志
-docker compose logs -f backend-api
-docker compose logs -f frontend
+docker compose logs -f tls-api
+docker compose logs -f console
 ```
 
 #### 6. 访问服务
 
-- **前端 Web 界面**：http://192.168.1.64:10152
-- **后端 API**：http://192.168.1.64:10151
-- **API 文档（Swagger）**：http://192.168.1.64:10151/docs
-- **API 文档（ReDoc）**：http://192.168.1.64:10151/redoc
+- **Console**：见 `.env` 的 `CONSOLE_EXTERNAL_PORT`
+- **HTTP 入口**：Traefik（`/vault/tls` `/vault/file` `/vault/analysis`）
+- **登录**：NFX-Identity（`nfx-ui`），本仓库没有本地 `/auth`
 
-### 本地开发启动后端（不经过 Docker）
+### 本地开发（Go + console，不经过 Docker）
 
-适用于只改 Python 代码、本机已安装 **Python 3.14+**（`python3 --version`，与 Docker 镜像一致）且 PostgreSQL / Redis / Kafka 可按 `.env` 访问的场景。
-
-1. 配置 `.env`：`cp .example.env .env` 并编辑（与 Docker 用同一份即可）。
-2. 在 **仓库根目录** 执行：`dev-api.sh` 使用 **`backend/.venv`**（代码目录为 `backend/`）。依赖在 **新建 venv** 或 **`backend/requirements.txt` 有更新** 时执行 `pip install`。
-   ```bash
-   chmod +x scripts/dev-api.sh   # 首次
-   ./scripts/dev-api.sh       # 统一后端：HTTP + Kafka Consumer + 定时任务；端口与 Vite 一致，默认 10151 → http://127.0.0.1:10151/docs
-   ```
-   （`dev-pipeline.sh` 已废弃：原 Pipeline 已并入 `backend/main.py`。）
-
-**前端本地开发**：`cd frontend` 后按该目录 `package.json` 的脚本执行（例如 `npm run dev`）。
+1. 配置 `.env`：`cp .example.env .env`（PostgreSQL / Redis / Kafka 走 NFX-Stack；`TOKEN_*` 与 Identity 一致）。
+2. 后端：`go run ./inputs/tls/api` 等模块入口（或 `docker compose -f docker-compose.dev.yml up --build`）。
+3. Console：`cd console && npm run dev`。无 `backend/`、无 `frontend/`、无 Python。
 
 ---
 
 ## 📁 目录结构
 
 ```
-Certs/
-├── scripts/                  # 本地开发（dev-api → backend）
-├── backend/                  # 默认后端（FastAPI + Kafka Consumer + 调度）
-├── backend_old/              # 旧版双进程单体（保留参考）
-├── frontend/                 # 前端应用（React + TypeScript）
-├── Websites/                 # 网站证书存储目录
-│   ├── acme.json            # Traefik 证书存储文件
-│   └── exported/            # 导出的证书文件
-├── Apis/                     # API 证书存储目录
-│   ├── acme.json            # Traefik 证书存储文件
-│   └── exported/            # 导出的证书文件
-├── docs/                     # 项目文档（英文）
-├── cmd.sh                    # 命令行工具
-├── docker-compose.yml        # Docker Compose 配置
-├── .example.env              # 环境变量模板
-└── README.md                 # 本文档
+NFX-Vault/
+├── console/                  # React + Vite（nfx-ui Identity 登录）
+├── modules/{tls,file,analysis,system}/
+├── inputs/{module}/{api,connection,pipeline,messaging,base}/
+├── databases/                # Atlas SQL
+├── docker-compose.yml
+└── README.md
 ```
 
 详细的项目结构说明请参考 [STRUCTURE.md](docs/STRUCTURE.md)。
@@ -286,7 +268,7 @@ curl -X POST http://192.168.1.64:10151/vault/tls/refresh/websites
 **解决方案**：
 - 检查 `.env` 文件配置是否正确
 - 检查端口是否被占用：`netstat -tuln | grep 10152`
-- 查看容器日志：`docker compose logs backend-api`
+- 查看容器日志：`docker compose logs tls-api`
 - 确保 PostgreSQL、Redis、Kafka 服务正常运行
 
 ### 2. 无法访问 Web 界面
@@ -296,7 +278,7 @@ curl -X POST http://192.168.1.64:10151/vault/tls/refresh/websites
 **解决方案**：
 - 检查防火墙设置
 - 确认端口映射正确：`docker compose ps`
-- 检查前端容器日志：`docker compose logs frontend`
+- 检查 console 容器日志：`docker compose logs console`
 
 ### 3. 证书读取失败
 

@@ -1,5 +1,7 @@
 # NFX-Vault 部署指南
 
+> 运行时是 Go + `console/`。部署入口是根目录 `docker-compose.yml` / `docker-compose.dev.yml`。下文若仍写 Python `backend-api` / FastAPI，以 compose 服务名为准。
+
 本文档提供在各种环境中部署 NFX-Vault 的详细说明。
 
 ## 📋 目录

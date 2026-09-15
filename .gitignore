@@ -1,148 +1,218 @@
-# ============================================
-# Certs 证书管理项目 .gitignore
-# ============================================
+# NFX-Vault — Go API + Vite console
+# Canonical ignore list vs Example PulsoLink-API, plus cert leftovers this product still owns.
 
-data/
+## Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+tmp/
+*.test
+*.out
+*.prof
+*.pprof
+*.cover
+cover.out
+coverage/
 
-# 环境配置文件（包含实际配置信息）
+## Go module overrides
+vendor/
+go.work
+go.work.sum
+
+## Tooling & temporary files
+.air.toml.local
+.buildcache/
+.cache/
+cache/
+.task/
+*.pid
+*.sock
+*.tmp
+*.temp
+*.cache
+*.orig
+*.rej
+
+## Secrets — ignore real env, keep examples
 .env
+.env.*
+.env.local
+.env.*.local
+*.env
+!.example.env
+!.env.example
 
-# 证书文件（敏感信息）
-*.pem
+# Redis SSH tunnel (task run / scripts/redis_ssh_tunnel.sh)
+.env.redis-tunnel
+.redis-ssh-tunnel.pid
+
+## Logs
+logs/
+*.log
+log/
+*.log.*
+
+## Uploaded assets
+assets/**/*
+!assets/**/.gitkeep
+static/images/pictures/*
+!static/images/pictures/.gitkeep
+
+## Runtime data (never push)
+stores/
+stores/mysql/
+stores/redis/
+stores/kafka/
+data/
+data/postgresql/
+data/redis/
+data/kafka/
+dump.rdb
+*.rdb
+*.sqlite
+*.db
+*.db-journal
+!data/**/.gitkeep
+
+## Secrets & certificates
 *.key
+*.pem
 *.crt
+*.cer
 *.cert
 *.p12
 *.pfx
-acme.json
-
-# Certbot 工作目录（包含配置、日志、证书等）
+*.jks
+*.keystore
+static/keys/*
+!static/keys/.gitkeep
+certs/
+certificates/
+ssl/
 .certbot/
+acme.json
+exported/
 
-
-# Python 缓存文件
-__pycache__/
-
-
-# 证书存储文件（敏感信息）
-# 忽略 Websites 和 Apis 目录下的所有内容（包含证书和密钥）
-# 但保留目录本身和 .gitkeep 文件
+# Issued cert trees (keep directory placeholders)
 Websites/*
 !Websites/.gitkeep
 Apis/*
 !Apis/.gitkeep
 
-# 导出的证书文件
-exported/
-*.crt
-*.key
+## Leftover Python paths (repo is Go now; still never commit venv/cache)
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+ENV/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr
+backend/.env
+backend/.env.local
+backend/__pycache__/
 
-# 日志文件
-*.log
-logs/
-*.log.*
+## Docker & local overrides
+docker-compose.override.yml
+.dockerignore.local
 
-# 备份文件
-*.bak
-*.backup
-*.old
-*.tmp
-*~
-
-# 系统文件
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-desktop.ini
-
-# 编辑器文件
-.vscode/
+## IDE, editor & OS files
 .idea/
+.vscode/
+.cursor/
 *.swp
 *.swo
 *~
 .project
 .classpath
 .settings/
-.cursor/
-
-# 临时文件
-*.tmp
-*.temp
-.cache/
-
-# ============================================
-# NFX-Vault Web 服务相关
-# ============================================
-
-# Python 虚拟环境（仓库内任意路径，含 backend/、根目录等）
-venv/
-.venv/
-env/
-ENV/
-
-# 前端
-frontend/node_modules/
-frontend/dist/
-frontend/dist-ssr
-frontend/*.local
-frontend/.env.local
-frontend/.env.*.local
-frontend/logs
-frontend/*.log
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
-frontend/pnpm-debug.log*
-frontend/lerna-debug.log*
-
-# 后端
-backend/__pycache__/
-backend/*.py[cod]
-backend/*$py.class
-backend/*.pyo
-backend/*.pyd
-backend/*.so
-backend/.Python
-backend/.env
-backend/.env.local
-backend/.pytest_cache/
-backend/.coverage
-backend/htmlcov/
-backend/dist/
-backend/build/
-backend/*.egg-info/
-
-# 旧版 backend_old（与 backend 同源命名忽略）
-backend_old/__pycache__/
-backend_old/*.py[cod]
-backend_old/*$py.class
-backend_old/*.pyo
-backend_old/*.pyd
-backend_old/*.so
-backend_old/.Python
-backend_old/.env
-backend_old/.env.local
-backend_old/.pytest_cache/
-backend_old/.coverage
-backend_old/htmlcov/
-backend_old/dist/
-backend_old/build/
-backend_old/*.egg-info/
-
-# Root still holds certs & compose; keep IDE ignores generic
-.vscode/
-.idea/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+desktop.ini
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# Example
-Pqttec-Admin/
-NFX-UI/
+## Database dumps (keep Atlas migrations)
+*.sql
+*.dump
+*.bak
+*.backup
+*.old
+!databases/
+!databases/**
+databases/build/
+databases/gen/
+databases/debug.txt
+databases/bin/
+
+## Protect source trees (never exclude pkgs)
+!scripts/
+!scripts/**
+!pkg/
+!pkg/**
+!pkg/cachex/
+!pkg/cachex/**
+!pkgs/
+!pkgs/**
+!pkgs/cachex/
+!pkgs/cachex/**
+!atlas/
+!atlas/**
+!enums/
+!enums/**
+!inputs/
+!inputs/**
+!modules/
+!modules/**
+!protos/
+!protos/**
+!events/
+!events/**
+!connections/
+!connections/**
+!errors/
+!errors/**
+!certs/
+!certs/**
+!ssl/
+!ssl/**
+!docker-compose.yml
+!docker-compose.dev.yml
+!go.mod
+!go.sum
+!Taskfile.yml
+!README.md
+!STRUCTURE.md
+!LICENSE
+!CONTRIBUTING.md
+
+## Console (Vite)
+/console/dist/
+/console/node_modules/
+/console/.turbo/
+!/console/.env.dev
+!/console/.env.prod
+!/console/.env.example
+!/console/.example.env

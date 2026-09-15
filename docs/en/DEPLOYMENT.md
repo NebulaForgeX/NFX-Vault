@@ -1,5 +1,7 @@
 # NFX-Vault Deployment Guide
 
+> Runtime is Go + `console/`. Deploy with repo-root `docker-compose.yml` / `docker-compose.dev.yml`. Ignore leftover Python `backend-api` / FastAPI names below.
+
 This document provides detailed instructions for deploying NFX-Vault in various environments.
 
 ## 📋 Table of Contents
