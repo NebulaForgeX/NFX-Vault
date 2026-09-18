@@ -46,9 +46,13 @@ func (h *TLSHandler) accountProfile(c fiber.Ctx) (accountID, profileID string, f
 }
 
 func (h *TLSHandler) List(c fiber.Ctx) error {
+	aid, _, ferr := h.accountProfile(c)
+	if ferr != nil {
+		return fiberx.ErrorFromErrx(c, ferr)
+	}
 	offset, _ := strconv.Atoi(c.Query("offset"))
 	limit, _ := strconv.Atoi(c.Query("limit"))
-	out, err := h.svc.List(c.Context(), offset, limit)
+	out, err := h.svc.List(c.Context(), aid, offset, limit)
 	if err != nil {
 		return err
 	}
@@ -56,7 +60,11 @@ func (h *TLSHandler) List(c fiber.Ctx) error {
 }
 
 func (h *TLSHandler) Detail(c fiber.Ctx) error {
-	row, err := h.svc.Detail(c.Context(), c.Params("certificateId"))
+	aid, _, ferr := h.accountProfile(c)
+	if ferr != nil {
+		return fiberx.ErrorFromErrx(c, ferr)
+	}
+	row, err := h.svc.Detail(c.Context(), aid, c.Params("certificateId"))
 	if err != nil {
 		return err
 	}
@@ -69,9 +77,12 @@ func (h *TLSHandler) Apply(c fiber.Ctx) error {
 		return fiberx.ErrorFromErrx(c, ferr)
 	}
 	var req struct {
-		Domain, Email, FolderName, Webroot string
-		SANs                               []string `json:"sans"`
-		ForceRenewal                       bool     `json:"force_renewal"`
+		Domain       string   `json:"domain"`
+		Email        string   `json:"email"`
+		FolderName   string   `json:"folder_name"`
+		Webroot      string   `json:"webroot"`
+		SANs         []string `json:"sans"`
+		ForceRenewal bool     `json:"force_renewal"`
 	}
 	if err := c.Bind().Body(&req); err != nil {
 		return err
@@ -80,7 +91,8 @@ func (h *TLSHandler) Apply(c fiber.Ctx) error {
 }
 
 func (h *TLSHandler) Reapply(c fiber.Ctx) error {
-	if _, _, ferr := h.accountProfile(c); ferr != nil {
+	aid, _, ferr := h.accountProfile(c)
+	if ferr != nil {
 		return fiberx.ErrorFromErrx(c, ferr)
 	}
 	var req struct {
@@ -90,7 +102,7 @@ func (h *TLSHandler) Reapply(c fiber.Ctx) error {
 	if err := c.Bind().Body(&req); err != nil {
 		return err
 	}
-	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.Reapply(c.Context(), req.CertificateID, req.ForceRenewal)})
+	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.Reapply(c.Context(), aid, req.CertificateID, req.ForceRenewal)})
 }
 
 func (h *TLSHandler) Create(c fiber.Ctx) error {
@@ -99,8 +111,13 @@ func (h *TLSHandler) Create(c fiber.Ctx) error {
 		return fiberx.ErrorFromErrx(c, ferr)
 	}
 	var req struct {
-		Domain, Certificate, PrivateKey, FolderName, Email, Issuer string
-		SANs                                                       []string `json:"sans"`
+		Domain      string   `json:"domain"`
+		Certificate string   `json:"certificate"`
+		PrivateKey  string   `json:"private_key"`
+		FolderName  string   `json:"folder_name"`
+		Email       string   `json:"email"`
+		Issuer      string   `json:"issuer"`
+		SANs        []string `json:"sans"`
 	}
 	if err := c.Bind().Body(&req); err != nil {
 		return err
@@ -109,7 +126,8 @@ func (h *TLSHandler) Create(c fiber.Ctx) error {
 }
 
 func (h *TLSHandler) UpdateManual(c fiber.Ctx) error {
-	if _, _, ferr := h.accountProfile(c); ferr != nil {
+	aid, _, ferr := h.accountProfile(c)
+	if ferr != nil {
 		return fiberx.ErrorFromErrx(c, ferr)
 	}
 	var req struct {
@@ -121,11 +139,12 @@ func (h *TLSHandler) UpdateManual(c fiber.Ctx) error {
 	if err := c.Bind().Body(&req); err != nil {
 		return err
 	}
-	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.UpdateManual(c.Context(), req.CertificateID, req.SANs, req.FolderName, req.Email)})
+	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.UpdateManual(c.Context(), aid, req.CertificateID, req.SANs, req.FolderName, req.Email)})
 }
 
 func (h *TLSHandler) Delete(c fiber.Ctx) error {
-	if _, _, ferr := h.accountProfile(c); ferr != nil {
+	aid, _, ferr := h.accountProfile(c)
+	if ferr != nil {
 		return fiberx.ErrorFromErrx(c, ferr)
 	}
 	var req struct {
@@ -134,10 +153,14 @@ func (h *TLSHandler) Delete(c fiber.Ctx) error {
 	if err := c.Bind().Body(&req); err != nil {
 		return err
 	}
-	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.Delete(c.Context(), req.CertificateID)})
+	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.Delete(c.Context(), aid, req.CertificateID)})
 }
 
 func (h *TLSHandler) Search(c fiber.Ctx) error {
+	aid, _, ferr := h.accountProfile(c)
+	if ferr != nil {
+		return fiberx.ErrorFromErrx(c, ferr)
+	}
 	var req struct {
 		Keyword string `json:"keyword"`
 		Offset  int    `json:"offset"`
@@ -146,7 +169,7 @@ func (h *TLSHandler) Search(c fiber.Ctx) error {
 	if err := c.Bind().Body(&req); err != nil {
 		return err
 	}
-	out, err := h.svc.Search(c.Context(), req.Keyword, req.Offset, req.Limit)
+	out, err := h.svc.Search(c.Context(), aid, req.Keyword, req.Offset, req.Limit)
 	if err != nil {
 		return err
 	}

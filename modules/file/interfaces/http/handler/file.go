@@ -19,38 +19,50 @@ func NewFileHandler(svc *fileapp.Service, identity *authconn.Client) *FileHandle
 	return &FileHandler{svc: svc, identity: identity}
 }
 
-func (h *FileHandler) accountProfile(c fiber.Ctx) *errx.Error {
+func (h *FileHandler) accountID(c fiber.Ctx) (string, *errx.Error) {
 	aid, ok := fiberx.AccountIDFromContext(c.Context())
 	if !ok {
-		return errx.Unauthorized("INVALID_TOKEN", "missing account")
+		return "", errx.Unauthorized("INVALID_TOKEN", "missing account")
 	}
 	pid, ok := fiberx.ProfileIDFromContext(c.Context())
 	if !ok {
-		return errx.Unauthorized("INVALID_TOKEN", "missing profile")
+		return "", errx.Unauthorized("INVALID_TOKEN", "missing profile")
 	}
 	scope, _ := fiberx.ProfileScopeFromContext(c.Context())
 	if h.identity != nil {
 		allowed, err := h.identity.Account.EnsureOwnedProfile(c.Context(), aid, pid, scope)
 		if err != nil {
-			return errx.Unauthorized("IDENTITY_UNAVAILABLE", "identity lookup failed").WithCause(err)
+			return "", errx.Unauthorized("IDENTITY_UNAVAILABLE", "identity lookup failed").WithCause(err)
 		}
 		if !allowed {
-			return errx.Unauthorized("PROFILE_NOT_OWNED", "profile does not belong to account")
+			return "", errx.Unauthorized("PROFILE_NOT_OWNED", "profile does not belong to account")
 		}
 	}
-	return nil
+	return aid.String(), nil
 }
 
 func (h *FileHandler) List(c fiber.Ctx) error {
-	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.List(c.Query("path"))})
+	aid, ferr := h.accountID(c)
+	if ferr != nil {
+		return fiberx.ErrorFromErrx(c, ferr)
+	}
+	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.List(c.Context(), aid, c.Query("path"))})
 }
 
 func (h *FileHandler) Content(c fiber.Ctx) error {
-	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.Content(c.Query("path"))})
+	aid, ferr := h.accountID(c)
+	if ferr != nil {
+		return fiberx.ErrorFromErrx(c, ferr)
+	}
+	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.Content(c.Context(), aid, c.Query("path"))})
 }
 
 func (h *FileHandler) Download(c fiber.Ctx) error {
-	b, name, mt, err := h.svc.Download(c.Query("path"))
+	aid, ferr := h.accountID(c)
+	if ferr != nil {
+		return fiberx.ErrorFromErrx(c, ferr)
+	}
+	b, name, mt, err := h.svc.Download(c.Context(), aid, c.Query("path"))
 	if err != nil {
 		return c.Status(404).JSON(map[string]any{"success": false, "message": err.Error()})
 	}
@@ -60,14 +72,16 @@ func (h *FileHandler) Download(c fiber.Ctx) error {
 }
 
 func (h *FileHandler) Export(c fiber.Ctx) error {
-	if ferr := h.accountProfile(c); ferr != nil {
+	aid, ferr := h.accountID(c)
+	if ferr != nil {
 		return fiberx.ErrorFromErrx(c, ferr)
 	}
-	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.ExportAll(c.Context())})
+	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.ExportAll(c.Context(), aid)})
 }
 
 func (h *FileHandler) ExportSingle(c fiber.Ctx) error {
-	if ferr := h.accountProfile(c); ferr != nil {
+	aid, ferr := h.accountID(c)
+	if ferr != nil {
 		return fiberx.ErrorFromErrx(c, ferr)
 	}
 	var req struct {
@@ -76,11 +90,12 @@ func (h *FileHandler) ExportSingle(c fiber.Ctx) error {
 	if err := c.Bind().Body(&req); err != nil {
 		return err
 	}
-	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.ExportSingle(c.Context(), req.CertificateID)})
+	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.ExportSingle(c.Context(), aid, req.CertificateID)})
 }
 
 func (h *FileHandler) Delete(c fiber.Ctx) error {
-	if ferr := h.accountProfile(c); ferr != nil {
+	aid, ferr := h.accountID(c)
+	if ferr != nil {
 		return fiberx.ErrorFromErrx(c, ferr)
 	}
 	var req struct {
@@ -91,5 +106,5 @@ func (h *FileHandler) Delete(c fiber.Ctx) error {
 	if err := c.Bind().Body(&req); err != nil {
 		return err
 	}
-	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.Delete(c.Context(), req.Store, req.Path, req.ItemType)})
+	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.Delete(c.Context(), aid, req.Store, req.Path, req.ItemType)})
 }

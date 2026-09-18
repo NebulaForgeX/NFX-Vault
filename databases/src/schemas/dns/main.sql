@@ -1,0 +1,5 @@
+-- atlas:import schema.sql
+-- atlas:import tables/namecheap_credentials.sql
+-- atlas:import tables/namecheap_ddns_hosts.sql
+-- atlas:import views/namecheap_credentials_active_view.sql
+-- atlas:import views/namecheap_ddns_hosts_active_view.sql

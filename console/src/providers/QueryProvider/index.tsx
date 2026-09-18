@@ -4,7 +4,7 @@ import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import { useAuthInv, useCertInv, useFileInv } from "./hooks";
+import { useAuthInv, useCertInv, useDnsInv, useFileInv } from "./hooks";
 
 export interface QueryProviderProps {
   children: ReactNode;
@@ -32,6 +32,7 @@ export function QueryProvider({ children }: QueryProviderProps) {
   useAuthInv(queryClient);
   useCertInv(queryClient);
   useFileInv(queryClient);
+  useDnsInv(queryClient);
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -1,0 +1,46 @@
+{
+  "title": "Namecheap DNS",
+  "subtitle": "Enregistrez votre clé API Namecheap, listez les domaines et mettez à jour les enregistrements A.",
+  "loading": "Chargement DNS…",
+  "empty": {
+    "credential": "Aucun identifiant Namecheap enregistré.",
+    "domains": "Aucun domaine sur ce compte Namecheap."
+  },
+  "credential": {
+    "title": "Identifiants API",
+    "hint": "Ajoutez cette IPv4 sortante de Vault à la liste blanche Namecheap : {{ip}}",
+    "apiUser": "ApiUser",
+    "userName": "UserName",
+    "apiKey": "Clé API",
+    "apiKeyKeep": "Laisser vide pour conserver la clé enregistrée",
+    "clientIp": "IP client (IPv4)",
+    "sandbox": "Utiliser l'API sandbox",
+    "useOutbound": "Utiliser l'IP détectée",
+    "save": "Enregistrer",
+    "verify": "Vérifier",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "saved": "Identifiants enregistrés",
+    "verifiedAt": "Dernière vérification : {{at}}",
+    "confirmDeleteTitle": "Supprimer les identifiants Namecheap",
+    "confirmDeleteMessage": "Retirer la clé API enregistrée de ce compte Vault ?"
+  },
+  "domains": {
+    "title": "Domaines",
+    "name": "Domaine",
+    "created": "Créé",
+    "expires": "Expiration",
+    "expired": "Expiré",
+    "locked": "Verrouillé",
+    "autoRenew": "Renouvellement auto",
+    "dns": "DNS Namecheap",
+    "open": "DNS",
+    "loadError": "Impossible de lister les domaines. Enregistrez et vérifiez d'abord la clé API."
+  },
+  "bulk": {
+    "host": "Hôte",
+    "ip": "Nouvelle IPv4",
+    "update": "Mettre à jour les enregistrements A sélectionnés",
+    "noneSelected": "Sélectionnez au moins un domaine"
+  }
+}

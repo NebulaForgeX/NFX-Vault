@@ -1,155 +1,112 @@
 .page {
   position: relative;
   z-index: 1;
-  width: 100%;
   min-height: 100dvh;
-}
-
-.backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: var(--color-background);
-}
-
-@media (min-width: 961px) {
-  .backdrop {
-    background: linear-gradient(90deg, var(--accent-10) 0%, var(--accent-10) 48%, var(--color-background) 48%);
-  }
-}
-
-.glow {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  opacity: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 14% 18%, color-mix(in oklab, var(--accent-9) 22%, transparent), transparent 38%),
-    radial-gradient(circle at 88% 72%, color-mix(in oklab, var(--accent-10) 14%, transparent), transparent 40%);
-}
-
-.heroPanel,
-.formPanel {
-  position: relative;
-  z-index: 2;
-}
-
-.heroPanel {
-  /* Accent plane always uses light ink — gray-1 flips black in dark appearance. */
-  --gray-1: #ffffff;
-  --gray-11: color-mix(in oklab, white 86%, transparent);
-  --gray-12: #ffffff;
-  min-height: 100dvh;
-  color: #ffffff;
-  background:
-    radial-gradient(circle at 16% 12%, color-mix(in oklab, white 18%, transparent), transparent 48%),
-    radial-gradient(circle at 84% 78%, color-mix(in oklab, black 14%, transparent), transparent 46%), linear-gradient(155deg, var(--accent-9) 0%, var(--accent-10) 100%);
+  background: #0b0c0a;
+  color: #d7d2c4;
   overflow: hidden;
 }
 
-.heroPanel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  opacity: 0.42;
-  background-image:
-    linear-gradient(to right, color-mix(in oklab, white 14%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, white 12%, transparent) 1px, transparent 1px);
-  background-size: 56px 72px;
-  mask-image: radial-gradient(ellipse 78% 68% at 40% 55%, #000 48%, transparent 100%);
-}
-
-.heroPanel > * {
-  position: relative;
-  z-index: 1;
-}
-
-.brandEyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  opacity: 0.82;
-}
-
-.brandTitle {
-  font-family: var(--heading-font-family), sans-serif;
-  letter-spacing: -0.045em;
-  max-width: 14ch;
-  line-height: 0.98;
-}
-
-.districtRail {
-  width: min(420px, 92%);
-  margin: 0 auto;
-}
-
-/* White glass chrome on accent hero — Card panel tokens cannot express this */
-.districtBlock {
-  border-radius: var(--radius-4);
-  border: 1px solid color-mix(in oklab, white 28%, transparent);
-  background: linear-gradient(160deg, color-mix(in oklab, white 14%, transparent), color-mix(in oklab, white 4%, transparent)), color-mix(in oklab, white 6%, transparent);
-  box-shadow: inset 0 1px 0 color-mix(in oklab, white 18%, transparent);
-}
-
-.districtLabel {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.92;
-}
-
-.pillar {
-  border-radius: var(--radius-4);
-  border: 1px solid color-mix(in oklab, white 22%, transparent);
-  background: color-mix(in oklab, white 8%, transparent);
-  box-shadow: inset 0 1px 0 color-mix(in oklab, white 16%, transparent);
-}
-
-.pillarIcon {
-  border-radius: var(--radius-3);
-  background: color-mix(in oklab, white 14%, transparent);
-  color: var(--gray-1);
-}
-
-.pillarTitle {
-  font-family: var(--heading-font-family), sans-serif;
-  letter-spacing: -0.02em;
-}
-
-.pillarBody {
-  opacity: 0.86;
-}
-
-.heroFooter {
-  max-width: 42ch;
-  opacity: 0.88;
-}
-
-.formPanel {
+.frame {
   min-height: 100dvh;
-  background: var(--color-background);
+  display: grid;
+  place-items: center;
+  padding: 36px 18px;
 }
 
-.formToolbar {
+.toolbar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
   z-index: 3;
 }
 
-.card {
-  width: min(100%, 440px);
+.cert {
+  position: relative;
+  width: min(520px, 100%);
+  border: 1px solid #c8b273;
+  padding: 28px 26px 22px;
+  background:
+    linear-gradient(180deg, #141512 0%, #10110f 100%);
 }
 
-@media (max-width: 960px) {
-  .heroPanel {
-    min-height: auto;
-    padding-bottom: var(--space-6);
-  }
+.crop {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #c8b273;
+}
 
-  .formPanel {
-    min-height: auto;
-  }
+.cropTl {
+  top: -8px;
+  left: -8px;
+  border-right: 0;
+  border-bottom: 0;
+}
 
-  .districtRail {
-    display: none;
-  }
+.cropTr {
+  top: -8px;
+  right: -8px;
+  border-left: 0;
+  border-bottom: 0;
+}
+
+.cropBl {
+  bottom: -8px;
+  left: -8px;
+  border-right: 0;
+  border-top: 0;
+}
+
+.cropBr {
+  bottom: -8px;
+  right: -8px;
+  border-left: 0;
+  border-top: 0;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #c8b273;
+  margin-bottom: 18px;
+}
+
+.title {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(1.4rem, 3vw, 1.85rem);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  margin: 0 0 10px;
+  color: #f2ecdc;
+}
+
+.lede {
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 48ch;
+  margin: 0 0 20px;
+  color: color-mix(in oklab, #d7d2c4 78%, transparent);
+}
+
+.form {
+  border: 1px dashed color-mix(in oklab, #c8b273 55%, transparent);
+  padding: 18px 16px;
+}
+
+.form :global(.rt-Heading),
+.form :global(.rt-Text) {
+  color: #f2ecdc;
+}
+
+.seal {
+  margin-top: 16px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #c8b273;
 }

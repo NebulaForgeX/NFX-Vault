@@ -35,6 +35,7 @@ func (ParseCertificateEvent) EventType() eventbus.EventType { return EventParseC
 
 type DeleteFolderEvent struct {
 	FileTopic
+	AccountID  string `json:"account_id,omitempty"`
 	Store      string `json:"store,omitempty"`
 	FolderName string `json:"folder_name,omitempty"`
 	Path       string `json:"path,omitempty"`
@@ -44,16 +45,18 @@ func (DeleteFolderEvent) EventType() eventbus.EventType { return EventDeleteFold
 
 type DeleteFileOrFolderEvent struct {
 	FileTopic
-	Store    string `json:"store,omitempty"`
-	Path     string `json:"path,omitempty"`
-	ItemType string `json:"item_type,omitempty"`
+	AccountID string `json:"account_id,omitempty"`
+	Store     string `json:"store,omitempty"`
+	Path      string `json:"path,omitempty"`
+	ItemType  string `json:"item_type,omitempty"`
 }
 
 func (DeleteFileOrFolderEvent) EventType() eventbus.EventType { return EventDeleteFileOrFolder }
 
 type ExportCertificateEvent struct {
 	FileTopic
-	ID string `json:"id"`
+	AccountID string `json:"account_id,omitempty"`
+	ID        string `json:"id"`
 }
 
 func (ExportCertificateEvent) EventType() eventbus.EventType { return EventExportCertificate }

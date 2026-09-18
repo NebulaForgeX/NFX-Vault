@@ -21,3 +21,7 @@ export function useFileRepository() {
 export function useAnalysisRepository() {
   return useVaultRepositories().analysis;
 }
+
+export function useDnsRepository() {
+  return useVaultRepositories().dns;
+}

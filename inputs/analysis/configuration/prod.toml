@@ -111,6 +111,7 @@
     file_addr = "${GRPC_HOST_FILE}:${GRPC_PORT_FILE}"
     analysis_addr = "${GRPC_HOST_ANALYSIS}:${GRPC_PORT_ANALYSIS}"
     system_addr = "${GRPC_HOST_SYSTEM}:${GRPC_PORT_SYSTEM}"
+    dns_addr = "${GRPC_HOST_DNS}:${GRPC_PORT_DNS}"
 
 
 [otel]

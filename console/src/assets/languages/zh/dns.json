@@ -1,0 +1,46 @@
+{
+  "title": "Namecheap DNS",
+  "subtitle": "保存你的 Namecheap API Key，列出域名并更新 A 记录。",
+  "loading": "正在加载 DNS…",
+  "empty": {
+    "credential": "尚未保存 Namecheap 凭证。",
+    "domains": "该 Namecheap 账号下没有域名。"
+  },
+  "credential": {
+    "title": "API 凭证",
+    "hint": "请把 Vault 出口 IPv4 加入 Namecheap API 白名单：{{ip}}",
+    "apiUser": "ApiUser",
+    "userName": "UserName",
+    "apiKey": "API Key",
+    "apiKeyKeep": "留空则保留已保存的 Key",
+    "clientIp": "Client IP（IPv4）",
+    "sandbox": "使用 Sandbox API",
+    "useOutbound": "填入检测到的 IP",
+    "save": "保存",
+    "verify": "校验",
+    "delete": "删除",
+    "cancel": "取消",
+    "saved": "凭证已保存",
+    "verifiedAt": "上次校验：{{at}}",
+    "confirmDeleteTitle": "删除 Namecheap 凭证",
+    "confirmDeleteMessage": "从当前 Vault 账号移除已保存的 API Key？"
+  },
+  "domains": {
+    "title": "域名",
+    "name": "域名",
+    "created": "创建",
+    "expires": "到期",
+    "expired": "已过期",
+    "locked": "锁定",
+    "autoRenew": "自动续费",
+    "dns": "Namecheap DNS",
+    "open": "DNS",
+    "loadError": "无法列出域名。请先保存并校验 API Key。"
+  },
+  "bulk": {
+    "host": "Host",
+    "ip": "新 IPv4",
+    "update": "更新所选 A 记录",
+    "noneSelected": "请至少选择一个域名"
+  }
+}

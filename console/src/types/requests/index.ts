@@ -3,3 +3,4 @@
 export * from "./cert.request";
 export * from "./file.request";
 export * from "./analysis.request";
+export * from "./dns.request";

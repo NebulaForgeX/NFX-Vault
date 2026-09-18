@@ -14,6 +14,8 @@ import {
   LoginPage,
   SelectProfilePage,
   SettingsPage,
+  DnsPage,
+  DnsDomainPage,
 } from "@/pages";
 import { ROUTES } from "@/navigations";
 import { VaultOverlays } from "@/overlays";
@@ -60,6 +62,8 @@ function App() {
           <Route path={ROUTES.CERT_DETAIL} element={<CertDetailPage />} />
           <Route path={ROUTES.ANALYSIS_TLS} element={<TLSAnalysisPage />} />
           <Route path={ROUTES.FILE_FOLDER} element={<FileFolderPage />} />
+          <Route path={ROUTES.DNS} element={<DnsPage />} />
+          <Route path={ROUTES.DNS_DOMAIN} element={<DnsDomainPage />} />
           <Route path={ROUTES.ACCOUNT} element={<AccountPage />} />
           <Route path={ROUTES.USER_SETTINGS} element={<SettingsPage />} />
           <Route path={ROUTES.LOGIN} element={<Navigate to={ROUTES.HOME} replace />} />

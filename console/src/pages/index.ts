@@ -9,4 +9,6 @@ export { default as CertEditPage } from "./CertEditPage";
 export { default as TLSAnalysisPage } from "./TLSAnalysisPage";
 export { default as FileFolderPage } from "./FileFolderPage";
 export { default as SettingsPage } from "./User/Settings";
+export { default as DnsPage } from "./DnsPage";
+export { default as DnsDomainPage } from "./DnsDomainPage";
 

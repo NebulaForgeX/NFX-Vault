@@ -14,6 +14,8 @@ const routeMap = defineRouter({
   CERT_DETAIL: "/cert/:certificateId",
   ANALYSIS_TLS: "/analysis/tls",
   FILE_FOLDER: "/filefolder",
+  DNS: "/dns",
+  DNS_DOMAIN: "/dns/:domain",
 });
 
 const { ROUTES, matchRoute, isActiveRoute, getRouteByKey } = createRouter(routeMap);

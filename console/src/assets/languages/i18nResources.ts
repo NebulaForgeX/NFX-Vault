@@ -18,6 +18,8 @@ import en_modal from "./en/modal.json";
 import en_common from "./en/common.json";
 import en_navigation from "./en/navigation.json";
 import en_pagesUserSettings from "./en/pages/User/Settings.json";
+import en_dns from "./en/dns.json";
+import en_dnsDomain from "./en/dnsDomain.json";
 
 import fr_certCheck from "./fr/certCheck.json";
 import fr_certDetail from "./fr/certDetail.json";
@@ -33,6 +35,8 @@ import fr_modal from "./fr/modal.json";
 import fr_common from "./fr/common.json";
 import fr_navigation from "./fr/navigation.json";
 import fr_pagesUserSettings from "./fr/pages/User/Settings.json";
+import fr_dns from "./fr/dns.json";
+import fr_dnsDomain from "./fr/dnsDomain.json";
 
 import zh_certCheck from "./zh/certCheck.json";
 import zh_certDetail from "./zh/certDetail.json";
@@ -48,6 +52,8 @@ import zh_modal from "./zh/modal.json";
 import zh_common from "./zh/common.json";
 import zh_navigation from "./zh/navigation.json";
 import zh_pagesUserSettings from "./zh/pages/User/Settings.json";
+import zh_dns from "./zh/dns.json";
+import zh_dnsDomain from "./zh/dnsDomain.json";
 
 // 所有语言包内容
 export const RESOURCES = {
@@ -66,6 +72,8 @@ export const RESOURCES = {
     navigation: en_navigation,
     common: en_common,
     "pages.User.Settings": en_pagesUserSettings,
+    dns: en_dns,
+    dnsDomain: en_dnsDomain,
   },
   zh: {
     certCheck: zh_certCheck,
@@ -82,6 +90,8 @@ export const RESOURCES = {
     navigation: zh_navigation,
     common: zh_common,
     "pages.User.Settings": zh_pagesUserSettings,
+    dns: zh_dns,
+    dnsDomain: zh_dnsDomain,
   },
   fr: {
     certCheck: fr_certCheck,
@@ -98,6 +108,8 @@ export const RESOURCES = {
     navigation: fr_navigation,
     common: fr_common,
     "pages.User.Settings": fr_pagesUserSettings,
+    dns: fr_dns,
+    dnsDomain: fr_dnsDomain,
   },
 };
 
@@ -117,6 +129,8 @@ export const NAME_SPACES_MAP = {
   navigation: "navigation",
   common: "common",
   "pages.User.Settings": "pages.User.Settings",
+  dns: "dns",
+  dnsDomain: "dnsDomain",
 };
 
 export const NAME_SPACES = Object.values(NAME_SPACES_MAP);

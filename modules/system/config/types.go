@@ -34,6 +34,7 @@ type GRPCClientConfig struct {
 	FileAddr     string `koanf:"file_addr"`
 	AnalysisAddr string `koanf:"analysis_addr"`
 	SystemAddr   string `koanf:"system_addr"`
+	DNSAddr      string `koanf:"dns_addr"`
 }
 
 type ServerConfig struct {

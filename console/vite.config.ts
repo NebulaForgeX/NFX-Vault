@@ -14,25 +14,18 @@ export default defineConfig(({ mode }) => {
   // - npm run preview → mode = "production"
   // - vite --mode staging → mode = "staging" (手动指定)
   
-  // 本地开发：从仓库根加载 .env（frontend 的上一级再上一级 = NFX-Vault 根）
-  // Docker 构建：COPY 只有 /app 下前端文件，envDir 若用 ../../ 会变成文件系统根目录，可能导致构建异常且无 dist
+  // 本地开发：仓库根 .env + console/.env.dev。Go Traefik 入口是 TRAEFIK_HTTP_PORT（10140）。
   const envDir =
     process.env.DOCKER_BUILD === "1"
       ? path.resolve(__dirname)
       : path.resolve(__dirname, "../../");
-  const env = loadEnv(mode, envDir, "");
-
-  // 从环境变量读取后端配置，提供默认值
-  // 优先级：loadEnv 读取的 .env 文件 > process.env（Docker build args）> 默认值
-  // 与仓库根 .env（BACKEND_HOST / BACKEND_PORT）及 scripts/dev-api.sh 默认端口 10151 对齐
-  const BACKEND_HOST = env.BACKEND_HOST || process.env.BACKEND_HOST || "localhost";
-  const BACKEND_PORT = env.BACKEND_PORT || process.env.BACKEND_PORT || "10151";
-  const BACKEND_URL = `http://${BACKEND_HOST}:${BACKEND_PORT}`;
+  const env = { ...loadEnv(mode, envDir, ""), ...loadEnv(mode, __dirname, "") };
+  const apiURL = env.VITE_API_URL || `http://127.0.0.1:${env.TRAEFIK_HTTP_PORT || "10140"}`;
+  const vitePort = Number(env.VITE_PORT) || 5175;
 
   // 调试信息（仅在开发环境输出）
   if (mode === "development") {
-    console.log("🔧 Vite Config - Backend URL:", BACKEND_URL);
-    console.log("🔧 Source:", env.BACKEND_HOST ? ".env file" : process.env.BACKEND_HOST ? "process.env" : "default");
+    console.log("🔧 Vite Config - API URL:", apiURL, "port:", vitePort);
   }
 
   return {
@@ -73,14 +66,13 @@ export default defineConfig(({ mode }) => {
     },
   },
   server: {
-    port: 5173,
+    port: vitePort,
     host: "0.0.0.0",
     open: true,
     proxy: {
       "/vault": {
-        target: BACKEND_URL,
+        target: apiURL,
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/vault/, "/vault"),
       },
     },
   },
@@ -91,7 +83,7 @@ export default defineConfig(({ mode }) => {
     chunkSizeWarningLimit: 400,
   },
   preview: {
-    port: 5173,
+    port: vitePort,
     host: "0.0.0.0",
   },
   envDir: envDir, // 告诉 Vite 从父目录加载 .env 文件

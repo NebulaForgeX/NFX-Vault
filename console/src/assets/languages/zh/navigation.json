@@ -12,6 +12,8 @@
   "fileFolder": "文件目录",
   "apis": "Apis",
   "websites": "Websites",
+  "dns": "DNS",
+  "namecheapDns": "Namecheap DNS",
   "appName": "NFX-Vault"
 }
 

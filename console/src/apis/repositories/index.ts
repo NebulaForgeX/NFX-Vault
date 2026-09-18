@@ -11,6 +11,8 @@ export type {
 export { ApiFileRepository } from "./FileRepository";
 export type { AnalysisRepository } from "./AnalysisRepository";
 export { ApiAnalysisRepository } from "./AnalysisRepository";
+export type { DnsRepository } from "./DnsRepository";
+export { ApiDnsRepository } from "./DnsRepository";
 export type { VaultRepositories } from "./types";
 export { vaultRepositories } from "./vaultRepositories";
 export {
@@ -19,4 +21,5 @@ export {
   useCertRepository,
   useFileRepository,
   useAnalysisRepository,
+  useDnsRepository,
 } from "./context";

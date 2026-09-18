@@ -12,6 +12,8 @@
   "fileFolder": "Dossier de fichiers",
   "apis": "Apis",
   "websites": "Websites",
+  "dns": "DNS",
+  "namecheapDns": "Namecheap DNS",
   "appName": "NFX-Vault"
 }
 

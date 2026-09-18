@@ -13,7 +13,7 @@ import { LayoutFrame } from "nfx-ui/layouts";
 import { Logo, PreferencesPopover } from "nfx-ui/components";
 import { AuthStore, clearAuth } from "nfx-ui/stores";
 
-import { Home, Shield, FileSearch, Folder, List, FilePlus, Scan, Globe, User, Settings } from "@/assets/icons/lucide";
+import { Home, Shield, FileSearch, Folder, List, FilePlus, Scan, Globe, User, Settings, Server } from "@/assets/icons/lucide";
 import { authEventEmitter } from "@/events/auth";
 import { routerEventEmitter } from "@/events/router";
 import { ROUTES } from "@/navigations";
@@ -50,6 +50,12 @@ function useSidebarItems(): SidebarMenuItem[] {
         path: ROUTES.FILE_FOLDER,
         icon: <Folder size={size20} />,
         children: [{ label: t("websites"), path: ROUTES.FILE_FOLDER, icon: <Globe size={size18} /> }],
+      },
+      {
+        label: t("dns"),
+        path: ROUTES.DNS,
+        icon: <Server size={size20} />,
+        children: [{ label: t("namecheapDns"), path: ROUTES.DNS, icon: <Globe size={size18} /> }],
       },
     ],
     [t],

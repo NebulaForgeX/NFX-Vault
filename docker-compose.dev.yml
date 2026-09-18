@@ -1,0 +1,362 @@
+name: nfx-vault-dev
+
+# HTTP 入口只有 NFX-Edge（先启动 Edge：共享网络 nfx-edge + Traefik）。
+# 本栈不跑 reverse-proxy。traefik.project 由 Edge LabelRegex 发现。
+# Must start NFX-Edge first (creates nfx-edge). This stack has no reverse-proxy.
+
+services:
+  tls-base:
+    image: nfx-vault-tls-base:dev
+    container_name: NFX-Vault-Tls-Base-Dev
+    build:
+      context: .
+      dockerfile: inputs/tls/base/Dockerfile
+      target: dev
+    environment:
+      - ENV=dev
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    command: [ "air", "-c", "inputs/tls/base/.air.toml" ]
+    expose:
+      - "${HTTP_PORT}"
+      - "${GRPC_PORT_TLS}"
+    ports:
+      - "${GRPC_PORT_TLS}:${GRPC_PORT_TLS}"
+    labels:
+      traefik.enable: "true"
+      traefik.project: "nfx-vault"
+      traefik.http.services.vault-tls-base.loadbalancer.server.port: "${HTTP_PORT}"
+      traefik.http.routers.vault-tls-base.entrypoints: web
+      traefik.http.routers.vault-tls-base.rule: Host(`${TRAEFIK_API_HOST}`) && PathPrefix(`${API_PREFIX_PATH_TLS}`)
+      traefik.http.routers.vault-tls-base.service: vault-tls-base
+      traefik.http.routers.vault-tls-base-secure.entrypoints: websecure
+      traefik.http.routers.vault-tls-base-secure.rule: Host(`${TRAEFIK_API_HOST}`) && PathPrefix(`${API_PREFIX_PATH_TLS}`)
+      traefik.http.routers.vault-tls-base-secure.service: vault-tls-base
+      traefik.http.routers.vault-tls-base-secure.tls: "true"
+    volumes:
+      - ${CERTS_DIR}:${CERTS_DIR}:rw
+      - ${ACME_CHALLENGE_DIR}:${ACME_CHALLENGE_DIR}:rw
+      - ./errors/langs:/app/errors/langs
+    develop:
+      watch:
+        - action: sync
+          path: inputs/tls/base
+          target: /app/inputs/tls/base
+        - action: sync
+          path: inputs/tls/configuration
+          target: /app/inputs/tls/configuration
+        - action: sync
+          path: modules/tls
+          target: /app/modules/tls
+        - action: sync
+          path: enums
+          target: /app/enums
+        - action: sync
+          path: errors/src
+          target: /app/errors/src
+        - action: sync
+          path: pkgs
+          target: /app/pkgs
+        - action: sync
+          path: protos
+          target: /app/protos
+        - action: sync
+          path: go.mod
+          target: /app/go.mod
+        - action: sync
+          path: go.sum
+          target: /app/go.sum
+        - action: sync
+          path: .env
+          target: /app/.env
+        - action: rebuild
+          path: inputs/tls/base/Dockerfile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+      - nfx-edge
+
+  file-base:
+    image: nfx-vault-file-base:dev
+    container_name: NFX-Vault-File-Base-Dev
+    build:
+      context: .
+      dockerfile: inputs/file/base/Dockerfile
+      target: dev
+    environment:
+      - ENV=dev
+      - CERTS_DIR=${CERTS_DIR}
+      - ACME_CHALLENGE_DIR=${ACME_CHALLENGE_DIR}
+    command: [ "air", "-c", "inputs/file/base/.air.toml" ]
+    expose:
+      - "${HTTP_PORT}"
+      - "${GRPC_PORT_FILE}"
+    ports:
+      - "${GRPC_PORT_FILE}:${GRPC_PORT_FILE}"
+    labels:
+      traefik.enable: "true"
+      traefik.project: "nfx-vault"
+      traefik.http.services.vault-file-base.loadbalancer.server.port: "${HTTP_PORT}"
+      traefik.http.routers.vault-file-base.entrypoints: web
+      traefik.http.routers.vault-file-base.rule: Host(`${TRAEFIK_API_HOST}`) && PathPrefix(`${API_PREFIX_PATH_FILE}`)
+      traefik.http.routers.vault-file-base.service: vault-file-base
+      traefik.http.routers.vault-file-base-secure.entrypoints: websecure
+      traefik.http.routers.vault-file-base-secure.rule: Host(`${TRAEFIK_API_HOST}`) && PathPrefix(`${API_PREFIX_PATH_FILE}`)
+      traefik.http.routers.vault-file-base-secure.service: vault-file-base
+      traefik.http.routers.vault-file-base-secure.tls: "true"
+    volumes:
+      - ${CERTS_DIR}:${CERTS_DIR}:rw
+      - ${ACME_CHALLENGE_DIR}:${ACME_CHALLENGE_DIR}:rw
+      - ./errors/langs:/app/errors/langs
+    develop:
+      watch:
+        - action: sync
+          path: inputs/file/base
+          target: /app/inputs/file/base
+        - action: sync
+          path: inputs/file/configuration
+          target: /app/inputs/file/configuration
+        - action: sync
+          path: modules/file
+          target: /app/modules/file
+        - action: sync
+          path: enums
+          target: /app/enums
+        - action: sync
+          path: errors/src
+          target: /app/errors/src
+        - action: sync
+          path: pkgs
+          target: /app/pkgs
+        - action: sync
+          path: protos
+          target: /app/protos
+        - action: sync
+          path: go.mod
+          target: /app/go.mod
+        - action: sync
+          path: go.sum
+          target: /app/go.sum
+        - action: sync
+          path: .env
+          target: /app/.env
+        - action: rebuild
+          path: inputs/file/base/Dockerfile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+      - nfx-edge
+
+  analysis-base:
+    image: nfx-vault-analysis-base:dev
+    container_name: NFX-Vault-Analysis-Base-Dev
+    build:
+      context: .
+      dockerfile: inputs/analysis/base/Dockerfile
+      target: dev
+    environment:
+      - ENV=dev
+    command: [ "air", "-c", "inputs/analysis/base/.air.toml" ]
+    expose:
+      - "${HTTP_PORT}"
+      - "${GRPC_PORT_ANALYSIS}"
+    ports:
+      - "${GRPC_PORT_ANALYSIS}:${GRPC_PORT_ANALYSIS}"
+    labels:
+      traefik.enable: "true"
+      traefik.project: "nfx-vault"
+      traefik.http.services.vault-analysis-base.loadbalancer.server.port: "${HTTP_PORT}"
+      traefik.http.routers.vault-analysis-base.entrypoints: web
+      traefik.http.routers.vault-analysis-base.rule: Host(`${TRAEFIK_API_HOST}`) && PathPrefix(`${API_PREFIX_PATH_ANALYSIS}`)
+      traefik.http.routers.vault-analysis-base.service: vault-analysis-base
+      traefik.http.routers.vault-analysis-base-secure.entrypoints: websecure
+      traefik.http.routers.vault-analysis-base-secure.rule: Host(`${TRAEFIK_API_HOST}`) && PathPrefix(`${API_PREFIX_PATH_ANALYSIS}`)
+      traefik.http.routers.vault-analysis-base-secure.service: vault-analysis-base
+      traefik.http.routers.vault-analysis-base-secure.tls: "true"
+    volumes:
+      - ./errors/langs:/app/errors/langs
+    develop:
+      watch:
+        - action: sync
+          path: inputs/analysis/base
+          target: /app/inputs/analysis/base
+        - action: sync
+          path: inputs/analysis/configuration
+          target: /app/inputs/analysis/configuration
+        - action: sync
+          path: modules/analysis
+          target: /app/modules/analysis
+        - action: sync
+          path: enums
+          target: /app/enums
+        - action: sync
+          path: errors/src
+          target: /app/errors/src
+        - action: sync
+          path: pkgs
+          target: /app/pkgs
+        - action: sync
+          path: protos
+          target: /app/protos
+        - action: sync
+          path: go.mod
+          target: /app/go.mod
+        - action: sync
+          path: go.sum
+          target: /app/go.sum
+        - action: sync
+          path: .env
+          target: /app/.env
+        - action: rebuild
+          path: inputs/analysis/base/Dockerfile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+      - nfx-edge
+
+  system-base:
+    image: nfx-vault-system-base:dev
+    container_name: NFX-Vault-System-Base-Dev
+    build:
+      context: .
+      dockerfile: inputs/system/base/Dockerfile
+      target: dev
+    environment:
+      - ENV=dev
+    command: [ "air", "-c", "inputs/system/base/.air.toml" ]
+    expose:
+      - "${HTTP_PORT}"
+      - "${GRPC_PORT_SYSTEM}"
+    ports:
+      - "${GRPC_PORT_SYSTEM}:${GRPC_PORT_SYSTEM}"
+    labels:
+      traefik.enable: "true"
+      traefik.project: "nfx-vault"
+      traefik.http.services.vault-system-base.loadbalancer.server.port: "${HTTP_PORT}"
+      traefik.http.routers.vault-system-base.entrypoints: web
+      traefik.http.routers.vault-system-base.rule: Host(`${TRAEFIK_API_HOST}`) && PathPrefix(`${API_PREFIX_PATH_SYSTEM}`)
+      traefik.http.routers.vault-system-base.service: vault-system-base
+      traefik.http.routers.vault-system-base-secure.entrypoints: websecure
+      traefik.http.routers.vault-system-base-secure.rule: Host(`${TRAEFIK_API_HOST}`) && PathPrefix(`${API_PREFIX_PATH_SYSTEM}`)
+      traefik.http.routers.vault-system-base-secure.service: vault-system-base
+      traefik.http.routers.vault-system-base-secure.tls: "true"
+    volumes:
+      - ./errors/langs:/app/errors/langs
+    develop:
+      watch:
+        - action: sync
+          path: inputs/system/base
+          target: /app/inputs/system/base
+        - action: sync
+          path: inputs/system/configuration
+          target: /app/inputs/system/configuration
+        - action: sync
+          path: modules/system
+          target: /app/modules/system
+        - action: sync
+          path: enums
+          target: /app/enums
+        - action: sync
+          path: errors/src
+          target: /app/errors/src
+        - action: sync
+          path: pkgs
+          target: /app/pkgs
+        - action: sync
+          path: protos
+          target: /app/protos
+        - action: sync
+          path: go.mod
+          target: /app/go.mod
+        - action: sync
+          path: go.sum
+          target: /app/go.sum
+        - action: sync
+          path: .env
+          target: /app/.env
+        - action: rebuild
+          path: inputs/system/base/Dockerfile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+      - nfx-edge
+
+  dns-base:
+    image: nfx-vault-dns-base:dev
+    container_name: NFX-Vault-Dns-Base-Dev
+    build:
+      context: .
+      dockerfile: inputs/dns/base/Dockerfile
+      target: dev
+    environment:
+      - ENV=dev
+    command: [ "air", "-c", "inputs/dns/base/.air.toml" ]
+    expose:
+      - "${HTTP_PORT}"
+      - "${GRPC_PORT_DNS}"
+    ports:
+      - "${GRPC_PORT_DNS}:${GRPC_PORT_DNS}"
+    labels:
+      traefik.enable: "true"
+      traefik.project: "nfx-vault"
+      traefik.http.services.vault-dns-base.loadbalancer.server.port: "${HTTP_PORT}"
+      traefik.http.routers.vault-dns-base.entrypoints: web
+      traefik.http.routers.vault-dns-base.rule: Host(`${TRAEFIK_API_HOST}`) && PathPrefix(`${API_PREFIX_PATH_DNS}`)
+      traefik.http.routers.vault-dns-base.service: vault-dns-base
+      traefik.http.routers.vault-dns-base-secure.entrypoints: websecure
+      traefik.http.routers.vault-dns-base-secure.rule: Host(`${TRAEFIK_API_HOST}`) && PathPrefix(`${API_PREFIX_PATH_DNS}`)
+      traefik.http.routers.vault-dns-base-secure.service: vault-dns-base
+      traefik.http.routers.vault-dns-base-secure.tls: "true"
+    volumes:
+      - ./errors/langs:/app/errors/langs
+    develop:
+      watch:
+        - action: sync
+          path: inputs/dns/base
+          target: /app/inputs/dns/base
+        - action: sync
+          path: inputs/dns/configuration
+          target: /app/inputs/dns/configuration
+        - action: sync
+          path: modules/dns
+          target: /app/modules/dns
+        - action: sync
+          path: enums
+          target: /app/enums
+        - action: sync
+          path: errors/src
+          target: /app/errors/src
+        - action: sync
+          path: pkgs
+          target: /app/pkgs
+        - action: sync
+          path: protos
+          target: /app/protos
+        - action: sync
+          path: go.mod
+          target: /app/go.mod
+        - action: sync
+          path: go.sum
+          target: /app/go.sum
+        - action: sync
+          path: .env
+          target: /app/.env
+        - action: rebuild
+          path: inputs/dns/base/Dockerfile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nfx-vault
+      - nfx-edge
+
+networks:
+  nfx-vault:
+    name: nfx-vault
+    driver: bridge
+  nfx-edge:
+    external: true
+    name: nfx-edge

@@ -22,7 +22,7 @@ NFX-Vault 是一个现代化的 SSL 证书管理和监控系统，提供统一�
 - 📊 **实时监控** - 查看证书状态、过期时间和剩余天数
 - 📥 **一键导出** - 快速导出证书文件到指定目录
 - 🌐 **现代化 Web 界面** - 基于 React + TypeScript 的响应式界面
-- 🚀 **RESTful API** - Go Fiber HTTP（`/vault/tls` `/vault/file` `/vault/analysis`）
+- 🚀 **RESTful API** - Go Fiber HTTP（`/vault/tls` `/vault/file` `/vault/analysis` `/vault/dns`）
 - 🐳 **Docker 部署** - 使用 Docker Compose 一键部署
 - 📝 **命令行工具** - 提供交互式命令行工具作为备选方案
 - ⏰ **自动调度** - 支持定时任务自动检查证书状态
@@ -160,7 +160,7 @@ docker compose logs -f console
 #### 6. 访问服务
 
 - **Console**：见 `.env` 的 `CONSOLE_EXTERNAL_PORT`
-- **HTTP 入口**：Traefik（`/vault/tls` `/vault/file` `/vault/analysis`）
+- **HTTP 入口**：Traefik（`/vault/tls` `/vault/file` `/vault/analysis` `/vault/dns`）
 - **登录**：NFX-Identity（`nfx-ui`），本仓库没有本地 `/auth`
 
 ### 本地开发（Go + console，不经过 Docker）
@@ -255,7 +255,7 @@ curl -X POST http://192.168.1.64:10151/vault/tls/refresh/websites
 
 项目使用独立的 Docker 网络：
 - `nfx-vault`：内部服务通信网络（bridge 模式）
-- `nfx-edge`：外部网络（需要预先创建，用于与 Traefik 等反向代理通信）
+- `nfx-edge`：由 NFX-Edge 创建的外部网络；HTTP 服务双挂接入，本仓不跑 Traefik
 
 ---
 

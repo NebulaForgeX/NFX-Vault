@@ -36,6 +36,17 @@ export const URL_PATHS = {
     tls: "/tls",
   }),
 
+  DNS: path("/vault/dns", {
+    credential: "/credential",
+    credentialVerify: "/credential/verify",
+    domains: "/domains",
+    hosts: "/hosts",
+    ddnsHosts: "/ddns-hosts",
+    aRecords: "/a-records",
+    outboundIp: "/outbound-ip",
+    i18nErrors: (lang: string) => `/i18n/errors/${lang}`,
+  }),
+
 } as const;
 
 export const API_ENDPOINTS = {

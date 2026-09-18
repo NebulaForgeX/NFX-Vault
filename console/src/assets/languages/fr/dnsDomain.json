@@ -1,0 +1,41 @@
+{
+  "subtitle": "Enregistrements d'hôtes Namecheap. Enregistrez un mot de passe Dynamic DNS pour mettre à jour A sans setHosts.",
+  "back": "Retour",
+  "loading": "Chargement des hôtes…",
+  "empty": "Aucun enregistrement d'hôte sur ce domaine.",
+  "loadError": "Impossible de charger les hôtes DNS. Vérifiez que le domaine utilise le DNS Namecheap.",
+  "host": "Hôte",
+  "type": "Type",
+  "address": "Adresse",
+  "ttl": "TTL",
+  "mxPref": "Préf. MX",
+  "active": "Actif",
+  "ddnsEnabled": "DDNS activé",
+  "associatedApp": "Application",
+  "friendlyName": "Nom convivial",
+  "emailType": "Type d'e-mail : {{type}}",
+  "ourDns": "DNS Namecheap : {{value}}",
+  "ddns": "Mot de passe DDNS",
+  "ddnsPassword": "Mot de passe",
+  "ddnsKeep": "Laisser vide pour conserver",
+  "saveDdns": "Enregistrer",
+  "removeDdns": "Supprimer",
+  "ddnsSaved": "Mot de passe DDNS enregistré",
+  "ddnsPasswordRequired": "Saisissez un mot de passe Dynamic DNS lors du premier enregistrement.",
+  "ddnsLastIp": "Dernière IPv4 : {{ip}}",
+  "ddnsLastSynced": "Synchronisé : {{at}}",
+  "newIp": "Nouvelle IPv4",
+  "updateA": "Mettre à jour A",
+  "cancel": "Annuler",
+  "confirmDeleteTitle": "Supprimer le mot de passe DDNS",
+  "confirmDeleteMessage": "Supprimer le mot de passe Dynamic DNS enregistré pour {{host}} ?",
+  "aResult": {
+    "item": "{{host}} ({{method}}) : {{message}}",
+    "method": {
+      "ddns": "Dynamic DNS",
+      "set_hosts": "setHosts"
+    },
+    "okDdns": "mis à jour via Dynamic DNS",
+    "okSetHosts": "mis à jour via Namecheap setHosts"
+  }
+}

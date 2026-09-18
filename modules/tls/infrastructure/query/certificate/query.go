@@ -24,8 +24,11 @@ func toVO(r views.TlsCertificatesActiveView) certQuery.CertificateVO {
 	}
 }
 
-func (h *handler) Page(ctx context.Context, keyword string, offset, limit int, stripSecrets bool) ([]certQuery.CertificateVO, int64, error) {
+func (h *handler) Page(ctx context.Context, accountID, keyword string, offset, limit int, stripSecrets bool) ([]certQuery.CertificateVO, int64, error) {
 	q := h.db.WithContext(ctx).Table(views.TlsCertificatesActiveView{}.TableName())
+	if accountID != "" {
+		q = q.Where("account_id = ?", accountID)
+	}
 	if keyword != "" {
 		like := "%" + keyword + "%"
 		q = q.Where("domain ILIKE ? OR folder_name ILIKE ? OR email ILIKE ?", like, like, like)

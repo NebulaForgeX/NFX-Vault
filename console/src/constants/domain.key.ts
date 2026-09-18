@@ -3,3 +3,7 @@
  */
 export const DOMAIN_CERT = "cert";
 export const DOMAIN_CERT_CERTIFICATE = "certificate";
+export const DOMAIN_DNS = "dns";
+export const DOMAIN_DNS_CREDENTIAL = "credential";
+export const DOMAIN_DNS_DOMAIN = "domain";
+export const DOMAIN_DNS_HOST = "host";

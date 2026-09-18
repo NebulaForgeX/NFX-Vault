@@ -1,0 +1,46 @@
+{
+  "title": "Namecheap DNS",
+  "subtitle": "Store your Namecheap API key, list domains, and update A records.",
+  "loading": "Loading DNS…",
+  "empty": {
+    "credential": "No Namecheap credentials saved yet.",
+    "domains": "No domains on this Namecheap account."
+  },
+  "credential": {
+    "title": "API credentials",
+    "hint": "Whitelist this Vault outbound IPv4 in Namecheap API Access: {{ip}}",
+    "apiUser": "ApiUser",
+    "userName": "UserName",
+    "apiKey": "API Key",
+    "apiKeyKeep": "Leave blank to keep the saved key",
+    "clientIp": "Client IP (IPv4)",
+    "sandbox": "Use sandbox API",
+    "useOutbound": "Use detected IP",
+    "save": "Save",
+    "verify": "Verify",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "saved": "Credentials saved",
+    "verifiedAt": "Last verified: {{at}}",
+    "confirmDeleteTitle": "Delete Namecheap credentials",
+    "confirmDeleteMessage": "Remove the saved API key from this Vault account?"
+  },
+  "domains": {
+    "title": "Domains",
+    "name": "Domain",
+    "created": "Created",
+    "expires": "Expires",
+    "expired": "Expired",
+    "locked": "Locked",
+    "autoRenew": "Auto-renew",
+    "dns": "Namecheap DNS",
+    "open": "DNS",
+    "loadError": "Could not list domains. Save and verify your API key first."
+  },
+  "bulk": {
+    "host": "Host",
+    "ip": "New IPv4",
+    "update": "Update selected A records",
+    "noneSelected": "Select at least one domain"
+  }
+}

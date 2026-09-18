@@ -1,3 +1,4 @@
 -- atlas:import extensions/pgcrypto.sql
 -- atlas:import schemas/vault/main.sql
 -- atlas:import schemas/system/main.sql
+-- atlas:import schemas/dns/main.sql

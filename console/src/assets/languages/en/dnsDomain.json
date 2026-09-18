@@ -1,0 +1,41 @@
+{
+  "subtitle": "Host records from Namecheap. Save a Dynamic DNS password to update A records without setHosts.",
+  "back": "Back",
+  "loading": "Loading hosts…",
+  "empty": "No host records on this domain.",
+  "loadError": "Could not load DNS hosts. Confirm the domain uses Namecheap DNS.",
+  "host": "Host",
+  "type": "Type",
+  "address": "Address",
+  "ttl": "TTL",
+  "mxPref": "MX pref",
+  "active": "Active",
+  "ddnsEnabled": "DDNS enabled",
+  "associatedApp": "App",
+  "friendlyName": "Friendly name",
+  "emailType": "Email type: {{type}}",
+  "ourDns": "Namecheap DNS: {{value}}",
+  "ddns": "DDNS password",
+  "ddnsPassword": "Password",
+  "ddnsKeep": "Leave blank to keep",
+  "saveDdns": "Save",
+  "removeDdns": "Remove",
+  "ddnsSaved": "DDNS password saved",
+  "ddnsPasswordRequired": "Enter a Dynamic DNS password on first save.",
+  "ddnsLastIp": "Last IPv4: {{ip}}",
+  "ddnsLastSynced": "Synced: {{at}}",
+  "newIp": "New IPv4",
+  "updateA": "Update A",
+  "cancel": "Cancel",
+  "confirmDeleteTitle": "Remove DDNS password",
+  "confirmDeleteMessage": "Delete the saved Dynamic DNS password for {{host}}?",
+  "aResult": {
+    "item": "{{host}} ({{method}}): {{message}}",
+    "method": {
+      "ddns": "Dynamic DNS",
+      "set_hosts": "setHosts"
+    },
+    "okDdns": "updated via dynamic dns",
+    "okSetHosts": "updated via namecheap setHosts"
+  }
+}

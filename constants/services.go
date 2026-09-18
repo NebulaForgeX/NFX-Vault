@@ -5,6 +5,7 @@ const (
 	ServiceFile     = "file"
 	ServiceAnalysis = "analysis"
 	ServiceSystem   = "system"
+	ServiceDNS      = "dns"
 )
 
 func AllServices() []string {
@@ -13,5 +14,6 @@ func AllServices() []string {
 		ServiceFile,
 		ServiceAnalysis,
 		ServiceSystem,
+		ServiceDNS,
 	}
 }

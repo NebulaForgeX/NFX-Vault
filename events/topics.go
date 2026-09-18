@@ -14,6 +14,9 @@ const (
 
 	TKSystem    eventbus.TopicKey = "system"
 	TKSystemDLQ eventbus.TopicKey = "system_poison"
+
+	TKDNS    eventbus.TopicKey = "dns"
+	TKDNSDLQ eventbus.TopicKey = "dns_poison"
 )
 
 type CertTopic struct{}
@@ -31,3 +34,7 @@ func (AnalysisTopic) TopicKey() eventbus.TopicKey { return TKAnalysis }
 type SystemTopic struct{}
 
 func (SystemTopic) TopicKey() eventbus.TopicKey { return TKSystem }
+
+type DNSTopic struct{}
+
+func (DNSTopic) TopicKey() eventbus.TopicKey { return TKDNS }

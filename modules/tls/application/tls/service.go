@@ -23,25 +23,25 @@ import (
 )
 
 type Service struct {
-	tx      transaction.TxManager
-	repos   *repofactory.TxRepoFactory
-	query   *certQuery.Query
-	cache   *cachex.Connection
-	bus     *eventbus.BusPublisher
-	certbot *certbot.Client
-	baseDir string
+	tx          transaction.TxManager
+	repoFactory *repofactory.TxRepoFactory
+	query       *certQuery.Query
+	cache       *cachex.Connection
+	bus         *eventbus.BusPublisher
+	certbot     *certbot.Client
+	baseDir     string
 }
 
 func NewService(
 	tx transaction.TxManager,
-	repos *repofactory.TxRepoFactory,
+	repoFactory *repofactory.TxRepoFactory,
 	query *certQuery.Query,
 	cache *cachex.Connection,
 	bus *eventbus.BusPublisher,
 	bot *certbot.Client,
 	baseDir string,
 ) *Service {
-	return &Service{tx: tx, repos: repos, query: query, cache: cache, bus: bus, certbot: bot, baseDir: baseDir}
+	return &Service{tx: tx, repoFactory: repoFactory, query: query, cache: cache, bus: bus, certbot: bot, baseDir: baseDir}
 }
 
 type Certificate = certQuery.CertificateVO
@@ -60,28 +60,32 @@ type CommandResult struct {
 }
 
 type ParsePreviewResult struct {
-	Success bool          `json:"success"`
-	Message string        `json:"message"`
+	Success bool           `json:"success"`
+	Message string         `json:"message"`
 	Data    *pemx.CertInfo `json:"data,omitempty"`
 }
 
-func (s *Service) List(ctx context.Context, offset, limit int) (ListResult, error) {
+func owned(row *Certificate, accountID string) bool {
+	return row != nil && accountID != "" && row.AccountID != nil && *row.AccountID == accountID
+}
+
+func (s *Service) List(ctx context.Context, accountID string, offset, limit int) (ListResult, error) {
 	if limit <= 0 {
 		limit = 20
 	}
-	rows, total, err := s.query.List.Page(ctx, "", offset, limit, true)
+	rows, total, err := s.query.List.Page(ctx, accountID, "", offset, limit, true)
 	if err != nil {
 		return ListResult{}, err
 	}
 	return ListResult{Items: rows, Total: total}, nil
 }
 
-func (s *Service) Detail(ctx context.Context, id string) (*Certificate, error) {
+func (s *Service) Detail(ctx context.Context, accountID, id string) (*Certificate, error) {
 	row, err := s.query.List.ByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	if row == nil {
+	if !owned(row, accountID) {
 		return nil, errx.NotFound("CERTIFICATE_NOT_FOUND", "certificate not found")
 	}
 	return row, nil
@@ -98,14 +102,20 @@ func (s *Service) Apply(ctx context.Context, accountID, profileID, domain, email
 		return CommandResult{Success: false, Message: err.Error()}
 	}
 	if existing != nil {
-		return CommandResult{Success: false, Message: "域名已存在，无法重复申请: " + domain}
+		if existing.AccountID != nil && *existing.AccountID != accountID {
+			return CommandResult{Success: false, Message: "域名已存在，无法重复申请: " + domain}
+		}
+		if owned(existing, accountID) {
+			return CommandResult{Success: false, Message: "域名已存在，无法重复申请: " + domain}
+		}
+		return s.runIssue(ctx, accountID, profileID, domain, email, sans, folderName, force, existing.ID)
 	}
 	return s.runIssue(ctx, accountID, profileID, domain, email, sans, folderName, force, "")
 }
 
-func (s *Service) Reapply(ctx context.Context, id string, force bool) CommandResult {
+func (s *Service) Reapply(ctx context.Context, accountID, id string, force bool) CommandResult {
 	row, err := s.query.List.ByID(ctx, id)
-	if err != nil || row == nil {
+	if err != nil || !owned(row, accountID) {
 		return CommandResult{Success: false, Message: "证书不存在"}
 	}
 	email, folder := "", ""
@@ -153,12 +163,20 @@ func (s *Service) runIssue(ctx context.Context, accountID, profileID, domain, em
 	issuer := info.Issuer
 	certPEM, keyPEM := issued.CertPEM, issued.KeyPEM
 	if renewID != "" {
+		updates := map[string]any{
+			"certificate": certPEM, "private_key": keyPEM, "sans": pemx.SansJSON(info.AllDomains), "issuer": issuer,
+			"not_before": info.NotBefore, "not_after": info.NotAfter, "is_valid": valid,
+			"days_remaining": days, "status": "success", "sans_changed": false, "updated_at": now,
+		}
+		if accountID != "" {
+			updates["account_id"] = accountID
+		}
+		if profileID != "" {
+			updates["profile_id"] = profileID
+		}
 		err := s.tx.WithUoW(ctx, func(ctx context.Context, uow transaction.UoW) error {
-			return s.repos.Certificate(uow).Update.Fields(ctx, renewID, map[string]any{
-				"certificate": certPEM, "private_key": keyPEM, "sans": pemx.SansJSON(info.AllDomains), "issuer": issuer,
-				"not_before": info.NotBefore, "not_after": info.NotAfter, "is_valid": valid,
-				"days_remaining": days, "status": "success", "sans_changed": false, "updated_at": now,
-			})
+			certificateRepo := s.repoFactory.Certificate(uow)
+			return certificateRepo.Update.Fields(ctx, renewID, updates)
 		})
 		if err != nil {
 			return CommandResult{Success: false, Message: err.Error()}
@@ -180,7 +198,8 @@ func (s *Service) runIssue(ctx context.Context, accountID, profileID, domain, em
 		st.ProfileID = &profileID
 	}
 	err = s.tx.WithUoW(ctx, func(ctx context.Context, uow transaction.UoW) error {
-		return s.repos.Certificate(uow).Create.New(ctx, certDomain.NewFromState(st))
+		certificateRepo := s.repoFactory.Certificate(uow)
+		return certificateRepo.Create.New(ctx, certDomain.NewFromState(st))
 	})
 	if err != nil {
 		return CommandResult{Success: false, Message: err.Error()}
@@ -230,7 +249,8 @@ func (s *Service) CreateManual(ctx context.Context, accountID, profileID, domain
 		st.ProfileID = &profileID
 	}
 	err = s.tx.WithUoW(ctx, func(ctx context.Context, uow transaction.UoW) error {
-		return s.repos.Certificate(uow).Create.New(ctx, certDomain.NewFromState(st))
+		certificateRepo := s.repoFactory.Certificate(uow)
+		return certificateRepo.Create.New(ctx, certDomain.NewFromState(st))
 	})
 	if err != nil {
 		return CommandResult{Success: false, Message: err.Error()}
@@ -239,9 +259,9 @@ func (s *Service) CreateManual(ctx context.Context, accountID, profileID, domain
 	return CommandResult{Success: true, Message: "Certificate created", CertificateID: id}
 }
 
-func (s *Service) UpdateManual(ctx context.Context, id string, sans []string, folderName, email *string) CommandResult {
+func (s *Service) UpdateManual(ctx context.Context, accountID, id string, sans []string, folderName, email *string) CommandResult {
 	cur, err := s.query.List.ByID(ctx, id)
-	if err != nil || cur == nil {
+	if err != nil || !owned(cur, accountID) {
 		return CommandResult{Success: false, Message: "Not found"}
 	}
 	updates := map[string]any{"updated_at": time.Now()}
@@ -258,7 +278,8 @@ func (s *Service) UpdateManual(ctx context.Context, id string, sans []string, fo
 		updates["email"] = *email
 	}
 	err = s.tx.WithUoW(ctx, func(ctx context.Context, uow transaction.UoW) error {
-		return s.repos.Certificate(uow).Update.Fields(ctx, id, updates)
+		certificateRepo := s.repoFactory.Certificate(uow)
+		return certificateRepo.Update.Fields(ctx, id, updates)
 	})
 	if err != nil {
 		return CommandResult{Success: false, Message: "Failed to update certificate"}
@@ -266,11 +287,16 @@ func (s *Service) UpdateManual(ctx context.Context, id string, sans []string, fo
 	return CommandResult{Success: true, Message: "Updated"}
 }
 
-func (s *Service) Delete(ctx context.Context, id string) CommandResult {
+func (s *Service) Delete(ctx context.Context, accountID, id string) CommandResult {
+	cur, err := s.query.List.ByID(ctx, id)
+	if err != nil || !owned(cur, accountID) {
+		return CommandResult{Success: false, Message: "Not found"}
+	}
 	var n int64
-	err := s.tx.WithUoW(ctx, func(ctx context.Context, uow transaction.UoW) error {
+	err = s.tx.WithUoW(ctx, func(ctx context.Context, uow transaction.UoW) error {
+		certificateRepo := s.repoFactory.Certificate(uow)
 		var e error
-		n, e = s.repos.Certificate(uow).Delete.ByID(ctx, id)
+		n, e = certificateRepo.Delete.ByID(ctx, id)
 		return e
 	})
 	if err != nil || n == 0 {
@@ -279,11 +305,11 @@ func (s *Service) Delete(ctx context.Context, id string) CommandResult {
 	return CommandResult{Success: true, Message: "Deleted"}
 }
 
-func (s *Service) Search(ctx context.Context, keyword string, offset, limit int) (ListResult, error) {
+func (s *Service) Search(ctx context.Context, accountID, keyword string, offset, limit int) (ListResult, error) {
 	if limit <= 0 {
 		limit = 20
 	}
-	rows, total, err := s.query.List.Page(ctx, keyword, offset, limit, false)
+	rows, total, err := s.query.List.Page(ctx, accountID, keyword, offset, limit, false)
 	if err != nil {
 		return ListResult{}, err
 	}
@@ -331,7 +357,8 @@ func (s *Service) HandleParseCertificate(ctx context.Context, evt events.ParseCe
 	days := info.DaysRemaining
 	issuer := info.Issuer
 	return s.tx.WithUoW(ctx, func(ctx context.Context, uow transaction.UoW) error {
-		return s.repos.Certificate(uow).Update.Fields(ctx, evt.ID, map[string]any{
+		certificateRepo := s.repoFactory.Certificate(uow)
+		return certificateRepo.Update.Fields(ctx, evt.ID, map[string]any{
 			"issuer": issuer, "not_before": info.NotBefore, "not_after": info.NotAfter,
 			"is_valid": valid, "days_remaining": days, "sans": pemx.SansJSON(info.AllDomains), "updated_at": time.Now(),
 		})
@@ -345,21 +372,25 @@ func (s *Service) ImportFromDisk(ctx context.Context) CommandResult {
 	}
 	processed := 0
 	err = s.tx.WithUoW(ctx, func(ctx context.Context, uow transaction.UoW) error {
-		repo := s.repos.Certificate(uow)
+		certificateRepo := s.repoFactory.Certificate(uow)
 		for _, f := range found {
+			cur, err := certificateRepo.Get.ByDomain(ctx, f.Info.CommonName)
+			if err != nil || cur == nil {
+				continue
+			}
+			st := cur.State()
 			now := time.Now()
 			valid := f.Info.IsValid
 			days := f.Info.DaysRemaining
 			issuer := f.Info.Issuer
 			folder := f.Folder
 			cert, key := f.CertPEM, f.KeyPEM
-			ent := certDomain.NewFromState(certDomain.State{
-				ID: uuid.NewString(), Domain: f.Info.CommonName, FolderName: &folder, Status: "success",
-				CertPEM: &cert, KeyPEM: &key, SANs: pemx.SansJSON(f.Info.AllDomains),
-				Issuer: &issuer, NotBefore: f.Info.NotBefore, NotAfter: f.Info.NotAfter,
-				IsValid: &valid, DaysRemaining: &days, CreatedAt: now, UpdatedAt: now,
-			})
-			if err := repo.Create.FirstOrCreateByDomain(ctx, ent); err != nil {
+			if err := certificateRepo.Update.Fields(ctx, st.ID, map[string]any{
+				"folder_name": folder, "certificate": cert, "private_key": key,
+				"sans": pemx.SansJSON(f.Info.AllDomains), "issuer": issuer,
+				"not_before": f.Info.NotBefore, "not_after": f.Info.NotAfter,
+				"is_valid": valid, "days_remaining": days, "updated_at": now,
+			}); err != nil {
 				return err
 			}
 			processed++
@@ -379,8 +410,8 @@ func (s *Service) HandleDiskRefresh(ctx context.Context, _ events.DiskRefreshEve
 
 func (s *Service) RefreshDaysRemaining(ctx context.Context) error {
 	return s.tx.WithUoW(ctx, func(ctx context.Context, uow transaction.UoW) error {
-		repo := s.repos.Certificate(uow)
-		rows, err := repo.Get.All(ctx)
+		certificateRepo := s.repoFactory.Certificate(uow)
+		rows, err := certificateRepo.Get.All(ctx)
 		if err != nil {
 			return err
 		}
@@ -391,7 +422,7 @@ func (s *Service) RefreshDaysRemaining(ctx context.Context) error {
 			}
 			days := int(time.Until(*st.NotAfter).Hours() / 24)
 			valid := days > 0
-			if err := repo.Update.Fields(ctx, st.ID, map[string]any{
+			if err := certificateRepo.Update.Fields(ctx, st.ID, map[string]any{
 				"days_remaining": days, "is_valid": valid, "updated_at": time.Now(),
 			}); err != nil {
 				return err
