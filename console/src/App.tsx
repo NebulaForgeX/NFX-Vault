@@ -12,7 +12,6 @@ import {
   DnsDomainPage,
   DnsPage,
   FileFolderPage,
-  GitHubCallbackPage,
   LoginPage,
   NotFoundPage,
   ProfileEditPage,
@@ -55,7 +54,6 @@ export default function App() {
         <Route path={ROUTES.SIGNUP} element={<SignupPage />} />
       </Route>
 
-      <Route path={ROUTES.LOGIN_GITHUB_CALLBACK} element={<GitHubCallbackPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
