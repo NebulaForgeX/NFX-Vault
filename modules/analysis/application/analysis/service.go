@@ -3,6 +3,7 @@ package analysisapp
 import (
 	"strings"
 
+	analysisErr "nfxvault/errors/src/analysis"
 	pemx "nfxvault/modules/tls/infrastructure/pem"
 )
 
@@ -29,18 +30,18 @@ type TLSData struct {
 }
 
 type TLSResult struct {
-	Success bool    `json:"success"`
-	Message string  `json:"message"`
+	Success bool     `json:"success"`
+	Message string   `json:"message"`
 	Data    *TLSData `json:"data"`
 }
 
 func (s *Service) AnalyzeTLS(certificate, privateKey string) TLSResult {
 	if strings.TrimSpace(certificate) == "" {
-		return TLSResult{Success: false, Message: "Certificate content is empty"}
+		return TLSResult{Success: false, Message: analysisErr.ErrAnalysisFailed.Message}
 	}
 	info, err := pemx.Parse(certificate)
 	if err != nil {
-		return TLSResult{Success: false, Message: "Failed to parse certificate. Please check PEM format."}
+		return TLSResult{Success: false, Message: analysisErr.ErrAnalysisFailed.Message}
 	}
 	hasKey := strings.TrimSpace(privateKey) != ""
 	var keyValid *bool

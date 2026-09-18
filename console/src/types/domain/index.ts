@@ -1,4 +1,4 @@
-// Domain types — 与 Pqttec-Admin `types/domain/index` 一致：枚举放在顶层 `types/enums.ts`
+// Domain types — closed sets live in `@/enums`
 
 export * from "./cert.domain";
 export * from "./file.domain";

@@ -13,7 +13,7 @@ import type {
   ParseCertificatePreviewResponse,
 } from "@/types";
 
-import { protectedClient } from "@/apis/clients";
+import { protectedClient, publicClient } from "@/apis/clients";
 import { URL_PATHS } from "./ip";
 
 /** 与后端 Certbot 最长等待（如 300s）对齐，并留余量，避免 nginx/浏览器先断连 */
@@ -92,5 +92,10 @@ export const ParseCertificatePreview = async (
   request: ParseCertificatePreviewRequest,
 ): Promise<ParseCertificatePreviewResponse> => {
   const { data } = await protectedClient.post<ParseCertificatePreviewResponse>(URL_PATHS.TLS.parsePreview, request);
+  return data;
+};
+
+export const GetErrorTranslations = async (lang: string): Promise<Record<string, unknown>> => {
+  const { data } = await publicClient.get<Record<string, unknown>>(URL_PATHS.TLS.i18nErrors(lang));
   return data;
 };

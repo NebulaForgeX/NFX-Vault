@@ -1,13 +1,15 @@
 import type { VaultRepositories } from "./types";
 
 import { ApiAnalysisRepository } from "./AnalysisRepository";
-import { ApiCertRepository } from "./CertRepository";
 import { ApiDnsRepository } from "./DnsRepository";
 import { ApiFileRepository } from "./FileRepository";
+import { ApiSystemRepository } from "./SystemRepository";
+import { ApiTlsRepository } from "./TlsRepository";
 
 export const vaultRepositories: VaultRepositories = {
-  cert: new ApiCertRepository(),
+  tls: new ApiTlsRepository(),
   file: new ApiFileRepository(),
   analysis: new ApiAnalysisRepository(),
+  system: new ApiSystemRepository(),
   dns: new ApiDnsRepository(),
 };

@@ -17,8 +17,8 @@ vars:
   MESSAGES_DIR: messages
   ENV: '{{.ENV | default "dev"}}'
   ENV_FILE: '{{if eq .ENV "secure"}}.secure.env{{else}}.env{{end}}'
-  NETWORK: "nfx-edge"
   APP_COMPOSE: '{{if eq .ENV "secure"}}docker-compose.yml{{else}}docker-compose.dev.yml{{end}}'
+  EDGE_NETWORK: nfx-edge
 
 tasks:
   start:
@@ -105,103 +105,57 @@ tasks:
     cmds:
       - rm -rf bin/
 
-  redis:tunnel:
-    desc: "Kill any stale Redis SSH tunnel, then prompt to open a fresh local-forward"
-    interactive: true
-    cmds:
-      - bash scripts/redis_ssh_tunnel.sh --env-file {{.ENV_FILE}}
-
-  redis:tunnel:down:
-    desc: "Stop Redis SSH tunnel and remove .env.redis-tunnel"
-    cmds:
-      - bash scripts/redis_ssh_tunnel.sh --down
-
-  console:
-    desc: "Run console dev server"
-    dir: console
-    cmds:
-      - npm run dev
-
-  console:i:
-    desc: "Install console dependencies"
-    dir: console
-    cmds:
-      - npm install
-
   run:
-    desc: "Build & start vault *-base + console (dev) or prod stack (secure). Requires NFX-Edge network {{.NETWORK}}."
-    interactive: true
+    desc: "Generate langs then start tls/file/analysis/system/dns + console (ENV=dev|secure). Requires NFX-Edge network {{.EDGE_NETWORK}}."
     cmds:
       - go run ./errors/cmd/gen_langs/ {{.ERRORS_DIR}} {{if eq .ENV "secure"}}--prod{{end}}
       - go run ./messages/cmd/gen_langs/ {{.MESSAGES_DIR}}
       - |
-        echo "==> ensure docker network {{.NETWORK}}"
-        if sudo docker network inspect {{.NETWORK}}; then
-          echo "  network {{.NETWORK}} already exists"
+        echo "==> ensure docker network {{.EDGE_NETWORK}}"
+        if sudo docker network inspect {{.EDGE_NETWORK}}; then
+          echo "  network {{.EDGE_NETWORK}} already exists"
         else
-          echo "ERROR: Docker network {{.NETWORK}} missing. Start NFX-Edge first."
+          echo "ERROR: Docker network {{.EDGE_NETWORK}} missing. Start NFX-Edge first."
           exit 1
         fi
       - |
-        ENV_FILE="{{.ENV_FILE}}"
-        if [[ "{{.ENV}}" == "secure" && ! -f "$ENV_FILE" ]]; then
-          ENV_FILE=".env"
-        fi
-        ENV_ARGS=(--env-file "$ENV_FILE")
-        if [[ -f .env.redis-tunnel ]]; then
-          ENV_ARGS+=(--env-file .env.redis-tunnel)
-        fi
-        if [[ "{{.ENV}}" == "secure" ]]; then
-          echo "==> docker compose up (prod)"
-          sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} up -d --build
-        else
-          for svc in tls-base file-base analysis-base system-base dns-base console; do
-            echo "==> docker compose build $svc"
-            sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} build "$svc"
-          done
-          echo "==> docker compose up"
-          sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} up
-        fi
+        ENV_ARGS=(--env-file "{{.ENV_FILE}}")
+        echo "==> compose env: {{.ENV_FILE}}"
+        svcs=(tls-base file-base analysis-base system-base dns-base console)
+        for svc in "${svcs[@]}"; do
+          echo "==> docker compose build $svc"
+          sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} build "$svc"
+        done
+        echo "==> docker compose up"
+        sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} up {{if eq .ENV "secure"}}-d{{end}}
 
   run:rebuild:
-    desc: "Force-rebuild (--no-cache) vault services + console (ENV=dev|secure)."
-    interactive: true
+    desc: "Force-rebuild (--no-cache) tls/file/analysis/system/dns + console (ENV=dev|secure)"
     cmds:
       - go run ./errors/cmd/gen_langs/ {{.ERRORS_DIR}} {{if eq .ENV "secure"}}--prod{{end}}
+      - go run ./messages/cmd/gen_langs/ {{.MESSAGES_DIR}}
       - |
-        echo "==> ensure docker network {{.NETWORK}}"
-        if sudo docker network inspect {{.NETWORK}}; then
-          echo "  network {{.NETWORK}} already exists"
+        echo "==> ensure docker network {{.EDGE_NETWORK}}"
+        if sudo docker network inspect {{.EDGE_NETWORK}}; then
+          echo "  network {{.EDGE_NETWORK}} already exists"
         else
-          echo "ERROR: Docker network {{.NETWORK}} missing. Start NFX-Edge first."
+          echo "ERROR: Docker network {{.EDGE_NETWORK}} missing. Start NFX-Edge first."
           exit 1
         fi
       - |
-        ENV_FILE="{{.ENV_FILE}}"
-        if [[ "{{.ENV}}" == "secure" && ! -f "$ENV_FILE" ]]; then
-          ENV_FILE=".env"
-        fi
-        ENV_ARGS=(--env-file "$ENV_FILE")
-        if [[ "{{.ENV}}" == "secure" ]]; then
-          sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} build --no-cache
-          sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} up -d
-        else
-          for svc in tls-base file-base analysis-base system-base dns-base console; do
-            echo "==> docker compose build --no-cache $svc"
-            sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} build --no-cache "$svc"
-          done
-          sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} up
-        fi
+        ENV_ARGS=(--env-file "{{.ENV_FILE}}")
+        svcs=(tls-base file-base analysis-base system-base dns-base console)
+        for svc in "${svcs[@]}"; do
+          echo "==> docker compose build --no-cache $svc"
+          sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} build --no-cache "$svc"
+        done
+        echo "==> docker compose up"
+        sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} up {{if eq .ENV "secure"}}-d{{end}}
 
   run:down:
     desc: "Stop the app stack (ENV=dev|secure)"
     cmds:
-      - |
-        ENV_FILE="{{.ENV_FILE}}"
-        if [[ "{{.ENV}}" == "secure" && ! -f "$ENV_FILE" ]]; then
-          ENV_FILE=".env"
-        fi
-        sudo docker compose --env-file "$ENV_FILE" -f {{.APP_COMPOSE}} down
+      - sudo docker compose --env-file {{.ENV_FILE}} -f {{.APP_COMPOSE}} down
 
   atlas:gen-models:
     desc: "Generate Go models from the PostgreSQL schema (ENV=dev|secure)"
@@ -313,3 +267,15 @@ tasks:
     desc: "Truncate all table data in dns/vault/system (dev only). Pass -- --yes to skip prompt."
     cmds:
       - go run ./scripts/cleardata/ {{.CLI_ARGS}}
+
+  console:
+    desc: "Run console dev server"
+    dir: console
+    cmds:
+      - npm run dev
+
+  console:i:
+    desc: "Install console dependencies"
+    dir: console
+    cmds:
+      - npm install

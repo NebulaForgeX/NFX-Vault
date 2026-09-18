@@ -19,7 +19,7 @@ import App from "./App.tsx";
 
 async function onLoadExtraBundles(lng: LanguageEnum) {
   try {
-    const bundle = await vaultRepositories.dns.GetErrorTranslations(lng);
+    const bundle = await vaultRepositories.system.GetErrorTranslations(lng);
     return { namespace: "errors", bundle: bundle as Record<string, unknown> };
   } catch {
     return null;

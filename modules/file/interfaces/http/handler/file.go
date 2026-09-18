@@ -1,7 +1,12 @@
 package handler
 
 import (
+	"os"
+
 	authconn "nfxvault/connections/auth"
+	commonErr "nfxvault/errors/src/common"
+	fileErr "nfxvault/errors/src/file"
+	sysErr "nfxvault/errors/src/sys"
 	fileapp "nfxvault/modules/file/application/file"
 	"nfxvault/pkgs/errx"
 	"nfxvault/pkgs/fiberx"
@@ -22,20 +27,20 @@ func NewFileHandler(svc *fileapp.Service, identity *authconn.Client) *FileHandle
 func (h *FileHandler) accountID(c fiber.Ctx) (string, *errx.Error) {
 	aid, ok := fiberx.AccountIDFromContext(c.Context())
 	if !ok {
-		return "", errx.Unauthorized("INVALID_TOKEN", "missing account")
+		return "", sysErr.ErrInvalidToken
 	}
 	pid, ok := fiberx.ProfileIDFromContext(c.Context())
 	if !ok {
-		return "", errx.Unauthorized("INVALID_TOKEN", "missing profile")
+		return "", sysErr.ErrInvalidToken
 	}
 	scope, _ := fiberx.ProfileScopeFromContext(c.Context())
 	if h.identity != nil {
 		allowed, err := h.identity.Account.EnsureOwnedProfile(c.Context(), aid, pid, scope)
 		if err != nil {
-			return "", errx.Unauthorized("IDENTITY_UNAVAILABLE", "identity lookup failed").WithCause(err)
+			return "", commonErr.ErrIdentityUnavailable
 		}
 		if !allowed {
-			return "", errx.Unauthorized("PROFILE_NOT_OWNED", "profile does not belong to account")
+			return "", commonErr.ErrProfileNotOwned
 		}
 	}
 	return aid.String(), nil
@@ -64,7 +69,10 @@ func (h *FileHandler) Download(c fiber.Ctx) error {
 	}
 	b, name, mt, err := h.svc.Download(c.Context(), aid, c.Query("path"))
 	if err != nil {
-		return c.Status(404).JSON(map[string]any{"success": false, "message": err.Error()})
+		if os.IsPermission(err) {
+			return fiberx.ErrorFromErrx(c, fileErr.ErrInvalidPath)
+		}
+		return fiberx.ErrorFromErrx(c, fileErr.ErrFileNotFound)
 	}
 	c.Set("Content-Type", mt)
 	c.Set("Content-Disposition", `attachment; filename="`+name+`"`)

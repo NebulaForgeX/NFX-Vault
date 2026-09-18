@@ -19,6 +19,7 @@ import {
   DeleteCertificate,
   GetCertificateDetailById,
   GetCertificateList,
+  GetErrorTranslations,
   InvalidateCache,
   ParseCertificatePreview,
   ReapplyCertificate,
@@ -26,11 +27,11 @@ import {
   UpdateManualAddCertificate,
   type GetCertificateListParams,
   type InvalidateCacheResponse,
-} from "@/apis/cert.api";
+} from "@/apis/tls.api";
 
 export type { GetCertificateListParams };
 
-export interface CertRepository {
+export interface TlsRepository {
   GetCertificateList(params?: GetCertificateListParams): Promise<CertificateListResponse>;
   GetCertificateDetailById(certificateId: string, options?: { timeout?: number }): Promise<CertificateDetailResponse>;
   ApplyCertificate(request: ApplyCertificateRequest): Promise<CertificateResponse>;
@@ -41,9 +42,10 @@ export interface CertRepository {
   InvalidateCache(): Promise<InvalidateCacheResponse>;
   SearchCertificate(request: SearchCertificateRequest): Promise<SearchCertificateResponse>;
   ParseCertificatePreview(request: ParseCertificatePreviewRequest): Promise<ParseCertificatePreviewResponse>;
+  GetErrorTranslations(lang: string): Promise<Record<string, unknown>>;
 }
 
-export class ApiCertRepository implements CertRepository {
+export class ApiTlsRepository implements TlsRepository {
   GetCertificateList = GetCertificateList;
   GetCertificateDetailById = GetCertificateDetailById;
   ApplyCertificate = ApplyCertificate;
@@ -54,4 +56,5 @@ export class ApiCertRepository implements CertRepository {
   InvalidateCache = InvalidateCache;
   SearchCertificate = SearchCertificate;
   ParseCertificatePreview = ParseCertificatePreview;
+  GetErrorTranslations = GetErrorTranslations;
 }

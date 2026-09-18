@@ -1,6 +1,7 @@
 import type { FileListResponse } from "@/types";
+import { FileItemTypeEnum, FileStoreEnum } from "@/enums";
 import { safeOr } from "nfx-ui/utils";
-import { protectedClient } from "@/apis/clients";
+import { protectedClient, publicClient } from "@/apis/clients";
 import { URL_PATHS } from "./ip";
 import { AuthStore } from "nfx-ui/stores";
 
@@ -24,9 +25,9 @@ export interface ExportSingleCertificateResponse {
   success: boolean;
   message: string;
   store?: string;
-  folder_name?: string;
+  folderName?: string;
   domain?: string;
-  certificate_id?: string;
+  certificateId?: string;
 }
 
 export const ExportSingleCertificate = async (params: ExportSingleCertificateParams): Promise<ExportSingleCertificateResponse> => {
@@ -72,9 +73,9 @@ export const GetFileContent = async (filePath: string): Promise<FileContentRespo
 };
 
 export interface DeleteFileOrFolderRequest {
-  store: "websites";
+  store: FileStoreEnum;
   path: string;
-  item_type: "file" | "folder";
+  itemType: FileItemTypeEnum;
 }
 
 export interface DeleteFileOrFolderResponse {
@@ -86,5 +87,10 @@ export const DeleteFileOrFolder = async (request: DeleteFileOrFolderRequest): Pr
   const { data } = await protectedClient.delete<DeleteFileOrFolderResponse>(URL_PATHS.FILE.delete, {
     data: request,
   });
+  return data;
+};
+
+export const GetErrorTranslations = async (lang: string): Promise<Record<string, unknown>> => {
+  const { data } = await publicClient.get<Record<string, unknown>>(URL_PATHS.FILE.i18nErrors(lang));
   return data;
 };

@@ -10,8 +10,8 @@ export function useVaultRepositories(): VaultRepositories {
   return ctx;
 }
 
-export function useCertRepository() {
-  return useVaultRepositories().cert;
+export function useTlsRepository() {
+  return useVaultRepositories().tls;
 }
 
 export function useFileRepository() {
@@ -20,6 +20,10 @@ export function useFileRepository() {
 
 export function useAnalysisRepository() {
   return useVaultRepositories().analysis;
+}
+
+export function useSystemRepository() {
+  return useVaultRepositories().system;
 }
 
 export function useDnsRepository() {

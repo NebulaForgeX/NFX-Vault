@@ -21,6 +21,7 @@ export const URL_PATHS = {
     invalidateCache: "/invalidate-cache",
     search: "/search",
     parsePreview: "/parse-preview",
+    i18nErrors: (lang: string) => `/i18n/errors/${lang}`,
   }),
 
   FILE: path("/vault/file", {
@@ -30,10 +31,18 @@ export const URL_PATHS = {
     download: "/download",
     content: "/content",
     delete: "/delete",
+    i18nErrors: (lang: string) => `/i18n/errors/${lang}`,
   }),
 
   ANALYSIS: path("/vault/analysis", {
     tls: "/tls",
+    i18nErrors: (lang: string) => `/i18n/errors/${lang}`,
+  }),
+
+  SYSTEM: path("/system", {
+    latest: "/system-state/latest",
+    initialize: "/system-state/initialize",
+    i18nErrors: (lang: string) => `/i18n/errors/${lang}`,
   }),
 
   DNS: path("/vault/dns", {

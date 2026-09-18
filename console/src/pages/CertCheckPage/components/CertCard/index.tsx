@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components";
 import { safeMaybe } from "nfx-ui/utils";
 import type { CertificateInfo } from "@/types";
-import { CertificateStatus } from "@/types";
+import { CertificateStatusEnum } from "@/enums";
 import { AlertCircle, Edit, Eye, Trash2, Loader2, AlertTriangle } from "@/assets/icons/lucide";
 import { useCertificateListAccent, useCertificateTime } from "@/hooks";
 import { useActionCertificateItem } from "../../hooks";
@@ -90,7 +90,7 @@ const CertCard = memo(({ cert }: CertCardProps) => {
         </dl>
 
         <footer className={styles.certActions} onClick={(e) => e.stopPropagation()}>
-          {cert.status === CertificateStatus.PROCESS && (
+          {cert.status === CertificateStatusEnum.PROCESS && (
             <Button
               type="button"
               variant="ghost"

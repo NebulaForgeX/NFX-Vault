@@ -25,7 +25,7 @@ export const useExportToFolder = ({ certificateId }: UseExportToFolderProps) => 
         showSuccess(
           result.message ||
             t("export.success.websitesFolder") ||
-            `Certificate exported to Websites/${result.folder_name || ""}`,
+            `Certificate exported to Websites/${result.folderName || ""}`,
         );
       } else {
         showError(result.message || t("export.error.failed") || "Failed to export certificate");

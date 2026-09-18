@@ -1,9 +1,11 @@
 /**
- * Domain keys for cert service (align with Sjgz-Admin / nfx-ui constants)
+ * Domain keys aligned with backend modules.
  */
-export const DOMAIN_CERT = "cert";
-export const DOMAIN_CERT_CERTIFICATE = "certificate";
+export const DOMAIN_TLS = "tls";
+export const DOMAIN_TLS_CERTIFICATE = "certificate";
 export const DOMAIN_DNS = "dns";
 export const DOMAIN_DNS_CREDENTIAL = "credential";
 export const DOMAIN_DNS_DOMAIN = "domain";
 export const DOMAIN_DNS_HOST = "host";
+export const DOMAIN_SYSTEM = "system";
+export const DOMAIN_SYSTEM_STATE = "state";

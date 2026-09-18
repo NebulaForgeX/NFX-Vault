@@ -1,5 +1,5 @@
 /**
- * Cert hooks — nfx-ui/hooks + CertRepository
+ * TLS hooks — nfx-ui/hooks + TlsRepository
  */
 import type {
   ApplyCertificateRequest,
@@ -19,23 +19,23 @@ import { useUnifiedSuspenseInfiniteQuery, useUnifiedSuspenseQuery } from "nfx-ui
 import { getApiErrorMessage } from "nfx-ui/utils";
 import { showError } from "nfx-ui/stores";
 
-import { useCertRepository, useFileRepository } from "@/apis/repositories";
-import { CERT_DETAIL, CERT_LIST } from "@/constants";
-import { certEventEmitter } from "@/events/cert";
+import { useFileRepository, useTlsRepository } from "@/apis/repositories";
+import { TLS_DETAIL, TLS_LIST } from "@/constants";
+import { tlsEventEmitter } from "@/events/tls";
 
 export const useCertificateList = (options?: SuspenseInfiniteQueryOptions<CertificateInfo>) => {
-  const cert = useCertRepository();
+  const tls = useTlsRepository();
   return useUnifiedSuspenseInfiniteQuery<CertificateInfo, { offset?: number; limit?: number }>(
-    (params) => cert.GetCertificateList({ offset: params.offset, limit: params.limit }),
-    CERT_LIST,
+    (params) => tls.GetCertificateList({ offset: params.offset, limit: params.limit }),
+    TLS_LIST,
     {},
     options,
   );
 };
 
 export const useCertificateDetailById = (certificateId: string, options?: SuspenseUnifiedQueryOptions<CertificateDetailResponse>) => {
-  const cert = useCertRepository();
-  return useUnifiedSuspenseQuery((p: { id: string }) => cert.GetCertificateDetailById(p.id), CERT_DETAIL(certificateId), { id: certificateId }, options);
+  const tls = useTlsRepository();
+  return useUnifiedSuspenseQuery((p: { id: string }) => tls.GetCertificateDetailById(p.id), TLS_DETAIL(certificateId), { id: certificateId }, options);
 };
 
 export const useExportCertificates = () => {
@@ -43,93 +43,93 @@ export const useExportCertificates = () => {
   return useMutation({
     mutationFn: () => file.ExportCertificates(),
     onSuccess: () => {
-      certEventEmitter.invalidateCertificates();
+      tlsEventEmitter.invalidateTls();
     },
     onError: (error: AxiosError) => showError(getApiErrorMessage(error, "[useExportCertificates]")),
   });
 };
 
 export const useInvalidateCache = () => {
-  const cert = useCertRepository();
+  const tls = useTlsRepository();
   return useMutation({
-    mutationFn: () => cert.InvalidateCache(),
+    mutationFn: () => tls.InvalidateCache(),
     onSuccess: () => {
-      certEventEmitter.invalidateCertificates();
+      tlsEventEmitter.invalidateTls();
     },
     onError: (error: AxiosError) => showError(getApiErrorMessage(error, "[useInvalidateCache]")),
   });
 };
 
-async function invalidateServerCertCacheAfterIssueSuccess(cert: { InvalidateCache(): Promise<unknown> }, data: { success?: boolean }) {
+async function invalidateServerTlsCacheAfterIssueSuccess(tls: { InvalidateCache(): Promise<unknown> }, data: { success?: boolean }) {
   if (!data.success) return;
   try {
-    await cert.InvalidateCache();
+    await tls.InvalidateCache();
   } catch {
     /* 后端可能已清缓存；仍发前端刷新事件 */
   }
 }
 
 export const useApplyCertificate = () => {
-  const cert = useCertRepository();
+  const tls = useTlsRepository();
   return useMutation({
-    mutationFn: (request: ApplyCertificateRequest) => cert.ApplyCertificate(request),
+    mutationFn: (request: ApplyCertificateRequest) => tls.ApplyCertificate(request),
     onSuccess: async (data) => {
-      await invalidateServerCertCacheAfterIssueSuccess(cert, data);
-      certEventEmitter.invalidateCertificates();
+      await invalidateServerTlsCacheAfterIssueSuccess(tls, data);
+      tlsEventEmitter.invalidateTls();
     },
     onError: (error: AxiosError) => showError(getApiErrorMessage(error, "[useApplyCertificate]")),
   });
 };
 
 export const useReapplyCertificate = () => {
-  const cert = useCertRepository();
+  const tls = useTlsRepository();
   return useMutation({
-    mutationFn: (request: ReapplyCertificateRequest) => cert.ReapplyCertificate(request),
+    mutationFn: (request: ReapplyCertificateRequest) => tls.ReapplyCertificate(request),
     onSuccess: async (data) => {
-      await invalidateServerCertCacheAfterIssueSuccess(cert, data);
-      certEventEmitter.invalidateCertificates();
+      await invalidateServerTlsCacheAfterIssueSuccess(tls, data);
+      tlsEventEmitter.invalidateTls();
     },
     onError: (error: AxiosError) => showError(getApiErrorMessage(error, "[useReapplyCertificate]")),
   });
 };
 
 export const useCreateCertificate = () => {
-  const cert = useCertRepository();
+  const tls = useTlsRepository();
   return useMutation({
-    mutationFn: (request: CreateCertificateRequest) => cert.CreateCertificate(request),
+    mutationFn: (request: CreateCertificateRequest) => tls.CreateCertificate(request),
     onSuccess: () => {
-      certEventEmitter.invalidateCertificates();
+      tlsEventEmitter.invalidateTls();
     },
     onError: (error: AxiosError) => showError(getApiErrorMessage(error, "[useCreateCertificate]")),
   });
 };
 
 export const useUpdateManualAddCertificate = () => {
-  const cert = useCertRepository();
+  const tls = useTlsRepository();
   return useMutation({
-    mutationFn: (request: UpdateManualAddCertificateRequest) => cert.UpdateManualAddCertificate(request),
+    mutationFn: (request: UpdateManualAddCertificateRequest) => tls.UpdateManualAddCertificate(request),
     onSuccess: (_data, variables) => {
-      certEventEmitter.invalidateCertificates(variables.certificateId ? CERT_DETAIL(variables.certificateId) : undefined);
+      tlsEventEmitter.invalidateTls(variables.certificateId ? TLS_DETAIL(variables.certificateId) : undefined);
     },
     onError: (error: AxiosError) => showError(getApiErrorMessage(error, "[useUpdateManualAddCertificate]")),
   });
 };
 
 export const useDeleteCertificate = () => {
-  const cert = useCertRepository();
+  const tls = useTlsRepository();
   return useMutation({
-    mutationFn: (request: DeleteCertificateRequest) => cert.DeleteCertificate(request),
+    mutationFn: (request: DeleteCertificateRequest) => tls.DeleteCertificate(request),
     onSuccess: () => {
-      certEventEmitter.invalidateCertificates();
+      tlsEventEmitter.invalidateTls();
     },
     onError: (error: AxiosError) => showError(getApiErrorMessage(error, "[useDeleteCertificate]")),
   });
 };
 
 export const useParseCertificatePreview = () => {
-  const cert = useCertRepository();
+  const tls = useTlsRepository();
   return useMutation({
-    mutationFn: (request: ParseCertificatePreviewRequest) => cert.ParseCertificatePreview(request),
+    mutationFn: (request: ParseCertificatePreviewRequest) => tls.ParseCertificatePreview(request),
     onError: (error: AxiosError) => showError(getApiErrorMessage(error, "[useParseCertificatePreview]")),
   });
 };

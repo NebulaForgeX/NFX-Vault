@@ -7,6 +7,7 @@ import {
   ExportSingleCertificate,
   GetFileContent,
   ListDirectory,
+  GetErrorTranslations,
   type DeleteFileOrFolderRequest,
   type DeleteFileOrFolderResponse,
   type ExportSingleCertificateParams,
@@ -23,6 +24,7 @@ export interface FileRepository {
   downloadFile(filePath: string, folderName: string): Promise<void>;
   GetFileContent(filePath: string): Promise<FileContentResponse>;
   DeleteFileOrFolder(request: DeleteFileOrFolderRequest): Promise<DeleteFileOrFolderResponse>;
+  GetErrorTranslations(lang: string): Promise<Record<string, unknown>>;
 }
 
 export class ApiFileRepository implements FileRepository {
@@ -32,4 +34,5 @@ export class ApiFileRepository implements FileRepository {
   downloadFile = downloadFile;
   GetFileContent = GetFileContent;
   DeleteFileOrFolder = DeleteFileOrFolder;
+  GetErrorTranslations = GetErrorTranslations;
 }

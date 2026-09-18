@@ -1,12 +1,12 @@
 /**
  * 证书领域类型 — 与 NFX-Vault Backend 对齐（无 store / source 列）
  */
-import type { CertificateStatus } from "../enums";
+import type { CertificateStatusEnum } from "@/enums";
 
 export interface CertificateInfo {
   id: string;
   domain: string;
-  status?: CertificateStatus;
+  status?: CertificateStatusEnum;
   email?: string;
   folderName?: string;
   issuer?: string;
@@ -29,7 +29,7 @@ export interface CertificateListResponse {
 export interface CertificateDetailResponse {
   id: string;
   domain: string;
-  status?: CertificateStatus;
+  status?: CertificateStatusEnum;
   email?: string;
   folderName?: string;
   issuer?: string;
@@ -48,7 +48,7 @@ export interface CertificateDetailResponse {
 export interface CertificateResponse {
   success: boolean;
   message: string;
-  status?: CertificateStatus;
+  status?: CertificateStatusEnum;
   error?: string;
   certificateId?: string;
   rateLimit?: boolean;

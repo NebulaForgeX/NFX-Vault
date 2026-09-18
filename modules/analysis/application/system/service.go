@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
+	systemErr "nfxvault/errors/src/system"
 	systemstateDomain "nfxvault/modules/analysis/domain/systemstate"
 	systemstateQuery "nfxvault/modules/analysis/query/systemstate"
-	"nfxvault/pkgs/errx"
 
 	"github.com/google/uuid"
 )
@@ -25,7 +25,7 @@ func NewService(repo *systemstateDomain.Repo, query *systemstateQuery.Query) *Se
 func (s *Service) Latest(ctx context.Context) (*State, error) {
 	row, err := s.query.Latest.Get(ctx)
 	if err != nil {
-		return nil, errx.Internal("SYSTEM_STATE", "lookup failed").WithCause(err)
+		return nil, systemErr.ErrSystemState.WithCause(err)
 	}
 	if row == nil {
 		return &State{Initialized: false}, nil
@@ -41,7 +41,7 @@ func (s *Service) Initialize(ctx context.Context, version string) (*State, error
 		st.InitializationVersion = &version
 	}
 	if err := s.repo.Create.New(ctx, systemstateDomain.NewFromState(st)); err != nil {
-		return nil, errx.Internal("SYSTEM_STATE", "initialize failed").WithCause(err)
+		return nil, systemErr.ErrSystemState.WithCause(err)
 	}
 	return &State{ID: id, Initialized: true, InitializedAt: &now, InitializationVersion: st.InitializationVersion, CreatedAt: now, UpdatedAt: now}, nil
 }

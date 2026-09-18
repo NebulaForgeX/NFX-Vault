@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import type { CertificateInfo } from "@/types";
-import { CertificateStatus } from "@/types";
+import { CertificateStatusEnum } from "@/enums";
 
 export interface CertificateStatusInfo {
   label: string;
@@ -20,10 +20,10 @@ export const useCertificateListAccent = (cert: CertificateInfo | undefined): str
     if (!cert) {
       return "var(--color-border-4)";
     }
-    if (cert.status === CertificateStatus.FAIL) {
+    if (cert.status === CertificateStatusEnum.FAIL) {
       return "var(--color-danger)";
     }
-    if (cert.status === CertificateStatus.PROCESS) {
+    if (cert.status === CertificateStatusEnum.PROCESS) {
       return "var(--color-primary)";
     }
     const isExpired = !cert.isValid || (cert.daysRemaining !== undefined && cert.daysRemaining <= 0);
@@ -48,10 +48,10 @@ export const useCertificateStatus = (cert: CertificateInfo | undefined): string 
     if (!cert || !cert.status) {
       return "var(--color-fg)";
     }
-    if (cert.status === CertificateStatus.SUCCESS) {
+    if (cert.status === CertificateStatusEnum.SUCCESS) {
       return "var(--color-success)";
     }
-    if (cert.status === CertificateStatus.FAIL) {
+    if (cert.status === CertificateStatusEnum.FAIL) {
       return "var(--color-danger)";
     }
     return "var(--color-fg)";

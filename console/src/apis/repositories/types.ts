@@ -1,11 +1,13 @@
 import type { AnalysisRepository } from "./AnalysisRepository";
-import type { CertRepository } from "./CertRepository";
 import type { DnsRepository } from "./DnsRepository";
 import type { FileRepository } from "./FileRepository";
+import type { SystemRepository } from "./SystemRepository";
+import type { TlsRepository } from "./TlsRepository";
 
 export interface VaultRepositories {
-  cert: CertRepository;
+  tls: TlsRepository;
   file: FileRepository;
   analysis: AnalysisRepository;
+  system: SystemRepository;
   dns: DnsRepository;
 }

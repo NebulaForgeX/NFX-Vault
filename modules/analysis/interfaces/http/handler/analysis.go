@@ -1,6 +1,7 @@
 package handler
 
 import (
+	analysisErr "nfxvault/errors/src/analysis"
 	analysisapp "nfxvault/modules/analysis/application/analysis"
 	"nfxvault/pkgs/fiberx"
 	"nfxvault/pkgs/httpx"
@@ -20,5 +21,9 @@ func (h *AnalysisHandler) TLS(c fiber.Ctx) error {
 	if err := c.Bind().Body(&req); err != nil {
 		return err
 	}
-	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: h.svc.AnalyzeTLS(req.Certificate, req.PrivateKey)})
+	out := h.svc.AnalyzeTLS(req.Certificate, req.PrivateKey)
+	if !out.Success {
+		return fiberx.ErrorFromErrx(c, analysisErr.ErrAnalysisFailed)
+	}
+	return fiberx.OK(c, "ok", httpx.SuccessOptions{Data: out})
 }

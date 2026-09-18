@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	tlsErr "nfxvault/errors/src/tls"
 	"nfxvault/events"
 	certDomain "nfxvault/modules/tls/domain/certificate"
 	"nfxvault/modules/tls/infrastructure/certbot"
@@ -15,7 +16,6 @@ import (
 	repofactory "nfxvault/modules/tls/infrastructure/repository/factory"
 	certQuery "nfxvault/modules/tls/query/certificate"
 	"nfxvault/pkgs/cachex"
-	"nfxvault/pkgs/errx"
 	"nfxvault/pkgs/kafkax/eventbus"
 	"nfxvault/pkgs/transaction"
 
@@ -86,7 +86,7 @@ func (s *Service) Detail(ctx context.Context, accountID, id string) (*Certificat
 		return nil, err
 	}
 	if !owned(row, accountID) {
-		return nil, errx.NotFound("CERTIFICATE_NOT_FOUND", "certificate not found")
+		return nil, tlsErr.ErrCertificateNotFound
 	}
 	return row, nil
 }

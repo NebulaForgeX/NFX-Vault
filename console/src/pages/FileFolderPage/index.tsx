@@ -11,10 +11,11 @@ import { routerEventEmitter } from "@/events/router";
 import { ROUTES } from "@/navigations";
 import { useDeleteFileOrFolder, useDirectoryList, useDownloadFile } from "@/hooks/file";
 import type { FileItem } from "@/types";
+import { FileItemTypeEnum, FileStoreEnum } from "@/enums";
 import { ModalStore, showConfirm } from "@/stores/modalStore";
 import { FolderItem, FileItem as FileItemComponent } from "./components";
 
-const STORE = "websites" as const;
+const STORE = FileStoreEnum.WEBSITES;
 
 const FileFolderPage = memo(() => {
   const [searchParams] = useSearchParams();
@@ -72,8 +73,8 @@ const FileFolderPage = memo(() => {
   const handleDelete = async (item: FileItem, e: React.MouseEvent) => {
     e.stopPropagation();
 
-    const itemType = item.type === "directory" ? "folder" : "file";
-    const itemName = itemType === "folder" ? "folder" : "file";
+    const itemType = item.type === "directory" ? FileItemTypeEnum.FOLDER : FileItemTypeEnum.FILE;
+    const itemName = itemType === FileItemTypeEnum.FOLDER ? "folder" : "file";
 
     showConfirm({
       title: `Delete ${itemName.charAt(0).toUpperCase() + itemName.slice(1)}`,
@@ -85,7 +86,7 @@ const FileFolderPage = memo(() => {
           const result = await deleteMutation.mutateAsync({
             store: STORE,
             path: item.path,
-            item_type: itemType,
+            itemType,
           });
 
           if (result.success) {

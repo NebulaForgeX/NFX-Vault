@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	fileErr "nfxvault/errors/src/file"
+	tlsErr "nfxvault/errors/src/tls"
 	"nfxvault/events"
 	fsstore "nfxvault/modules/file/infrastructure/fs"
 	certQuery "nfxvault/modules/tls/query/certificate"
@@ -22,18 +24,18 @@ func NewService(certs *certQuery.Query, fs *fsstore.Store, bus *eventbus.BusPubl
 }
 
 type CommandResult struct {
-	Success       bool           `json:"success"`
-	Message       string         `json:"message"`
-	Store         string         `json:"store,omitempty"`
-	Path          string         `json:"path,omitempty"`
-	ItemType      string         `json:"item_type,omitempty"`
+	Success       bool            `json:"success"`
+	Message       string          `json:"message"`
+	Store         string          `json:"store,omitempty"`
+	Path          string          `json:"path,omitempty"`
+	ItemType      string          `json:"item_type,omitempty"`
 	Items         []fsstore.Entry `json:"items,omitempty"`
-	Content       *string        `json:"content,omitempty"`
-	Filename      *string        `json:"filename,omitempty"`
-	FolderName    string         `json:"folder_name,omitempty"`
-	Domain        string         `json:"domain,omitempty"`
-	CertificateID string         `json:"certificate_id,omitempty"`
-	Exported      int            `json:"exported,omitempty"`
+	Content       *string         `json:"content,omitempty"`
+	Filename      *string         `json:"filename,omitempty"`
+	FolderName    string          `json:"folder_name,omitempty"`
+	Domain        string          `json:"domain,omitempty"`
+	CertificateID string          `json:"certificate_id,omitempty"`
+	Exported      int             `json:"exported,omitempty"`
 }
 
 func firstSegment(subpath string) string {
@@ -75,20 +77,20 @@ func (s *Service) pathAllowed(ctx context.Context, accountID, subpath string) bo
 
 func (s *Service) List(ctx context.Context, accountID, subpath string) CommandResult {
 	if !s.pathAllowed(ctx, accountID, subpath) {
-		return CommandResult{Success: false, Message: "Directory not found: " + subpath, Items: []fsstore.Entry{}}
+		return CommandResult{Success: false, Message: fileErr.ErrFileNotFound.Message, Items: []fsstore.Entry{}}
 	}
 	store, path, items, err := s.fs.List(subpath)
 	if err != nil {
-		msg := "Directory not found: " + subpath
+		msg := fileErr.ErrFileNotFound.Message
 		if os.IsPermission(err) {
-			msg = "Invalid path"
+			msg = fileErr.ErrInvalidPath.Message
 		}
 		return CommandResult{Success: false, Message: msg, Items: []fsstore.Entry{}}
 	}
 	if firstSegment(subpath) == "" {
 		folders, ferr := s.ownedFolders(ctx, accountID)
 		if ferr != nil {
-			return CommandResult{Success: false, Message: ferr.Error(), Items: []fsstore.Entry{}}
+			return CommandResult{Success: false, Message: fileErr.ErrFileNotFound.Message, Items: []fsstore.Entry{}}
 		}
 		filtered := make([]fsstore.Entry, 0, len(items))
 		for _, item := range items {
@@ -103,11 +105,11 @@ func (s *Service) List(ctx context.Context, accountID, subpath string) CommandRe
 
 func (s *Service) Content(ctx context.Context, accountID, subpath string) CommandResult {
 	if !s.pathAllowed(ctx, accountID, subpath) || firstSegment(subpath) == "" {
-		return CommandResult{Success: false, Message: "not found"}
+		return CommandResult{Success: false, Message: fileErr.ErrFileNotFound.Message}
 	}
 	b, name, err := s.fs.Read(subpath)
 	if err != nil {
-		return CommandResult{Success: false, Message: err.Error()}
+		return CommandResult{Success: false, Message: fileErr.ErrFileNotFound.Message}
 	}
 	c, n := string(b), name
 	return CommandResult{Success: true, Message: "File read successfully", Content: &c, Filename: &n}
@@ -122,7 +124,7 @@ func (s *Service) Download(ctx context.Context, accountID, subpath string) (cont
 
 func (s *Service) Delete(ctx context.Context, accountID, store, p, itemType string) CommandResult {
 	if !s.pathAllowed(ctx, accountID, p) || firstSegment(p) == "" {
-		return CommandResult{Success: false, Message: "Path not found: " + p, Store: store, Path: p, ItemType: itemType}
+		return CommandResult{Success: false, Message: fileErr.ErrFileNotFound.Message, Store: store, Path: p, ItemType: itemType}
 	}
 	if store == "" {
 		store = "websites"
@@ -133,9 +135,9 @@ func (s *Service) Delete(ctx context.Context, accountID, store, p, itemType stri
 		s.publishDeleteFile(ctx, accountID, store, p, itemType)
 	}
 	if err := s.fs.Delete(store, p, itemType); err != nil {
-		msg := err.Error()
-		if os.IsNotExist(err) {
-			msg = "Path not found: " + p
+		msg := fileErr.ErrFileNotFound.Message
+		if os.IsPermission(err) {
+			msg = fileErr.ErrInvalidPath.Message
 		}
 		return CommandResult{Success: false, Message: msg, Store: store, Path: p, ItemType: itemType}
 	}
@@ -163,7 +165,7 @@ func (s *Service) HandleDeleteFileOrFolder(ctx context.Context, evt events.Delet
 func (s *Service) ExportSingle(ctx context.Context, accountID, certificateID string) CommandResult {
 	row, err := s.certs.List.ByID(ctx, certificateID)
 	if err != nil || row == nil || row.AccountID == nil || *row.AccountID != accountID {
-		return CommandResult{Success: false, Message: "certificate not found", CertificateID: certificateID}
+		return CommandResult{Success: false, Message: tlsErr.ErrCertificateNotFound.Message, CertificateID: certificateID}
 	}
 	folder := row.Domain
 	if row.FolderName != nil && *row.FolderName != "" {
@@ -177,7 +179,7 @@ func (s *Service) ExportSingle(ctx context.Context, accountID, certificateID str
 		key = *row.PrivateKey
 	}
 	if err := s.fs.WriteCertificate(folder, cert, key); err != nil {
-		return CommandResult{Success: false, Message: err.Error(), CertificateID: certificateID}
+		return CommandResult{Success: false, Message: fileErr.ErrFileNotFound.Message, CertificateID: certificateID}
 	}
 	s.publishExport(ctx, accountID, certificateID)
 	return CommandResult{
@@ -201,7 +203,7 @@ func (s *Service) HandleExportCertificate(ctx context.Context, evt events.Export
 func (s *Service) ExportAll(ctx context.Context, accountID string) CommandResult {
 	rows, _, err := s.certs.List.Page(ctx, accountID, "", 0, 5000, false)
 	if err != nil {
-		return CommandResult{Success: false, Message: err.Error()}
+		return CommandResult{Success: false, Message: fileErr.ErrFileNotFound.Message}
 	}
 	n := 0
 	for _, row := range rows {

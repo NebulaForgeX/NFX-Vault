@@ -6,6 +6,8 @@ import (
 	"strconv"
 
 	authconn "nfxvault/connections/auth"
+	commonErr "nfxvault/errors/src/common"
+	sysErr "nfxvault/errors/src/sys"
 	tlsapp "nfxvault/modules/tls/application/tls"
 	"nfxvault/pkgs/errx"
 	"nfxvault/pkgs/fiberx"
@@ -26,20 +28,20 @@ func NewTLSHandler(svc *tlsapp.Service, identity *authconn.Client) *TLSHandler {
 func (h *TLSHandler) accountProfile(c fiber.Ctx) (accountID, profileID string, ferr *errx.Error) {
 	aid, ok := fiberx.AccountIDFromContext(c.Context())
 	if !ok {
-		return "", "", errx.Unauthorized("INVALID_TOKEN", "missing account")
+		return "", "", sysErr.ErrInvalidToken
 	}
 	pid, ok := fiberx.ProfileIDFromContext(c.Context())
 	if !ok {
-		return "", "", errx.Unauthorized("INVALID_TOKEN", "missing profile")
+		return "", "", sysErr.ErrInvalidToken
 	}
 	scope, _ := fiberx.ProfileScopeFromContext(c.Context())
 	if h.identity != nil {
 		allowed, err := h.identity.Account.EnsureOwnedProfile(c.Context(), aid, pid, scope)
 		if err != nil {
-			return "", "", errx.Unauthorized("IDENTITY_UNAVAILABLE", "identity lookup failed").WithCause(err)
+			return "", "", commonErr.ErrIdentityUnavailable
 		}
 		if !allowed {
-			return "", "", errx.Unauthorized("PROFILE_NOT_OWNED", "profile does not belong to account")
+			return "", "", commonErr.ErrProfileNotOwned
 		}
 	}
 	return aid.String(), pid.String(), nil
