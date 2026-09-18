@@ -10,7 +10,7 @@ services:
     container_name: NFX-Vault-Tls-Base-Dev
     build:
       context: .
-      dockerfile: inputs/tls/base/Dockerfile
+      dockerfile: inputs/tls/configuration/Dockerfile.Base
       target: dev
     environment:
       - ENV=dev
@@ -70,7 +70,7 @@ services:
           path: .env
           target: /app/.env
         - action: rebuild
-          path: inputs/tls/base/Dockerfile
+          path: inputs/tls/configuration/Dockerfile.Base
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -82,7 +82,7 @@ services:
     container_name: NFX-Vault-File-Base-Dev
     build:
       context: .
-      dockerfile: inputs/file/base/Dockerfile
+      dockerfile: inputs/file/configuration/Dockerfile.Base
       target: dev
     environment:
       - ENV=dev
@@ -142,7 +142,7 @@ services:
           path: .env
           target: /app/.env
         - action: rebuild
-          path: inputs/file/base/Dockerfile
+          path: inputs/file/configuration/Dockerfile.Base
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -154,7 +154,7 @@ services:
     container_name: NFX-Vault-Analysis-Base-Dev
     build:
       context: .
-      dockerfile: inputs/analysis/base/Dockerfile
+      dockerfile: inputs/analysis/configuration/Dockerfile.Base
       target: dev
     environment:
       - ENV=dev
@@ -210,7 +210,7 @@ services:
           path: .env
           target: /app/.env
         - action: rebuild
-          path: inputs/analysis/base/Dockerfile
+          path: inputs/analysis/configuration/Dockerfile.Base
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -222,7 +222,7 @@ services:
     container_name: NFX-Vault-System-Base-Dev
     build:
       context: .
-      dockerfile: inputs/system/base/Dockerfile
+      dockerfile: inputs/system/configuration/Dockerfile.Base
       target: dev
     environment:
       - ENV=dev
@@ -278,7 +278,7 @@ services:
           path: .env
           target: /app/.env
         - action: rebuild
-          path: inputs/system/base/Dockerfile
+          path: inputs/system/configuration/Dockerfile.Base
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -290,7 +290,7 @@ services:
     container_name: NFX-Vault-Dns-Base-Dev
     build:
       context: .
-      dockerfile: inputs/dns/base/Dockerfile
+      dockerfile: inputs/dns/configuration/Dockerfile.Base
       target: dev
     environment:
       - ENV=dev
@@ -346,7 +346,7 @@ services:
           path: .env
           target: /app/.env
         - action: rebuild
-          path: inputs/dns/base/Dockerfile
+          path: inputs/dns/configuration/Dockerfile.Base
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
