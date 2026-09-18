@@ -353,6 +353,37 @@ services:
       - nfx-vault
       - nfx-edge
 
+  console:
+    image: nfx-vault-console:dev
+    container_name: NFX-Vault-Console-Dev
+    build:
+      context: ./console
+      dockerfile: Dockerfile
+      additional_contexts:
+        nfx-ui: ../NFX-UI
+      target: prod
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_IDENTITY_API_URL: ${VITE_IDENTITY_API_URL}
+    ports:
+      - "${CONSOLE_EXTERNAL_PORT}:${CONSOLE_PORT}"
+    labels:
+      traefik.enable: "true"
+      traefik.project: "nfx-vault"
+      traefik.http.services.vault-console.loadbalancer.server.port: "${CONSOLE_PORT}"
+      traefik.http.routers.vault-console.entrypoints: web
+      traefik.http.routers.vault-console.rule: Host(`${TRAEFIK_CONSOLE_HOST}`)
+      traefik.http.routers.vault-console.service: vault-console
+      traefik.http.routers.vault-console.priority: "1"
+      traefik.http.routers.vault-console-secure.entrypoints: websecure
+      traefik.http.routers.vault-console-secure.rule: Host(`${TRAEFIK_CONSOLE_HOST}`)
+      traefik.http.routers.vault-console-secure.service: vault-console
+      traefik.http.routers.vault-console-secure.tls: "true"
+      traefik.http.routers.vault-console-secure.priority: "1"
+    networks:
+      - nfx-vault
+      - nfx-edge
+
 networks:
   nfx-vault:
     name: nfx-vault

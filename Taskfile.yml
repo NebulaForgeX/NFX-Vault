@@ -129,7 +129,7 @@ tasks:
       - npm install
 
   run:
-    desc: "Build & start vault *-base (dev) or prod stack (secure). Requires NFX-Edge network {{.NETWORK}}."
+    desc: "Build & start vault *-base + console (dev) or prod stack (secure). Requires NFX-Edge network {{.NETWORK}}."
     interactive: true
     cmds:
       - go run ./errors/cmd/gen_langs/ {{.ERRORS_DIR}} {{if eq .ENV "secure"}}--prod{{end}}
@@ -155,7 +155,7 @@ tasks:
           echo "==> docker compose up (prod)"
           sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} up -d --build
         else
-          for svc in tls-base file-base analysis-base system-base dns-base; do
+          for svc in tls-base file-base analysis-base system-base dns-base console; do
             echo "==> docker compose build $svc"
             sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} build "$svc"
           done
@@ -164,7 +164,7 @@ tasks:
         fi
 
   run:rebuild:
-    desc: "Force-rebuild (--no-cache) vault services (ENV=dev|secure)."
+    desc: "Force-rebuild (--no-cache) vault services + console (ENV=dev|secure)."
     interactive: true
     cmds:
       - go run ./errors/cmd/gen_langs/ {{.ERRORS_DIR}} {{if eq .ENV "secure"}}--prod{{end}}
@@ -186,7 +186,7 @@ tasks:
           sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} build --no-cache
           sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} up -d
         else
-          for svc in tls-base file-base analysis-base system-base dns-base; do
+          for svc in tls-base file-base analysis-base system-base dns-base console; do
             echo "==> docker compose build --no-cache $svc"
             sudo docker compose "${ENV_ARGS[@]}" -f {{.APP_COMPOSE}} build --no-cache "$svc"
           done
