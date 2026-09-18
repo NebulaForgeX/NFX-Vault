@@ -21,7 +21,7 @@ services:
       - "${HTTP_PORT}"
       - "${GRPC_PORT_TLS}"
     ports:
-      - "${GRPC_PORT_TLS}:${GRPC_PORT_TLS}"
+      - "${GRPC_EXT_PORT_TLS}:${GRPC_PORT_TLS}"
     labels:
       traefik.enable: "true"
       traefik.project: "nfx-vault"
@@ -93,7 +93,7 @@ services:
       - "${HTTP_PORT}"
       - "${GRPC_PORT_FILE}"
     ports:
-      - "${GRPC_PORT_FILE}:${GRPC_PORT_FILE}"
+      - "${GRPC_EXT_PORT_FILE}:${GRPC_PORT_FILE}"
     labels:
       traefik.enable: "true"
       traefik.project: "nfx-vault"
@@ -163,7 +163,7 @@ services:
       - "${HTTP_PORT}"
       - "${GRPC_PORT_ANALYSIS}"
     ports:
-      - "${GRPC_PORT_ANALYSIS}:${GRPC_PORT_ANALYSIS}"
+      - "${GRPC_EXT_PORT_ANALYSIS}:${GRPC_PORT_ANALYSIS}"
     labels:
       traefik.enable: "true"
       traefik.project: "nfx-vault"
@@ -231,7 +231,7 @@ services:
       - "${HTTP_PORT}"
       - "${GRPC_PORT_SYSTEM}"
     ports:
-      - "${GRPC_PORT_SYSTEM}:${GRPC_PORT_SYSTEM}"
+      - "${GRPC_EXT_PORT_SYSTEM}:${GRPC_PORT_SYSTEM}"
     labels:
       traefik.enable: "true"
       traefik.project: "nfx-vault"
@@ -299,7 +299,7 @@ services:
       - "${HTTP_PORT}"
       - "${GRPC_PORT_DNS}"
     ports:
-      - "${GRPC_PORT_DNS}:${GRPC_PORT_DNS}"
+      - "${GRPC_EXT_PORT_DNS}:${GRPC_PORT_DNS}"
     labels:
       traefik.enable: "true"
       traefik.project: "nfx-vault"

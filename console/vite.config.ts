@@ -14,13 +14,13 @@ export default defineConfig(({ mode }) => {
   // - npm run preview → mode = "production"
   // - vite --mode staging → mode = "staging" (手动指定)
   
-  // 本地开发：仓库根 .env + console/.env.dev。Go Traefik 入口是 TRAEFIK_HTTP_PORT（10140）。
+  // 本地开发：仓库根 .env + console/.env.dev。HTTP 入口是 NFX-Edge（10166），不是本栈 Traefik。
   const envDir =
     process.env.DOCKER_BUILD === "1"
       ? path.resolve(__dirname)
       : path.resolve(__dirname, "../../");
   const env = { ...loadEnv(mode, envDir, ""), ...loadEnv(mode, __dirname, "") };
-  const apiURL = env.VITE_API_URL || `http://127.0.0.1:${env.TRAEFIK_HTTP_PORT || "10140"}`;
+  const apiURL = env.VITE_API_URL || "http://127.0.0.1:10166";
   const vitePort = Number(env.VITE_PORT) || 5175;
 
   // 调试信息（仅在开发环境输出）

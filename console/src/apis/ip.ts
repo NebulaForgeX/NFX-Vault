@@ -5,7 +5,7 @@ import { path } from "nfx-ui/apis";
 import { safeOr } from "nfx-ui/utils";
 
 /** Vite `import.meta.env` 为 `unknown`，与 `safeOr` 组合后需收窄为 `string` */
-const HTTP_BASE_URL: string = safeOr(import.meta.env.VITE_API_URL as string | undefined | null, "http://127.0.0.1:10140");
+const HTTP_BASE_URL: string = safeOr(import.meta.env.VITE_API_URL as string | undefined | null, "http://127.0.0.1:10166");
 const WS_BASE_URL: string = safeOr(import.meta.env.VITE_WS_URL as string | undefined | null, "");
 const IMAGE_BASE_URL: string = safeOr(import.meta.env.VITE_IMAGE_URL as string | undefined | null, "");
 
