@@ -6,12 +6,13 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuthRepository } from "nfx-ui/apis";
 import { AuthSignupPlatformEnum, LanguageEnum } from "nfx-ui/enums";
 import { useUnifiedQuery } from "nfx-ui/hooks";
-import { AuthStore, clearAuth, ensureDeviceIdStorage, showError } from "nfx-ui/stores";
+import { AuthStore, clearAuth, ensureDeviceIdStorage } from "nfx-ui/stores";
 import { useTranslation } from "react-i18next";
 
 import { authEventEmitter } from "@/events/auth";
 import { routerEventEmitter } from "@/events/router";
 import { ROUTES } from "@/navigations";
+import { showError } from "@/stores/modalStore";
 import { vaultApiErrorMessage } from "@/utils/vaultApiError";
 
 export function useSendSignupCode() {

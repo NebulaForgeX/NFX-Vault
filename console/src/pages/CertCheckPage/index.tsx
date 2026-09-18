@@ -8,7 +8,7 @@ import { useNavigate } from "react-router";
 
 import { useInvalidateCache } from "@/hooks";
 import { ROUTES } from "@/navigations";
-import { showError, showSuccess } from "nfx-ui/stores";
+import { showError, showSuccess } from "@/stores/modalStore";
 
 import { CertList } from "./components";
 

@@ -6,7 +6,7 @@ import type { NormalUnifiedQueryOptions } from "nfx-ui/hooks";
 import { useMutation } from "@tanstack/react-query";
 import { useUnifiedQuery } from "nfx-ui/hooks";
 import { getApiErrorMessage } from "nfx-ui/utils";
-import { showError } from "nfx-ui/stores";
+import { showError } from "@/stores/modalStore";
 
 import { useFileRepository } from "@/apis/repositories";
 import { FILE_CONTENT, FILE_DIRECTORY } from "@/constants";

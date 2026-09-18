@@ -5,7 +5,7 @@ import type { SystemState } from "@/apis/system.api";
 import { useMutation } from "@tanstack/react-query";
 import { useUnifiedQuery } from "nfx-ui/hooks";
 import { getApiErrorMessage } from "nfx-ui/utils";
-import { showError } from "nfx-ui/stores";
+import { showError } from "@/stores/modalStore";
 
 import { useSystemRepository } from "@/apis/repositories";
 import { SYSTEM_STATE } from "@/constants";

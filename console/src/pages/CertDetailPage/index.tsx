@@ -10,7 +10,7 @@ import { safeStringable } from "nfx-ui/utils";
 import { routerEventEmitter } from "@/events/router";
 import { useCertificateDetailById } from "@/hooks";
 import { ROUTES } from "@/navigations";
-import { showSuccess } from "nfx-ui/stores";
+import { showSuccess } from "@/stores/modalStore";
 import {
   CertDetailHeader,
   CertificateInfo,

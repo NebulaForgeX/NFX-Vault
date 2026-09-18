@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { showSuccess, showError } from "nfx-ui/stores";
+import { showSuccess, showError } from "@/stores/modalStore";
 
 import { useExportSingleCertificate } from "@/hooks/file";
 

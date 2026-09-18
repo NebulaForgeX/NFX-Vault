@@ -5,12 +5,10 @@ import { PageFrame } from "@/layouts";
 import { EmptyState, PageHeader } from "@/components";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
-import { showError, showSuccess } from "nfx-ui/stores";
-
 import { NamecheapHostTypeEnum } from "@/enums";
 import { routerEventEmitter } from "@/events/router";
 import { useDeleteNamecheapDdnsHost, useDnsOutboundIp, useNamecheapDdnsHosts, useNamecheapHosts, useUpdateDnsARecords, useUpsertNamecheapDdnsHost } from "@/hooks/dns";
-import { showConfirm } from "@/stores/modalStore";
+import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
 
 import styles from "../DnsPage/styles.module.css";
 

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { routerEventEmitter } from "@/events/router";
 import { useUpdateManualAddCertificate } from "@/hooks";
-import { showError, showSuccess } from "nfx-ui/stores";
+import { showError, showSuccess } from "@/stores/modalStore";
 import { ROUTES } from "@/navigations";
 
 export const useEditCertificate = (certificateId: string) => {

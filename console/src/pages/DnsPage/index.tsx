@@ -5,7 +5,7 @@ import { PageFrame } from "@/layouts";
 import { EmptyState, PageHeader } from "@/components";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { showError, showSuccess } from "nfx-ui/stores";
+import { showConfirm, showError, showSuccess } from "@/stores/modalStore";
 
 import {
   useDeleteNamecheapCredential,
@@ -17,7 +17,6 @@ import {
   useVerifyNamecheapCredential,
 } from "@/hooks/dns";
 import { ROUTES } from "@/navigations";
-import { showConfirm } from "@/stores/modalStore";
 
 import styles from "./styles.module.css";
 

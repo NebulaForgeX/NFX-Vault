@@ -5,14 +5,13 @@ import { PageFrame } from "@/layouts";
 import { EmptyState, PageHeader } from "@/components";
 import { useSearchParams } from "react-router";
 import { safeOr, safeStringable } from "nfx-ui/utils";
-import { showError, showSuccess } from "nfx-ui/stores";
+import type { FileItem } from "@/types";
 
+import { FileItemTypeEnum, FileStoreEnum } from "@/enums";
 import { routerEventEmitter } from "@/events/router";
 import { ROUTES } from "@/navigations";
 import { useDeleteFileOrFolder, useDirectoryList, useDownloadFile } from "@/hooks/file";
-import type { FileItem } from "@/types";
-import { FileItemTypeEnum, FileStoreEnum } from "@/enums";
-import { ModalStore, showConfirm } from "@/stores/modalStore";
+import { ModalStore, showConfirm, showError, showSuccess } from "@/stores/modalStore";
 import { FolderItem, FileItem as FileItemComponent } from "./components";
 
 const STORE = FileStoreEnum.WEBSITES;

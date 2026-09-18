@@ -16,7 +16,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useUnifiedQuery } from "nfx-ui/hooks";
 import { getApiErrorMessage } from "nfx-ui/utils";
-import { showError, showSuccess } from "nfx-ui/stores";
+import { showError, showSuccess } from "@/stores/modalStore";
 
 import { useDnsRepository } from "@/apis/repositories";
 import { DNS_CREDENTIAL, DNS_DDNS_HOSTS, DNS_DOMAIN_LIST, DNS_HOSTS, DNS_OUTBOUND_IP } from "@/constants";

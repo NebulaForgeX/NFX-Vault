@@ -18,7 +18,7 @@ import {
   WebrootController,
 } from "../../controllers";
 import { useParseCertificatePreview } from "@/hooks";
-import { showError, showSuccess } from "nfx-ui/stores";
+import { showError, showSuccess } from "@/stores/modalStore";
 
 import styles from "./styles.module.css";
 

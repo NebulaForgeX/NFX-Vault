@@ -3,7 +3,7 @@ import type { AxiosError } from "axios";
 
 import { useMutation } from "@tanstack/react-query";
 import { getApiErrorMessage } from "nfx-ui/utils";
-import { showError } from "nfx-ui/stores";
+import { showError } from "@/stores/modalStore";
 
 import { useAnalysisRepository } from "@/apis/repositories";
 

@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { routerEventEmitter } from "@/events/router";
 import { useApplyCertificate } from "@/hooks";
 import { ROUTES } from "@/navigations";
-import { showError, showSuccess } from "nfx-ui/stores";
+import { showError, showSuccess } from "@/stores/modalStore";
 
 export const useSubmitCertificate = () => {
   const { t } = useTranslation("common");

@@ -17,7 +17,7 @@ import type { SuspenseInfiniteQueryOptions, SuspenseUnifiedQueryOptions } from "
 import { useMutation } from "@tanstack/react-query";
 import { useUnifiedSuspenseInfiniteQuery, useUnifiedSuspenseQuery } from "nfx-ui/hooks";
 import { getApiErrorMessage } from "nfx-ui/utils";
-import { showError } from "nfx-ui/stores";
+import { showError } from "@/stores/modalStore";
 
 import { useFileRepository, useTlsRepository } from "@/apis/repositories";
 import { TLS_DETAIL, TLS_LIST } from "@/constants";

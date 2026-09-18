@@ -4,8 +4,7 @@ import { useTranslation } from "react-i18next";
 import { routerEventEmitter } from "@/events/router";
 import { ROUTES } from "@/navigations";
 import { buildCertCheckPath } from "@/utils/certCheckUrl";
-import { hideModal, showError, showLoading, showSuccess } from "nfx-ui/stores";
-import { showConfirm } from "@/stores/modalStore";
+import { hideModal, showConfirm, showError, showLoading, showSuccess } from "@/stores/modalStore";
 import { useCertificateDetailById, useDeleteCertificate, useReapplyCertificate } from "@/hooks";
 
 export const useOperationCertificate = (certificateId: string) => {
