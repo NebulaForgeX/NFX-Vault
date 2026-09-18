@@ -286,11 +286,10 @@ tasks:
         export POSTGRES_HOST="${POSTGRES_HOST:-$POSTGRESQL_HOST}"
         export POSTGRES_PORT="${POSTGRES_PORT:-$POSTGRESQL_PORT}"
         if [[ "{{.ENV}}" == "secure" ]]; then
-          export POSTGRES_DB_PROD="${POSTGRESQL_NAME_PROD:-nfxvault}"
-          atlas migrate status --env prod --config file://databases/atlas.hcl --dir file://databases/migrations/production
+          export POSTGRES_DB="${POSTGRES_DB:-${POSTGRESQL_NAME:-$POSTGRESQL_NAME_PROD}}"
+          atlas migrate status --env secure --config file://databases/atlas.hcl --dir file://databases/migrations/secure
         else
-          export POSTGRES_DB_DEV="${POSTGRESQL_NAME_DEV:-nfxvault_dev}"
-          export POSTGRES_DB_PROD="${POSTGRESQL_NAME_PROD:-nfxvault}"
+          export POSTGRES_DB="${POSTGRES_DB:-${POSTGRESQL_NAME:-$POSTGRESQL_NAME_DEV}}"
           export POSTGRES_DB_SHADOW="${POSTGRESQL_NAME_SHADOW:-nfxvault_diff}"
           atlas migrate status --env dev --config file://databases/atlas.hcl --dir file://databases/migrations/development
         fi
@@ -312,6 +311,7 @@ tasks:
         fi
         export POSTGRES_DB_SHADOW="${POSTGRES_DB_SHADOW:-${POSTGRESQL_NAME_SHADOW:-nfxvault_diff}}"
         export POSTGRES_SSLMODE="${POSTGRES_SSLMODE:-{{.POSTGRES_SSLMODE}}}"
+        export POSTGRES_CONTAINER_NAME="${POSTGRES_CONTAINER_NAME:-NFX-Stack-PostgreSQL}"
         export ATLAS_CONFIG_PATH="file://databases/atlas.hcl"
         bash run_atlas_pipeline.sh --{{.ENV}} {{.CLI_ARGS}}
 

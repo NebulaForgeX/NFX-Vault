@@ -82,12 +82,7 @@ for src in "${GEN_DIR}"/*.go; do
     schema_name="${BASH_REMATCH[1]}"
     table_name="${BASH_REMATCH[2]}"
     table_name="${table_name%.go}"
-    # DB schema "loop" maps to Go module "content" (Near-style module name).
-    module_name="${schema_name}"
-    if [[ "${schema_name}" == "loop" ]]; then
-      module_name="content"
-    fi
-    DEST_DIR="${REPO_ROOT}/modules/${module_name}/infrastructure/rdb/models"
+    DEST_DIR="${REPO_ROOT}/modules/${schema_name}/infrastructure/rdb/models"
     mkdir -p "${DEST_DIR}"
     rm -f "${DEST_DIR}/${table_name}_dbgen.go"
     dest_file="${DEST_DIR}/${table_name}_dbgen.go"

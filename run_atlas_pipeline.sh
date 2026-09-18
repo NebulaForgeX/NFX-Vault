@@ -133,7 +133,7 @@ fi
 
 if [[ "${ENV}" == "secure" ]]; then
   write_header "Running Atlas pipeline for SECURE"
-  export ATLAS_ENV=prod
+  export ATLAS_ENV=secure
 else
   write_header "Running Atlas pipeline for DEVELOPMENT"
   export ATLAS_ENV=dev
@@ -289,11 +289,7 @@ else
   write_header "Step 5.5: Manual view migration (if needed)"
   echo ""
   echo "If you need to add CREATE VIEW statements to migration files:"
-  if [[ "${ATLAS_ENV}" == "prod" ]]; then
-    echo "  - databases/migrations/production/"
-  else
-    echo "  - databases/migrations/development/"
-  fi
+  echo "  - databases/migrations/${ATLAS_ENV}/"
   echo ""
   if [[ "${AUTO_CONFIRM_VIEWS}" == "yes" ]]; then
     echo "Auto-confirmed (--yes)."
