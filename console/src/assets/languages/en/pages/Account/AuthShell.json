@@ -1,9 +1,10 @@
 {
-  "pillarIdentityTitle": "Identity",
-  "pillarIdentityBody": "One Account holds who you are across the Pulso family.",
-  "pillarCommunityTitle": "Community",
-  "pillarCommunityBody": "Profiles connect you to people and places in the city.",
-  "pillarLinkTitle": "Link",
-  "pillarLinkBody": "The shared key that opens Near, Loop, and every product.",
+  "brandHome": "Vault",
+  "pillarIdentityTitle": "Lock",
+  "pillarIdentityBody": "Your NFX Account unlocks the vault and credential cabinet.",
+  "pillarCommunityTitle": "Attest",
+  "pillarCommunityBody": "Record who opened what, and when — auditable.",
+  "pillarLinkTitle": "Access",
+  "pillarLinkBody": "Sign in once. The Vault console trusts this key.",
   "backHome": "Home"
 }
