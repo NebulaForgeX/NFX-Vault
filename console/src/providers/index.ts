@@ -1,3 +1,4 @@
 export { QueryProvider } from "./QueryProvider";
-export { VaultDataProvider } from "./DataProvider";
-export { RouterProvider } from "./RouterProvider";
+export { DataProvider } from "./DataProvider";
+export { default as ModalProvider } from "./ModalProvider";
+export { default as RouterProvider } from "./RouterProvider";

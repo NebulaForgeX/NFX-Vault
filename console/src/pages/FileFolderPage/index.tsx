@@ -1,8 +1,8 @@
 import { memo } from "react";
 import { Button, Flex } from "@radix-ui/themes";
 import { Folder } from "lucide-react";
-import { PageFrame } from "nfx-ui/layouts";
-import { EmptyState, PageHeader } from "nfx-ui/components";
+import { PageFrame } from "@/layouts";
+import { EmptyState, PageHeader } from "@/components";
 import { useSearchParams } from "react-router";
 import { safeOr, safeStringable } from "nfx-ui/utils";
 import { showError, showSuccess } from "nfx-ui/stores";

@@ -1,2 +1,1 @@
-export { getBuiltinBundles } from "./i18nResources";
-export * from "./i18nResources";
+export { getBuiltinI18nBundles, getBuiltinBundles } from "./i18nResources";

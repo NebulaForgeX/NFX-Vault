@@ -1,13 +1,13 @@
 import { memo } from "react";
 import { Button } from "@radix-ui/themes";
 import { ArrowLeft, FilePlus } from "lucide-react";
-import { PageFrame } from "nfx-ui/layouts";
-import { PageHeader, Suspense } from "nfx-ui/components";
+import { PageFrame } from "@/layouts";
+import { PageHeader, Suspense } from "@/components";
 import { FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 import { routerEventEmitter } from "@/events/router";
-import { CertificateApplyForm, useInitApplyCertificateForm, useSubmitCertificate } from "@/elements/certificate";
+import { CertificateApplyForm, useInitApplyCertificateForm, useSubmitCertificate } from "@/features/certificate";
 
 const CertAddPage = memo(() => {
   const { t } = useTranslation("certAdd");

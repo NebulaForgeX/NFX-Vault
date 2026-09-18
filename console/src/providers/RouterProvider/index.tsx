@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { BrowserRouter } from "react-router";
 
-import { useRouterEvents } from "./hooks/useRouterEvents";
+import { useRouterEvents } from "./useRouterEvents";
 
 export interface RouterProviderProps {
   children: ReactNode;

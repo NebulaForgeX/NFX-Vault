@@ -5,9 +5,8 @@ ARG VITE_API_URL=http://127.0.0.1:10140
 ARG VITE_IDENTITY_API_URL=http://127.0.0.1:10166
 ENV VITE_API_URL=${VITE_API_URL}
 ENV VITE_IDENTITY_API_URL=${VITE_IDENTITY_API_URL}
-COPY package.json package-lock.json* ./
-COPY --from=nfx-ui . /NFX-UI
-RUN npm ci || npm install
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
 RUN npm run build
 

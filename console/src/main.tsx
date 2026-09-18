@@ -3,47 +3,40 @@ import { createRoot } from "react-dom/client";
 
 import "@radix-ui/themes/styles.css";
 import "nfx-ui/themes/fonts";
-import "nfx-ui/themes/styles.css";
+import "nfx-ui/themes/index.css";
 
 import { LanguageEnum } from "nfx-ui/enums";
-import { LanguageProvider, ThemeProvider, ModalProvider, DataProvider } from "nfx-ui/providers";
-import { LayoutProvider } from "nfx-ui/layouts";
+import { LanguageProvider, ThemeProvider } from "nfx-ui/providers";
+import { ensureDeviceIdStorage } from "nfx-ui/stores";
+
+import { getBuiltinI18nBundles } from "@/assets/languages/i18nResources";
+import { syncDocumentLogo } from "@/constants";
+import { DataProvider, ModalProvider, QueryProvider, RouterProvider } from "@/providers";
+
+import App from "./App";
 
 import "./index.css";
 
-import { getBuiltinBundles } from "@/assets/languages";
-import { vaultRepositories } from "@/apis/repositories";
-import { VaultDataProvider, QueryProvider, RouterProvider } from "@/providers";
+void ensureDeviceIdStorage();
 
-import App from "./App.tsx";
-
-async function onLoadExtraBundles(lng: LanguageEnum) {
-  try {
-    const bundle = await vaultRepositories.system.GetErrorTranslations(lng);
-    return { namespace: "errors", bundle: bundle as Record<string, unknown> };
-  } catch {
-    return null;
-  }
+function bootstrap() {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <QueryProvider>
+        <LanguageProvider fallbackLng={LanguageEnum.ZH} getBuiltinBundles={getBuiltinI18nBundles}>
+          <ThemeProvider onAppearanceChange={syncDocumentLogo}>
+            <DataProvider>
+              <RouterProvider>
+                <ModalProvider>
+                  <App />
+                </ModalProvider>
+              </RouterProvider>
+            </DataProvider>
+          </ThemeProvider>
+        </LanguageProvider>
+      </QueryProvider>
+    </StrictMode>,
+  );
 }
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <QueryProvider>
-      <LanguageProvider fallbackLng={LanguageEnum.ZH} getBuiltinBundles={getBuiltinBundles} onLoadExtraBundles={onLoadExtraBundles}>
-        <ThemeProvider>
-          <LayoutProvider>
-            <DataProvider>
-              <VaultDataProvider>
-                <RouterProvider>
-                  <ModalProvider>
-                    <App />
-                  </ModalProvider>
-                </RouterProvider>
-              </VaultDataProvider>
-            </DataProvider>
-          </LayoutProvider>
-        </ThemeProvider>
-      </LanguageProvider>
-    </QueryProvider>
-  </StrictMode>,
-);
+void bootstrap();

@@ -1,8 +1,8 @@
 import { memo } from "react";
 import { Button, Flex } from "@radix-ui/themes";
 import { FileKey } from "lucide-react";
-import { PageFrame } from "nfx-ui/layouts";
-import { EmptyState, Suspense } from "nfx-ui/components";
+import { PageFrame } from "@/layouts";
+import { EmptyState, Suspense } from "@/components";
 import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 

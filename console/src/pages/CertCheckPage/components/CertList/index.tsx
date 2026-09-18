@@ -1,8 +1,7 @@
 import { memo, useMemo } from "react";
 import { FileKey } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { CardHeader, EmptyState } from "nfx-ui/components";
-import { VirtualWindowList } from "@/components";
+import { CardHeader, EmptyState, VirtuosoList } from "@/components";
 import { useCertificateList } from "@/hooks";
 import CertCard from "../CertCard";
 import styles from "./styles.module.css";
@@ -44,13 +43,12 @@ const CertList = memo(() => {
     <div className={styles.section}>
       <CardHeader icon={<FileKey size={18} />} title={`${t("certificate.list")} (${certificates.length} ${t("certificate.total") || "total"})`} />
       <div className={styles.listContainer}>
-        <VirtualWindowList
+        <VirtuosoList
           data={certificates.filter((cert) => cert && cert.domain)}
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
           fetchNextPage={fetchNextPage}
           renderItem={(cert) => <CertCard key={cert.id || cert.domain} cert={cert} />}
-          estimateSize={268}
           getItemKey={(cert) => cert.id || cert.domain}
           emptyState={emptyStateContent}
           loadingIndicator={loadingIndicator}

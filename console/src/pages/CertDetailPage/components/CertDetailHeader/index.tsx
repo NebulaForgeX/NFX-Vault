@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Badge, Button, Flex } from "@radix-ui/themes";
 import { ArrowLeft, Clock, FileKey } from "lucide-react";
-import { PageHeader } from "nfx-ui/components";
+import { PageHeader } from "@/components";
 import { useTranslation } from "react-i18next";
 
 import { routerEventEmitter } from "@/events/router";

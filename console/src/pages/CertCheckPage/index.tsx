@@ -1,8 +1,8 @@
 import { memo, useCallback } from "react";
 import { Button, Flex } from "@radix-ui/themes";
 import { FileKey, Plus, RefreshCw } from "lucide-react";
-import { PageFrame } from "nfx-ui/layouts";
-import { PageHeader, Suspense } from "nfx-ui/components";
+import { PageFrame } from "@/layouts";
+import { PageHeader, Suspense } from "@/components";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 

@@ -49,7 +49,7 @@ export function useSignup() {
     onSuccess: (res) => {
       AuthStore.getState().setTokens({ accessToken: res.accessToken, refreshToken: res.refreshToken });
       AuthStore.getState().setCurrentAccountId(res.accountId);
-      routerEventEmitter.navigateReplace(ROUTES.SELECT_PROFILE);
+      routerEventEmitter.navigateReplace(ROUTES.CHECK);
     },
     onError: (error: AxiosError) => {
       showError(vaultApiErrorMessage(error, t("registerFailed")));
@@ -68,7 +68,7 @@ export function useLoginByEmail() {
     onSuccess: (res) => {
       AuthStore.getState().setTokens({ accessToken: res.accessToken, refreshToken: res.refreshToken });
       AuthStore.getState().setCurrentAccountId(res.accountId);
-      routerEventEmitter.navigateReplace(ROUTES.SELECT_PROFILE);
+      routerEventEmitter.navigateReplace(ROUTES.CHECK);
     },
     onError: (error: AxiosError) => {
       showError(vaultApiErrorMessage(error, t("loginFailed")));

@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 
-import { vaultRepositories, VaultRepositoriesContext } from "@/apis/repositories";
+import { DataProvider as NfxDataProvider } from "nfx-ui/providers";
 
-export interface DataProviderProps {
-  children: ReactNode;
-}
+import { VaultRepositoriesContext, vaultRepositories } from "@/apis/repositories";
 
-export function VaultDataProvider({ children }: DataProviderProps) {
-  return <VaultRepositoriesContext.Provider value={vaultRepositories}>{children}</VaultRepositoriesContext.Provider>;
+export function DataProvider({ children }: { children: ReactNode }) {
+  return (
+    <NfxDataProvider>
+      <VaultRepositoriesContext.Provider value={vaultRepositories}>{children}</VaultRepositoriesContext.Provider>
+    </NfxDataProvider>
+  );
 }

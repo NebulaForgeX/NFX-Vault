@@ -1,8 +1,8 @@
 import { memo, useState } from "react";
 import { Button, Card, Flex, Text, TextArea } from "@radix-ui/themes";
 import { ArrowLeft, FileSearch, KeyRound, Shield } from "lucide-react";
-import { PageFrame } from "nfx-ui/layouts";
-import { CardHeader, EmptyState, PageHeader } from "nfx-ui/components";
+import { PageFrame } from "@/layouts";
+import { CardHeader, EmptyState, PageHeader } from "@/components";
 import { useTranslation } from "react-i18next";
 
 import { getApiErrorMessage } from "nfx-ui/utils";

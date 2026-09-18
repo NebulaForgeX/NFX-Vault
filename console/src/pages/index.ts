@@ -1,6 +1,3 @@
-export { default as LoginPage } from "./LoginPage";
-export { default as SelectProfilePage } from "./SelectProfilePage";
-export { default as AccountPage } from "./AccountPage";
 export { default as DashboardPage } from "./DashboardPage";
 export { default as CertCheckPage } from "./CertCheckPage";
 export { default as CertDetailPage } from "./CertDetailPage";
@@ -11,4 +8,10 @@ export { default as FileFolderPage } from "./FileFolderPage";
 export { default as SettingsPage } from "./User/Settings";
 export { default as DnsPage } from "./DnsPage";
 export { default as DnsDomainPage } from "./DnsDomainPage";
-
+export { default as NotFoundPage } from "./NotFoundPage";
+export { default as LoginPage } from "./Account/Login";
+export { default as SignupPage } from "./Account/Signup";
+export { default as GitHubCallbackPage } from "./Account/GitHubCallback";
+export { default as ProfileOverviewPage } from "./User/Profile/Overview";
+export { default as ProfileEditPage } from "./User/Profile/Edit";
+export { default as ProfileIdentitiesPage } from "./User/Profile/Identities";

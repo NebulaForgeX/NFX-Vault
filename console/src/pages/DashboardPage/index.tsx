@@ -1,8 +1,8 @@
 import { memo } from "react";
 import { Button, Card, Flex } from "@radix-ui/themes";
 import { LayoutDashboard, Shield, FilePlus, FileSearch } from "lucide-react";
-import { PageFrame } from "nfx-ui/layouts";
-import { CardHeader, PageHeader } from "nfx-ui/components";
+import { PageFrame } from "@/layouts";
+import { CardHeader, PageHeader } from "@/components";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 

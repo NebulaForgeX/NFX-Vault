@@ -1,8 +1,8 @@
 import { memo, useEffect, useMemo, useState } from "react";
 import { Button, Checkbox, Flex, Text, TextField } from "@radix-ui/themes";
 import { Server } from "lucide-react";
-import { PageFrame } from "nfx-ui/layouts";
-import { EmptyState, PageHeader } from "nfx-ui/components";
+import { PageFrame } from "@/layouts";
+import { EmptyState, PageHeader } from "@/components";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { showError, showSuccess } from "nfx-ui/stores";

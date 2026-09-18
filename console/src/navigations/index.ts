@@ -1,13 +1,19 @@
-import type { RouteKey as RouteKeyGeneric, RoutePath as RoutePathGeneric } from "nfx-ui/navigations";
-
-import { createRouter, defineRouter } from "nfx-ui/navigations";
+import { createRouter, defineRouter } from "@/utils";
 
 const routeMap = defineRouter({
   HOME: "/",
-  LOGIN: "/login",
-  SELECT_PROFILE: "/select-profile",
-  ACCOUNT: "/account",
+  LOGIN: "/auth/login",
+  SIGNUP: "/auth/signup",
+  LOGIN_GITHUB_CALLBACK: "/auth/login/github/callback",
+
+  USER: "/user",
+  USER_OVERVIEW: "/user/overview",
+  PROFILE: "/user/profile",
+  USER_PROFILE_OVERVIEW: "/user/profile/overview",
+  USER_PROFILE_EDIT: "/user/profile/edit",
+  USER_PROFILE_IDENTITIES: "/user/profile/identities",
   USER_SETTINGS: "/user/settings",
+
   CHECK: "/check",
   CERT_ADD: "/cert/add",
   CERT_EDIT: "/cert/edit/:certificateId",
@@ -18,8 +24,7 @@ const routeMap = defineRouter({
   DNS_DOMAIN: "/dns/:domain",
 });
 
-const { ROUTES, matchRoute, isActiveRoute, getRouteByKey } = createRouter(routeMap);
-type RouteKey = RouteKeyGeneric<typeof routeMap>;
-type RoutePath = RoutePathGeneric<typeof routeMap>;
+const { ROUTES, matchRoute, isActiveRoute, buildPath } = createRouter(routeMap);
 
-export { ROUTES, matchRoute, isActiveRoute, getRouteByKey, type RouteKey, type RoutePath };
+export type RouteKey = keyof typeof ROUTES;
+export { ROUTES, matchRoute, isActiveRoute, buildPath };
